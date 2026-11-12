@@ -28,36 +28,39 @@ export default function AdminPage() {
   const [newName, setNewName] = useState('');
   const [newService, setNewService] = useState('أتمتة الأعمال وتوفير التكاليف');
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     if (password === '246800') {
       setIsAuthenticated(true);
       setErrorMsg('');
-      setBookings(getBookedAppointments());
+      const data = await getBookedAppointments();
+      setBookings(data);
     } else {
       setErrorMsg(t('admin.wrongPassword'));
     }
   };
 
-  const handleDelete = (id) => {
-    const updated = deleteAppointment(id);
+  const handleDelete = async (id) => {
+    const updated = await deleteAppointment(id);
     setBookings(updated);
   };
 
-  const handleManualAdd = (e) => {
+  const handleManualAdd = async (e) => {
     e.preventDefault();
     if (!newName) return;
 
-    saveAppointment({
+    await saveAppointment({
       date: newDate,
       timeSlot: newSlot,
       name: newName,
       email: 'admin@sard.ai',
       service: newService,
-      notes: 'Created via Admin Dashboard'
+      notes: 'Created via Admin Dashboard',
+      created_via: 'admin_agent'
     });
 
-    setBookings(getBookedAppointments());
+    const data = await getBookedAppointments();
+    setBookings(data);
     setNewName('');
   };
 
@@ -65,18 +68,20 @@ export default function AdminPage() {
     if (!agentPrompt.trim()) return;
     setAgentLoading(true);
 
-    setTimeout(() => {
+    setTimeout(async () => {
       const today = new Date().toISOString().split('T')[0];
-      saveAppointment({
+      await saveAppointment({
         date: today,
         timeSlot: '03:00 PM',
         name: 'AI Agent Scheduled Meeting',
         email: 'agent@sard.ai',
         service: 'Auto-Scheduled Consultation',
-        notes: `AI Prompt: ${agentPrompt}`
+        notes: `AI Prompt: ${agentPrompt}`,
+        created_via: 'admin_agent'
       });
 
-      setBookings(getBookedAppointments());
+      const data = await getBookedAppointments();
+      setBookings(data);
       setAgentLog(isRTL ? `✅ تم تنفيذ طلبك "${agentPrompt}" وإنشاء الموعد في الكالندر.` : `✅ Executed "${agentPrompt}" and created meeting.`);
       setAgentPrompt('');
       setAgentLoading(false);

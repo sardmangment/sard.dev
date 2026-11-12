@@ -139,13 +139,14 @@ ${partnersInfo || "Sard AI maintains official partnerships with key industry lea
             const name = match[3].trim() || 'Chat User';
             const service = match[4].trim() || 'AI Consultation';
 
-            const newBooking = saveAppointment({
+            const newBooking = await saveAppointment({
               date: date || new Date().toISOString().split('T')[0],
               timeSlot: timeSlot || '02:00 PM',
               name,
               email: 'chat@sard.ai',
               service,
-              notes: 'Booked via Sard AI Chat Assistant'
+              notes: 'Booked via Sard AI Chat Assistant',
+              created_via: 'ai_chat'
             });
 
             setLastBooking(newBooking);

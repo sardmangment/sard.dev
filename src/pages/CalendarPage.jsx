@@ -35,38 +35,55 @@ export default function CalendarPage() {
   const [service, setService] = useState('');
   const [notes, setNotes] = useState('');
   const [bookings, setBookings] = useState([]);
+  const [loadingBookings, setLoadingBookings] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const [successMsg, setSuccessMsg] = useState(false);
 
   useEffect(() => {
-    setBookings(getBookedAppointments());
+    async function loadBookings() {
+      setLoadingBookings(true);
+      const data = await getBookedAppointments();
+      setBookings(data);
+      setLoadingBookings(false);
+    }
+    loadBookings();
   }, []);
 
   const bookedSlotsForDate = bookings
-    .filter(b => b.date === selectedDate)
-    .map(b => b.timeSlot);
+    .filter(b => b.date === selectedDate && b.status !== 'cancelled')
+    .map(b => b.timeSlot || b.time_slot);
 
-  const handleBookingSubmit = (e) => {
+  const handleBookingSubmit = async (e) => {
     e.preventDefault();
-    if (!selectedSlot || !name) return;
+    if (!selectedSlot || !name || submitting) return;
 
-    saveAppointment({
-      date: selectedDate,
-      timeSlot: selectedSlot,
-      name,
-      email,
-      service: service || (isRTL ? "استشارة أتمتة وحلول ذكاء اصطناعي" : "AI Consultation"),
-      notes
-    });
+    setSubmitting(true);
+    try {
+      await saveAppointment({
+        date: selectedDate,
+        timeSlot: selectedSlot,
+        name,
+        email,
+        service: service || (isRTL ? "استشارة أتمتة وحلول ذكاء اصطناعي" : "AI Consultation"),
+        notes,
+        created_via: 'web_form'
+      });
 
-    setBookings(getBookedAppointments());
-    setSuccessMsg(true);
-    setSelectedSlot('');
-    setName('');
-    setEmail('');
-    setService('');
-    setNotes('');
+      const refreshed = await getBookedAppointments();
+      setBookings(refreshed);
+      setSuccessMsg(true);
+      setSelectedSlot('');
+      setName('');
+      setEmail('');
+      setService('');
+      setNotes('');
 
-    setTimeout(() => setSuccessMsg(false), 5000);
+      setTimeout(() => setSuccessMsg(false), 5000);
+    } catch (err) {
+      console.error('Failed submitting booking:', err);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
