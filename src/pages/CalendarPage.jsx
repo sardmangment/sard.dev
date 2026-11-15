@@ -1,16 +1,34 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { getBookedAppointments, saveAppointment, TIME_SLOTS } from '../utils/calendarStorage';
+import {
+  getBookedSlotsForDate,
+  saveAppointment,
+  TIME_SLOTS,
+  getBookingErrorMessage
+} from '../utils/calendarStorage';
 import { useTranslation } from 'react-i18next';
-import { Calendar as CalendarIcon, Clock, Lock, CheckCircle2, ArrowRight, ArrowLeft, Bot, PlusCircle } from 'lucide-react';
-import sardLogo from '../assets/logo.png';
-import aiLogo from '../assets/ai-logo.png';
-import { LanguageSwitcher } from '../components/LanguageSwitcher';
+import {
+  Calendar as CalendarIcon,
+  Clock,
+  Lock,
+  CheckCircle2,
+  ArrowRight,
+  ArrowLeft,
+  PlusCircle,
+  X,
+  ExternalLink,
+  Loader2,
+  Copy,
+  Check,
+  Bookmark,
+  Home,
+  MessageSquare
+} from 'lucide-react';
+import { SiteNavbar } from '../components/SiteNavbar';
 
 export default function CalendarPage() {
   const { t, i18n } = useTranslation();
-  const navigate = useNavigate();
   const isRTL = i18n.language === 'ar';
 
   const todayDateObj = new Date();
@@ -34,32 +52,56 @@ export default function CalendarPage() {
   const [email, setEmail] = useState('');
   const [service, setService] = useState('');
   const [notes, setNotes] = useState('');
-  const [bookings, setBookings] = useState([]);
-  const [loadingBookings, setLoadingBookings] = useState(true);
+  const [bookedSlots, setBookedSlots] = useState([]);
+  const [loadingSlots, setLoadingSlots] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [successMsg, setSuccessMsg] = useState(false);
+  const [lastBookedAppointment, setLastBookedAppointment] = useState(null);
+  const [bookingError, setBookingError] = useState('');
+  const [copiedLink, setCopiedLink] = useState(false);
+  const [deviceBookings, setDeviceBookings] = useState([]);
+
+  // Load device bookings from localStorage (D-26 Default A) & prune expired bookings
+  useEffect(() => {
+    try {
+      const stored = JSON.parse(localStorage.getItem('sard_device_bookings') || '[]');
+      if (Array.isArray(stored)) {
+        // Prune bookings that are in the past (older than today)
+        const valid = stored.filter(b => b.date && b.date >= todayStr);
+        setDeviceBookings(valid);
+        if (valid.length !== stored.length) {
+          localStorage.setItem('sard_device_bookings', JSON.stringify(valid));
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }, [todayStr]);
+
+  async function loadSlots(dateStr) {
+    setLoadingSlots(true);
+    try {
+      const slots = await getBookedSlotsForDate(dateStr || selectedDate);
+      setBookedSlots(Array.isArray(slots) ? slots : []);
+    } catch (err) {
+      console.error('Failed to load slots from database:', err);
+    } finally {
+      setLoadingSlots(false);
+    }
+  }
 
   useEffect(() => {
-    async function loadBookings() {
-      setLoadingBookings(true);
-      const data = await getBookedAppointments();
-      setBookings(data);
-      setLoadingBookings(false);
-    }
-    loadBookings();
-  }, []);
-
-  const bookedSlotsForDate = bookings
-    .filter(b => b.date === selectedDate && b.status !== 'cancelled')
-    .map(b => b.timeSlot || b.time_slot);
+    loadSlots(selectedDate);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedDate]);
 
   const handleBookingSubmit = async (e) => {
     e.preventDefault();
     if (!selectedSlot || !name || submitting) return;
 
     setSubmitting(true);
+    setBookingError('');
     try {
-      await saveAppointment({
+      const created = await saveAppointment({
         date: selectedDate,
         timeSlot: selectedSlot,
         name,
@@ -69,90 +111,227 @@ export default function CalendarPage() {
         created_via: 'web_form'
       });
 
-      const refreshed = await getBookedAppointments();
-      setBookings(refreshed);
-      setSuccessMsg(true);
+      await loadSlots(selectedDate);
+      setLastBookedAppointment(created);
+
+      // Save to device bookings if manageToken is present (HF-02)
+      if (created.manageToken) {
+        try {
+          const existing = JSON.parse(localStorage.getItem('sard_device_bookings') || '[]');
+          const filtered = existing.filter(b => b.id !== created.id);
+          filtered.unshift({
+            id: created.id,
+            token: created.manageToken,
+            date: created.date,
+            slot: created.timeSlot || created.time_slot,
+            service: created.service || created.service_type,
+          });
+          const limited = filtered.slice(0, 10);
+          localStorage.setItem('sard_device_bookings', JSON.stringify(limited));
+          setDeviceBookings(limited);
+        } catch {
+          // ignore
+        }
+      }
+
       setSelectedSlot('');
       setName('');
-      setEmail('');
       setService('');
       setNotes('');
-
-      setTimeout(() => setSuccessMsg(false), 5000);
     } catch (err) {
       console.error('Failed submitting booking:', err);
+      setBookingError(getBookingErrorMessage(err, isRTL));
+      if (err.code === '23505' || err.message?.includes('23505') || err.message?.includes('SLOT_ALREADY_BOOKED')) {
+        await loadSlots(selectedDate);
+      }
     } finally {
       setSubmitting(false);
     }
   };
 
+  const buildGoogleCalendarUrl = (apt) => {
+    const title = `Sard AI: ${apt.service || apt.service_type || 'Consultation'}`;
+    const desc = `Appointment with Sard AI.\nClient: ${apt.name || apt.client_name}\nTime Slot: ${apt.timeSlot || apt.time_slot}\nNotes: ${apt.notes || 'None'}`;
+    const dateFormatted = (apt.date || todayStr).replace(/-/g, '');
+    return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${dateFormatted}/${dateFormatted}&details=${encodeURIComponent(desc)}`;
+  };
+
+  const getManageUrl = (id, token) => {
+    if (typeof window === 'undefined') return `/calendar/manage/${id}#t=${token}`;
+    return `${window.location.origin}/calendar/manage/${id}#t=${token}`;
+  };
+
+  const handleCopyLink = (url) => {
+    if (typeof window !== 'undefined') {
+      navigator.clipboard.writeText(url);
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2000);
+    }
+  };
+
+  const calendarLinks = [
+    { to: '/', icon: Home, label_ar: 'الرئيسية', label_en: 'Home' },
+    { to: '/ai', icon: MessageSquare, label_ar: 'احجز بالذكاء الاصطناعي', label_en: 'Book with AI' },
+  ];
+
+  const calendarDrawerLinks = [
+    { to: '/', icon: Home, label_ar: 'الرئيسية', label_en: 'Home' },
+    { to: '/ai', icon: MessageSquare, label_ar: 'مساعد الذكاء الاصطناعي', label_en: 'Sard AI Chat' },
+  ];
+
   return (
-    <div className="min-h-screen bg-black text-white py-8 px-4 sm:px-8">
-      <div className="max-w-5xl mx-auto space-y-8">
-        
-        {/* Navigation Bar */}
-        <div className="flex justify-between items-center pb-4 border-b border-white/10">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => navigate('/')}
-              className="p-2.5 rounded-lg bg-white/5 hover:bg-white/10 text-white transition-colors flex items-center gap-2 text-sm font-medium"
-            >
-              {isRTL ? <ArrowRight className="w-4 h-4" /> : <ArrowLeft className="w-4 h-4" />}
-              {isRTL ? "الرئيسية" : "Home"}
-            </button>
+    <div className="min-h-screen bg-background text-foreground transition-colors flex flex-col">
+      <SiteNavbar links={calendarLinks} drawerLinks={calendarDrawerLinks} />
 
-            <img src={sardLogo} alt="Sard AI" className="w-10 h-10 object-contain ml-2" />
-          </div>
-
-          <div className="flex items-center gap-3">
-            <Link
-              to="/ai"
-              className="flex items-center gap-2 px-3 py-2 bg-brand-orange/10 border border-brand-orange/30 text-brand-orange rounded-lg text-xs sm:text-sm font-semibold hover:bg-brand-orange/20"
-            >
-              <img src={aiLogo} alt="AI" className="w-5 h-5 object-contain" />
-              <span>{isRTL ? "الحجز بواسطة AI" : "Book via AI"}</span>
-            </Link>
-            <LanguageSwitcher />
-          </div>
-        </div>
+      <div className="max-w-5xl mx-auto space-y-8 w-full py-8 px-4 sm:px-8 flex-1">
 
         {/* Header */}
         <div className="text-center space-y-3">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-orange/20 border border-brand-orange/30 text-brand-orange text-xs sm:text-sm font-bold">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-orange/15 border border-brand-orange/30 text-brand-orange text-xs sm:text-sm font-bold shadow-sm">
             <CalendarIcon className="w-4 h-4" />
             <span>{t('calendar.badge')}</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-white">
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-foreground">
             {t('calendar.title')}
           </h1>
-          <p className="text-gray-400 text-sm sm:text-base max-w-2xl mx-auto">
+          <p className="text-muted-foreground text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
             {t('calendar.subtitle')}
           </p>
         </div>
 
-        {/* Success Alert */}
-        {successMsg && (
+        {/* Success Alert & Manage Link (HF-02) */}
+        {lastBookedAppointment && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="p-4 rounded-xl bg-green-500/20 border border-green-500/40 text-green-300 flex items-center gap-3"
+            className="p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-foreground space-y-4 shadow-md"
           >
-            <CheckCircle2 className="w-6 h-6 shrink-0 text-green-400" />
-            <div>
-              <p className="font-bold text-sm sm:text-base">{t('calendar.successTitle')}</p>
-              <p className="text-xs">{t('calendar.successDesc')}</p>
+            <div className="flex items-start justify-between flex-wrap gap-3">
+              <div className="flex items-start gap-3">
+                <CheckCircle2 className="w-6 h-6 shrink-0 text-emerald-600 mt-0.5" />
+                <div>
+                  <p className="font-bold text-base text-foreground">
+                    {isRTL ? "تم تأكيد موعدك بنجاح!" : "Your appointment is confirmed!"}
+                  </p>
+                  <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+                    {isRTL
+                      ? `تم حجز موعدك يوم ${lastBookedAppointment.date} في تمام الساعة ${lastBookedAppointment.timeSlot || lastBookedAppointment.time_slot}.`
+                      : `Booked for ${lastBookedAppointment.date} at ${lastBookedAppointment.timeSlot || lastBookedAppointment.time_slot}.`}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <a
+                  href={buildGoogleCalendarUrl(lastBookedAppointment)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3 py-1.5 rounded-lg bg-secondary hover:bg-secondary/80 text-foreground border border-border text-xs font-semibold transition-colors flex items-center gap-1.5"
+                >
+                  <ExternalLink className="w-3.5 h-3.5 text-brand-orange" />
+                  <span>{isRTL ? "إضافة لتقويم Google" : "Google Calendar"}</span>
+                </a>
+
+                <button
+                  type="button"
+                  onClick={() => setLastBookedAppointment(null)}
+                  className="p-1.5 text-muted-foreground hover:text-foreground rounded-lg"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
             </div>
+
+            {/* Manage Token Link Display */}
+            {lastBookedAppointment.manageToken && (
+              <div className="pt-3 border-t border-emerald-500/20 space-y-2">
+                <span className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                  <Bookmark className="w-3.5 h-3.5 text-brand-orange" />
+                  {isRTL ? "رابط إدارة حجزك الخاص" : "Your private booking link"}
+                </span>
+                <p className="text-[11px] text-muted-foreground">
+                  {isRTL
+                    ? "احفظ هذا الرابط — هو الطريقة الوحيدة لعرض حجزك أو إلغائه لاحقاً. لا تشاركه مع أي شخص."
+                    : "Save this link — it's the only way to view or cancel your booking later. Don't share it with anyone."}
+                </p>
+
+                <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                  <input
+                    type="text"
+                    readOnly
+                    value={getManageUrl(lastBookedAppointment.id, lastBookedAppointment.manageToken)}
+                    className="flex-1 bg-background border border-border rounded-lg px-3 py-1.5 text-xs font-mono text-muted-foreground outline-none"
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() => handleCopyLink(getManageUrl(lastBookedAppointment.id, lastBookedAppointment.manageToken))}
+                    className="px-3 py-1.5 rounded-lg bg-secondary hover:bg-secondary/80 border border-border text-foreground text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                  >
+                    {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                    <span>{copiedLink ? (isRTL ? "تم النسخ" : "Copied") : (isRTL ? "نسخ الرابط" : "Copy link")}</span>
+                  </button>
+
+                  <Link
+                    to={`/calendar/manage/${lastBookedAppointment.id}#t=${lastBookedAppointment.manageToken}`}
+                    className="px-3 py-1.5 rounded-lg bg-brand-orange text-black font-bold text-xs hover:bg-brand-orange-400 transition-colors shadow-sm"
+                  >
+                    {isRTL ? "عرض الحجز" : "View booking"}
+                  </Link>
+                </div>
+              </div>
+            )}
           </motion.div>
         )}
 
+        {/* Device Bookings Banner (Saved in localStorage on this device) */}
+        {deviceBookings.length > 0 && (
+          <div className="p-4 rounded-2xl bg-card border border-border space-y-3 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                  <Bookmark className="w-4 h-4 text-brand-orange" />
+                  {isRTL ? "حجوزاتك على هذا الجهاز" : "Your bookings on this device"}
+                </span>
+                <p className="text-[11px] text-muted-foreground mt-0.5">
+                  {isRTL ? "تظهر هنا فقط على هذا الجهاز والمتصفح." : "Shown only on this device and browser."}
+                </p>
+              </div>
+              <span className="text-[11px] text-muted-foreground">({deviceBookings.length})</span>
+            </div>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+              {deviceBookings.map((b) => (
+                <div
+                  key={b.id}
+                  className="p-3 rounded-xl bg-secondary/40 border border-border flex items-center justify-between text-xs gap-2"
+                >
+                  <div className="space-y-0.5 truncate">
+                    <p className="font-bold text-foreground">{b.date} - {b.slot}</p>
+                    <p className="text-[11px] text-muted-foreground truncate">{b.service}</p>
+                  </div>
+
+                  <Link
+                    to={`/calendar/manage/${b.id}#t=${b.token}`}
+                    className="px-2.5 py-1 rounded-lg bg-brand-orange/15 hover:bg-brand-orange/25 text-brand-orange font-bold shrink-0 transition-colors"
+                  >
+                    {isRTL ? "عرض الحجز" : "View booking"}
+                  </Link>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Main Booking Interface */}
         <div className="grid lg:grid-cols-12 gap-8 items-start">
-          
+
           {/* Date Picker & Current Week Buttons + Slots */}
-          <div className="lg:col-span-7 bg-white/5 border border-white/10 rounded-2xl p-6 space-y-6">
-            
+          <div className="lg:col-span-7 bg-card border border-border rounded-2xl p-6 space-y-6 shadow-sm">
+
             {/* Week Days Quick Bar */}
             <div className="space-y-3">
-              <label className="text-sm font-bold text-gray-300 flex items-center justify-between">
+              <label className="text-sm font-bold text-foreground flex items-center justify-between">
                 <span className="flex items-center gap-2">
                   <CalendarIcon className="w-4 h-4 text-brand-orange" />
                   {isRTL ? "أيام هذا الأسبوع:" : "Current Week:"}
@@ -160,7 +339,7 @@ export default function CalendarPage() {
                 <span className="text-xs text-brand-orange font-mono">{selectedDate}</span>
               </label>
 
-              <div className="grid grid-cols-7 gap-1.5 text-center">
+              <div className="flex sm:grid sm:grid-cols-7 gap-2 overflow-x-auto pb-2 text-center -mx-1 px-1 scrollbar-thin">
                 {weekDays.map((day) => {
                   const isSelected = selectedDate === day.dateStr;
                   return (
@@ -171,13 +350,12 @@ export default function CalendarPage() {
                         setSelectedDate(day.dateStr);
                         setSelectedSlot('');
                       }}
-                      className={`p-2.5 rounded-xl border flex flex-col items-center justify-center transition-all ${
-                        isSelected
-                          ? "bg-brand-orange text-black font-bold border-brand-orange shadow-md scale-105"
-                          : "bg-black/50 border-white/15 text-gray-300 hover:border-brand-orange/60"
-                      }`}
+                      className={`min-w-[64px] sm:min-w-0 flex-1 p-2 sm:p-2.5 rounded-xl border flex flex-col items-center justify-center shrink-0 sm:shrink transition-all ${isSelected
+                        ? "bg-brand-orange text-black font-bold border-brand-orange shadow-md scale-105"
+                        : "bg-secondary/60 border-border text-foreground hover:border-brand-orange/60"
+                        }`}
                     >
-                      <span className="text-[10px] uppercase font-semibold">{isRTL ? day.dayNameAr : day.dayNameEn}</span>
+                      <span className="text-[11px] uppercase font-semibold whitespace-nowrap">{isRTL ? day.dayNameAr : day.dayNameEn}</span>
                       <span className="text-sm font-bold mt-0.5">{day.dayNumber}</span>
                     </button>
                   );
@@ -195,33 +373,42 @@ export default function CalendarPage() {
                   setSelectedDate(e.target.value);
                   setSelectedSlot('');
                 }}
-                className="w-full bg-black/60 border border-white/20 rounded-xl px-4 py-2 text-xs sm:text-sm text-white focus:border-brand-orange outline-none"
+                className="w-full bg-background border border-border rounded-xl px-4 py-2 text-xs sm:text-sm text-foreground focus:border-brand-orange outline-none"
               />
             </div>
 
-            <div className="text-xs text-gray-400 bg-white/5 p-3 rounded-lg border border-white/10 flex items-center gap-2">
+            <div className="text-xs text-muted-foreground bg-muted/40 p-3 rounded-xl border border-border flex items-center gap-2">
               <Clock className="w-4 h-4 text-brand-orange shrink-0" />
               <span>{t('calendar.workingHours')}</span>
             </div>
 
+            {/* Slots Selection */}
             <div className="space-y-3">
-              <label className="text-sm font-bold text-gray-300">
-                {t('calendar.slotsLabel')}
-              </label>
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-bold text-foreground">
+                  {t('calendar.slotsLabel')}
+                </label>
+                {loadingSlots && (
+                  <span className="text-xs text-muted-foreground flex items-center gap-1">
+                    <Loader2 className="w-3 h-3 animate-spin text-brand-orange" />
+                    {isRTL ? "تحديث المواعيد..." : "Syncing..."}
+                  </span>
+                )}
+              </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {TIME_SLOTS.map((slot) => {
-                  const isBooked = bookedSlotsForDate.includes(slot);
+                  const isBooked = bookedSlots.includes(slot);
                   const isSelected = selectedSlot === slot;
 
                   if (isBooked) {
                     return (
                       <div
                         key={slot}
-                        className="p-3 rounded-xl bg-white/5 border border-white/10 text-gray-500 cursor-not-allowed flex items-center justify-between opacity-50 select-none"
+                        className="p-3 rounded-xl bg-muted/50 border border-border text-muted-foreground/60 cursor-not-allowed flex items-center justify-between opacity-50 select-none line-through"
                       >
                         <span className="text-xs font-semibold">{slot}</span>
-                        <div className="flex items-center gap-1 text-[10px] text-gray-400">
+                        <div className="flex items-center gap-1 text-[10px] text-muted-foreground/60">
                           <Lock className="w-3 h-3" />
                           <span>{t('calendar.booked')}</span>
                         </div>
@@ -234,92 +421,120 @@ export default function CalendarPage() {
                       key={slot}
                       type="button"
                       onClick={() => setSelectedSlot(slot)}
-                      className={`p-3 rounded-xl border transition-all flex items-center justify-between text-xs sm:text-sm font-bold ${
-                        isSelected
-                          ? "bg-brand-orange text-black border-brand-orange shadow-lg shadow-brand-orange/30 scale-105"
-                          : "bg-black/60 border-white/20 text-white hover:border-brand-orange/60"
-                      }`}
+                      className={`p-3 rounded-xl border text-xs sm:text-sm font-bold transition-all flex items-center justify-between cursor-pointer ${isSelected
+                        ? "bg-brand-orange text-black border-brand-orange shadow-md scale-102"
+                        : "bg-secondary/40 border-border text-foreground hover:border-brand-orange/60"
+                        }`}
                     >
                       <span>{slot}</span>
-                      {isSelected ? <CheckCircle2 className="w-4 h-4 text-black" /> : <PlusCircle className="w-3.5 h-3.5 text-gray-400" />}
+                      {isSelected ? (
+                        <CheckCircle2 className="w-4 h-4 text-black" />
+                      ) : (
+                        <PlusCircle className="w-4 h-4 text-muted-foreground/60" />
+                      )}
                     </button>
                   );
                 })}
               </div>
             </div>
+
           </div>
 
-          {/* Booking Form with Free Input for Service Type */}
-          <div className="lg:col-span-5 bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4">
-            <h3 className="text-xl font-bold text-white border-b border-white/10 pb-3">
-              {t('calendar.confirmTitle')}
+          {/* Booking Confirmation Form */}
+          <div className="lg:col-span-5 bg-card border border-border rounded-2xl p-6 space-y-5 shadow-sm">
+            <h3 className="text-lg font-bold text-foreground pb-2 border-b border-border">
+              {t('calendar.confirmDetails')}
             </h3>
 
-            <form onSubmit={handleBookingSubmit} className="space-y-4 text-sm">
-              <div className="space-y-1">
-                <label className="text-gray-300 text-xs font-semibold">{t('calendar.fullName')}</label>
+            {/* Selected Slot Recap */}
+            <div className="p-4 rounded-xl bg-secondary/40 border border-border space-y-1">
+              <span className="text-xs text-muted-foreground font-semibold">
+                {t('calendar.selectedSlotTitle')}
+              </span>
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-bold text-foreground">
+                  {selectedDate} {selectedSlot ? `| ${selectedSlot}` : ''}
+                </p>
+                {!selectedSlot && (
+                  <span className="text-xs text-brand-orange animate-pulse font-medium">
+                    {t('calendar.chooseSlot')}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <form onSubmit={handleBookingSubmit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-foreground mb-1">
+                  {t('calendar.nameLabel')} <span className="text-red-500">*</span>
+                </label>
                 <input
                   type="text"
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder={isRTL ? "الاسم الكريم" : "Full Name"}
-                  className="w-full bg-black/60 border border-white/20 rounded-xl px-4 py-2.5 text-white focus:border-brand-orange outline-none"
+                  placeholder={t('calendar.namePlaceholder')}
+                  className="w-full bg-background border border-border rounded-xl px-4 py-2.5 text-sm text-foreground focus:border-brand-orange outline-none"
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="text-gray-300 text-xs font-semibold">{t('calendar.email')}</label>
+              <div>
+                <label className="block text-xs font-bold text-foreground mb-1">
+                  {t('calendar.emailLabel')}
+                </label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@example.com"
-                  className="w-full bg-black/60 border border-white/20 rounded-xl px-4 py-2.5 text-white focus:border-brand-orange outline-none"
+                  placeholder={t('calendar.emailPlaceholder')}
+                  className="w-full bg-background border border-border rounded-xl px-4 py-2.5 text-sm text-foreground focus:border-brand-orange outline-none"
                 />
               </div>
 
-              {/* Free Text Input for Requested Service or Topic */}
-              <div className="space-y-1">
-                <label className="text-gray-300 text-xs font-semibold">
-                  {isRTL ? "موضوع الاجتماع / نوع الخدمة المطلوب *" : "Meeting Topic / Service Details *"}
+              <div>
+                <label className="block text-xs font-bold text-foreground mb-1">
+                  {t('calendar.serviceLabel')}
                 </label>
                 <input
                   type="text"
-                  required
                   value={service}
                   onChange={(e) => setService(e.target.value)}
-                  placeholder={isRTL ? "اكتب تفاصيل الخدمة أو الاستفسار..." : "Type any service topic or request details..."}
-                  className="w-full bg-black/60 border border-white/20 rounded-xl px-4 py-2.5 text-white focus:border-brand-orange outline-none"
+                  placeholder={isRTL ? "استشارة أتمتة الأعمال / حلول ذكية" : "Business Automation / AI Consultation"}
+                  className="w-full bg-background border border-border rounded-xl px-4 py-2.5 text-sm text-foreground focus:border-brand-orange outline-none"
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="text-gray-300 text-xs font-semibold">{t('calendar.notes')}</label>
+              <div>
+                <label className="block text-xs font-bold text-foreground mb-1">
+                  {t('calendar.notesLabel')}
+                </label>
                 <textarea
-                  rows="3"
+                  rows={3}
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  placeholder={isRTL ? "اكتب أي ملاحظات إضافية..." : "Additional notes..."}
-                  className="w-full bg-black/60 border border-white/20 rounded-xl px-4 py-2.5 text-white focus:border-brand-orange outline-none"
+                  placeholder={t('calendar.notesPlaceholder')}
+                  className="w-full bg-background border border-border rounded-xl p-3 text-sm text-foreground focus:border-brand-orange outline-none resize-none"
                 />
               </div>
 
-              <div className="pt-2">
-                <button
-                  type="submit"
-                  disabled={!selectedSlot || !name || !service}
-                  className={`w-full py-3.5 rounded-xl font-bold transition-all text-black ${
-                    selectedSlot && name && service
-                      ? "bg-brand-orange hover:bg-brand-orange-400 shadow-lg shadow-brand-orange/30 cursor-pointer"
-                      : "bg-gray-600 cursor-not-allowed opacity-50"
-                  }`}
-                >
-                  {selectedSlot
-                    ? `${t('calendar.confirmButton')} (${selectedSlot})`
-                    : t('calendar.selectSlotFirst')}
-                </button>
-              </div>
+              {bookingError && (
+                <p className="text-xs text-red-600 font-semibold">{bookingError}</p>
+              )}
+
+              <button
+                type="submit"
+                disabled={!selectedSlot || !name || submitting}
+                className="w-full py-3 rounded-xl bg-brand-orange text-black font-bold text-sm hover:bg-brand-orange-400 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md disabled:opacity-50"
+              >
+                {submitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin text-black" />
+                    <span>{t('calendar.saving')}</span>
+                  </>
+                ) : (
+                  <span>{t('calendar.bookNow')}</span>
+                )}
+              </button>
             </form>
           </div>
 

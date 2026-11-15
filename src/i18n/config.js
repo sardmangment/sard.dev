@@ -24,4 +24,20 @@ i18n
     },
   });
 
+// Centralized HTML dir and lang attribute sync across all routes
+const updateHtmlAttributes = (lng) => {
+  if (typeof document !== 'undefined') {
+    const isRtl = (lng || '').startsWith('ar');
+    document.documentElement.dir = isRtl ? 'rtl' : 'ltr';
+    document.documentElement.lang = isRtl ? 'ar' : 'en';
+  }
+};
+
+i18n.on('languageChanged', (lng) => {
+  updateHtmlAttributes(lng);
+});
+
+// Initial run
+updateHtmlAttributes(i18n.language || 'en');
+
 export default i18n;

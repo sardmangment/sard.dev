@@ -7,13 +7,19 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "node --test tests/partners-marquee.test.mjs tests/chat-booking-failure.test.mjs tests/calendar-storage.test.mjs tests/d17-migration-text.test.mjs tests/chat-proxy.test.mjs tests/admin-api.test.mjs tests/admin-session.test.mjs tests/rate-limit.test.mjs tests/admin-page.test.mjs tests/manage-appointment-ui.test.mjs tests/calendar-mobile-strip.test.mjs tests/chat-bidirectional-safe-area.test.mjs tests/mobile-nav-drawer.test.mjs tests/projects-page.test.mjs tests/projects-gallery.test.mjs tests/projects-empty-state.test.mjs tests/project-details.test.mjs tests/member-verify.test.mjs tests/verify-live-harness.test.mjs tests/footer-location.test.mjs tests/hf13-customer-wording.test.mjs tests/site-navbar.test.mjs",
+    "test:integration": "node tests/supabase-calendar.integration.test.mjs && node tests/two-browsers-cross-validation.test.mjs"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
+    "@radix-ui/react-separator": "1.1.7",
+    "@radix-ui/react-slot": "1.2.3",
     "@react-three/drei": "^10.7.6",
     "@react-three/fiber": "^9.4.0",
     "@supabase/supabase-js": "^2.110.8",
+    "class-variance-authority": "0.7.1",
+    "clsx": "2.1.1",
     "framer-motion": "^12.23.24",
     "gsap": "^3.13.0",
     "i18next": "^25.6.1",
@@ -23,6 +29,7 @@
     "react-dom": "^19.1.1",
     "react-i18next": "^16.2.4",
     "react-router-dom": "^7.9.6",
+    "tailwind-merge": "2.6.0",
     "three": "^0.181.0"
   },
   "devDependencies": {
@@ -35,6 +42,7 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.22",
     "globals": "^16.4.0",
+    "playwright": "^1.65.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.0",
     "vite": "^7.1.7"

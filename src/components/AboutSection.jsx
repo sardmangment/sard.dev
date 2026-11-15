@@ -12,7 +12,7 @@ export const AboutSection = () => {
   ];
 
   return (
-    <section className="py-24 bg-gradient-to-b from-black to-gray-900 relative overflow-hidden">
+    <section id="about" className="py-24 bg-gradient-to-b from-background via-secondary/20 to-background relative overflow-hidden transition-colors">
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: -30 }}
@@ -24,7 +24,7 @@ export const AboutSection = () => {
           <Lightbulb className="w-8 h-8 sm:w-10 sm:h-10 text-brand-orange" />
           <TextPressure
             text={t('about.title')}
-            className="text-3xl sm:text-4xl md:text-5xl font-bold text-white text-center"
+            className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground text-center"
           />
         </motion.div>
 
@@ -37,7 +37,7 @@ export const AboutSection = () => {
               viewport={{ once: true, margin: '-100px' }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <p className="text-lg sm:text-2xl font-medium text-center text-gray-200 leading-relaxed">
+              <p className="text-lg sm:text-2xl font-medium text-center text-foreground/85 leading-relaxed">
                 {text}
               </p>
             </motion.div>
@@ -53,20 +53,20 @@ export const AboutSection = () => {
         >
           <motion.div
             whileHover={{ scale: 1.03 }}
-            className="text-center p-6 sm:p-8 rounded-xl bg-brand-orange/5 border border-brand-orange/20"
+            className="text-center p-6 sm:p-8 rounded-2xl bg-card border border-border shadow-sm hover:shadow-md transition-shadow"
           >
             <Zap className="w-8 h-8 text-brand-orange mx-auto mb-3" />
-            <div className="text-3xl sm:text-4xl font-bold text-white mb-2">100%</div>
-            <div className="text-sm sm:text-base text-gray-400">{t('about.stats.mindset')}</div>
+            <div className="text-3xl sm:text-4xl font-bold text-foreground mb-2">100%</div>
+            <div className="text-sm sm:text-base text-muted-foreground">{t('about.stats.mindset')}</div>
           </motion.div>
 
           <motion.div
             whileHover={{ scale: 1.03 }}
-            className="text-center p-6 sm:p-8 rounded-xl bg-brand-orange/5 border border-brand-orange/20"
+            className="text-center p-6 sm:p-8 rounded-2xl bg-card border border-border shadow-sm hover:shadow-md transition-shadow"
           >
             <TrendingUp className="w-8 h-8 text-brand-orange mx-auto mb-3" />
-            <div className="text-3xl sm:text-4xl font-bold text-white mb-2">10x</div>
-            <div className="text-sm sm:text-base text-gray-400">{t('about.stats.solutions')}</div>
+            <div className="text-3xl sm:text-4xl font-bold text-foreground mb-2">10x</div>
+            <div className="text-sm sm:text-base text-muted-foreground">{t('about.stats.solutions')}</div>
           </motion.div>
         </motion.div>
       </div>

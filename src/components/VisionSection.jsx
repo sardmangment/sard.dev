@@ -1,11 +1,11 @@
 import { motion } from 'framer-motion';
 import { TextPressure } from './TextPressure';
-import  SplitText   from './SplitText';
+import SplitText from './SplitText';
 import { Telescope } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 export const VisionSection = () => {
-  const { t , i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const paragraphs = [
     t('vision.paragraph1'),
     t('vision.paragraph2'),
@@ -13,31 +13,7 @@ export const VisionSection = () => {
   ];
 
   return (
-    <section className="py-32 bg-gradient-to-b from-gray-900 to-black relative overflow-hidden">
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full">
-          {[...Array(20)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute w-1 h-1 bg-white rounded-full"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-              }}
-              animate={{
-                opacity: [0, 1, 0],
-                scale: [0, 1, 0],
-              }}
-              transition={{
-                duration: 3,
-                repeat: Infinity,
-                delay: i * 0.2,
-              }}
-            />
-          ))}
-        </div>
-      </div>
-
+    <section className="py-32 bg-gradient-to-b from-secondary/25 via-background to-background relative overflow-hidden transition-colors">
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: -50 }}
@@ -57,7 +33,7 @@ export const VisionSection = () => {
           </motion.div>
           <TextPressure
             text={t('vision.title')}
-            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white text-center"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground text-center"
           />
         </motion.div>
 
@@ -69,10 +45,9 @@ export const VisionSection = () => {
             transition={{ duration: 0.3 }} 
             className="text-center"
           >
-            
             <SplitText
               text={t('vision.subtitle')}
-              className="text-2xl sm:text-3xl md:text-4xl font-bold text-white"
+              className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground"
               delay={100}
               duration={0.2}
               ease="power3.out"
@@ -91,7 +66,7 @@ export const VisionSection = () => {
             >
               <SplitText
                 text={text}
-                className="text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed"
+                className="text-base sm:text-lg md:text-xl text-foreground/80 leading-relaxed font-normal"
                 stagger={0.005} 
                 delay={0} 
                 direction={i18n.language === "ar" ? "rtl" : "ltr"}
@@ -105,28 +80,13 @@ export const VisionSection = () => {
             viewport={{ once: true, margin: '-100px' }} 
             transition={{ duration: 0.3, delay: 0, type: 'spring' }}
             whileHover={{
-              scale: 1.02,
-              boxShadow: '0 30px 60px rgba(255, 255, 255, 0.1)',
+              scale: 1.01,
             }}
-            className="mt-12 sm:mt-16 p-8 sm:p-12 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 text-center hover:border-white/30 transition-all"
+            className="mt-12 sm:mt-16 p-8 sm:p-12 rounded-2xl bg-card border border-border text-center hover:border-brand-orange/40 shadow-sm transition-all"
           >
-            <motion.div
-              className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-light text-white italic"
-              animate={{
-                textShadow: [
-                  '0 0 0px rgba(255,255,255,0)',
-                  '0 0 20px rgba(255,255,255,0.3)',
-                  '0 0 0px rgba(255,255,255,0)',
-                ],
-              }}
-              transition={{
-                duration: 3,
-                repeat: Infinity,
-                repeatType: 'loop',
-              }}
-            >
+            <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-medium text-foreground italic">
               "{t('vision.quote')}"
-            </motion.div>
+            </div>
           </motion.div>
         </div>
       </div>

@@ -6,7 +6,7 @@ export default function FormattedMarkdown({ content }) {
   const lines = content.split('\n');
 
   return (
-    <div className="space-y-2 text-gray-200 leading-relaxed text-base sm:text-lg select-text">
+    <div className="space-y-2 text-foreground leading-relaxed text-base sm:text-lg select-text">
       {lines.map((line, idx) => {
         const trimmed = line.trim();
         if (!trimmed) return <div key={idx} className="h-1" />;
@@ -15,7 +15,7 @@ export default function FormattedMarkdown({ content }) {
         if (trimmed.startsWith('###') || trimmed.startsWith('##') || trimmed.startsWith('#')) {
           const cleanHeading = trimmed.replace(/^#+\s*/, '');
           return (
-            <h3 key={idx} className="text-lg sm:text-xl font-bold text-brand-orange mt-3 mb-1">
+            <h3 key={idx} dir="auto" className="text-lg sm:text-xl font-bold text-brand-orange mt-3 mb-1 text-start">
               {parseBold(cleanHeading)}
             </h3>
           );
@@ -27,14 +27,14 @@ export default function FormattedMarkdown({ content }) {
           return (
             <div key={idx} className="flex items-start gap-2 my-1">
               <span className="text-brand-orange font-bold">•</span>
-              <p className="flex-1 text-gray-200">{parseBold(cleanBullet)}</p>
+              <p dir="auto" className="flex-1 text-foreground text-start leading-relaxed">{parseBold(cleanBullet)}</p>
             </div>
           );
         }
 
         // Standard Paragraph
         return (
-          <p key={idx} className="text-gray-200 leading-relaxed">
+          <p key={idx} dir="auto" className="text-foreground leading-relaxed text-start">
             {parseBold(trimmed)}
           </p>
         );
@@ -48,7 +48,7 @@ function parseBold(text) {
   return parts.map((part, i) => {
     if (part.startsWith('**') && part.endsWith('**')) {
       return (
-        <strong key={i} className="font-bold text-white">
+        <strong key={i} className="font-bold text-foreground">
           {part.slice(2, -2)}
         </strong>
       );

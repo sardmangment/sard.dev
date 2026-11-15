@@ -22,7 +22,7 @@ export default function StreamingBotMessage({ fullText, isRTL }) {
   }, [fullText]);
 
   return (
-    <div className="w-full py-2 text-gray-100 leading-relaxed text-base sm:text-lg">
+    <div className="w-full py-2 text-foreground leading-relaxed text-base sm:text-lg" dir={isRTL ? "rtl" : "ltr"}>
       <div className="text-xs font-bold text-brand-orange uppercase tracking-wider mb-2">
         Sard AI
       </div>

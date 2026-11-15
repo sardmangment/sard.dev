@@ -47,7 +47,9 @@ const SplitText = ({
       if (el._splitInstance) {
         try {
           el._splitInstance.revert();
-        } catch (_) {}
+        } catch {
+          // ignore revert failure if already reverted
+        }
         el._splitInstance = null;
       }
 

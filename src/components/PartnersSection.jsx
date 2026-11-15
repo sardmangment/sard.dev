@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
 import { supabase } from '../integrations/supabase/client';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -29,55 +28,66 @@ export const PartnersSection = () => {
 
   const isRTL = i18n.language === 'ar';
 
-  if (loading || partners.length === 0) {
+  if (loading || !Array.isArray(partners) || partners.length === 0) {
     return null;
   }
 
-  // Multiply items for smooth infinite loop ribbon
-  const marqueeItems = [...partners, ...partners, ...partners, ...partners];
+  // Ensure a single group has sufficient items to fill viewports before repeating
+  const repeatCount = Math.max(2, Math.ceil(8 / partners.length));
+  const singleGroup = Array.from({ length: repeatCount }, () => partners).flat();
+
+  const renderPartnerItem = (partner, uniqueKey) => {
+    const name = isRTL ? partner.partner_name_ar : partner.partner_name_en;
+
+    return (
+      <div
+        key={uniqueKey}
+        onClick={() => navigate(`/partners/${partner.id}`)}
+        className="cursor-pointer group flex items-center justify-center shrink-0 px-2 transition-transform hover:scale-110 duration-300"
+      >
+        {partner.partner_logo_url ? (
+          <img
+            src={partner.partner_logo_url}
+            alt={name}
+            className="h-10 sm:h-12 md:h-14 w-auto object-contain filter grayscale contrast-125 opacity-70 group-hover:grayscale-0 group-hover:opacity-100 group-hover:contrast-100 transition-all duration-300"
+          />
+        ) : (
+          <span className="text-lg font-bold text-muted-foreground group-hover:text-brand-orange filter grayscale group-hover:grayscale-0 transition-all duration-300">
+            {name}
+          </span>
+        )}
+      </div>
+    );
+  };
 
   return (
-    <section className="py-12 bg-black border-y border-white/10 overflow-hidden relative">
+    <section id="partners" className="py-12 bg-secondary/35 border-y border-border overflow-hidden relative transition-colors">
       <div className="container mx-auto px-4 mb-6 text-center">
         <p className="text-xs uppercase tracking-widest text-brand-orange font-semibold">
           {t('partners.title')}
         </p>
       </div>
 
-      <div className="flex w-full overflow-hidden select-none mask-gradient">
-        <motion.div
-          className="flex items-center gap-12 sm:gap-16 whitespace-nowrap min-w-full"
-          animate={{ x: isRTL ? ['0%', '50%'] : ['0%', '-50%'] }}
-          transition={{
-            repeat: Infinity,
-            ease: 'linear',
-            duration: Math.max(15, partners.length * 4),
-          }}
+      {/* dir="ltr" isolates logo ribbon layout and translation direction for flawless continuous movement */}
+      <div dir="ltr" className="flex w-full overflow-hidden select-none mask-gradient">
+        <div
+          className="flex w-max animate-marquee hover:[animation-play-state:paused]"
+          style={{ '--marquee-duration': `${Math.max(20, singleGroup.length * 3.5)}s` }}
         >
-          {marqueeItems.map((partner, index) => {
-            const name = isRTL ? partner.partner_name_ar : partner.partner_name_en;
+          {/* Group 1 */}
+          <div className="flex shrink-0 items-center gap-12 sm:gap-16 pr-12 sm:pr-16">
+            {singleGroup.map((partner, index) =>
+              renderPartnerItem(partner, `g1-${partner.id}-${index}`)
+            )}
+          </div>
 
-            return (
-              <div
-                key={`${partner.id}-${index}`}
-                onClick={() => navigate(`/partners/${partner.id}`)}
-                className="cursor-pointer group flex items-center justify-center shrink-0 px-2 transition-transform hover:scale-110 duration-300"
-              >
-                {partner.partner_logo_url ? (
-                  <img
-                    src={partner.partner_logo_url}
-                    alt={name}
-                    className="h-10 sm:h-12 md:h-14 w-auto object-contain filter grayscale contrast-200 opacity-60 group-hover:grayscale-0 group-hover:opacity-100 group-hover:contrast-100 transition-all duration-300"
-                  />
-                ) : (
-                  <span className="text-lg font-bold text-gray-500 group-hover:text-brand-orange filter grayscale group-hover:grayscale-0 transition-all duration-300">
-                    {name}
-                  </span>
-                )}
-              </div>
-            );
-          })}
-        </motion.div>
+          {/* Group 2 (Twin track for seamless loop) */}
+          <div className="flex shrink-0 items-center gap-12 sm:gap-16 pr-12 sm:pr-16" aria-hidden="true">
+            {singleGroup.map((partner, index) =>
+              renderPartnerItem(partner, `g2-${partner.id}-${index}`)
+            )}
+          </div>
+        </div>
       </div>
     </section>
   );

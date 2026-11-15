@@ -1,33 +1,54 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { supabase } from '../integrations/supabase/client';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, ArrowRight, Calendar, FileText, Building2, CheckCircle, ShieldCheck } from 'lucide-react';
-import { LanguageSwitcher } from '../components/LanguageSwitcher';
+import { 
+  ArrowLeft, 
+  ArrowRight, 
+  Calendar, 
+  FileText, 
+  Building2, 
+  CheckCircle, 
+  ShieldCheck, 
+  Briefcase, 
+  ExternalLink,
+  Home,
+  FolderGit2
+} from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { SiteNavbar } from '../components/SiteNavbar';
 import sardITLogo from '../assets/logo.png';
 
 export default function PartnerDetailsPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const [partner, setPartner] = useState(null);
+  const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const isRTL = i18n.language === 'ar';
 
   useEffect(() => {
     async function getPartnerDetails() {
-      const { data, error } = await supabase
-        .from('partnerships')
-        .select('*')
-        .eq('id', id)
-        .single();
+      try {
+        const [partnerRes, projectsRes] = await Promise.all([
+          supabase.from('partnerships').select('*').eq('id', id).single(),
+          supabase.from('projects').select('*').eq('partnership_id', id).order('display_order', { ascending: true })
+        ]);
 
-      if (!error && data) {
-        setPartner(data);
+        if (!partnerRes.error && partnerRes.data) {
+          setPartner(partnerRes.data);
+        }
+        if (!projectsRes.error && projectsRes.data) {
+          setProjects(projectsRes.data);
+        }
+      } catch (err) {
+        console.error('Error fetching partner details:', err);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     }
 
     if (id) {
@@ -37,7 +58,7 @@ export default function PartnerDetailsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black text-white flex justify-center items-center">
+      <div className="min-h-screen bg-background text-foreground flex justify-center items-center">
         <div className="w-10 h-10 border-4 border-brand-orange border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -45,11 +66,11 @@ export default function PartnerDetailsPage() {
 
   if (!partner) {
     return (
-      <div className="min-h-screen bg-black text-white flex flex-col justify-center items-center gap-4">
+      <div className="min-h-screen bg-background text-foreground flex flex-col justify-center items-center gap-4">
         <h2 className="text-2xl font-bold">{isRTL ? "الشريك غير موجود" : "Partner Not Found"}</h2>
         <button
           onClick={() => navigate('/')}
-          className="px-6 py-2 bg-brand-orange text-black font-semibold rounded-lg"
+          className="px-6 py-2.5 bg-brand-orange text-black font-semibold rounded-xl hover:bg-brand-orange-400 transition-colors"
         >
           {isRTL ? "العودة للرئيسية" : "Back to Home"}
         </button>
@@ -61,28 +82,27 @@ export default function PartnerDetailsPage() {
   const description = isRTL ? partner.description_ar : partner.description_en;
   const contractDetails = isRTL ? partner.contract_details_ar : partner.contract_details_en;
 
+  const partnerLinks = [
+    { to: '/', icon: Home, label_ar: 'الرئيسية', label_en: 'Home' },
+    { to: '/projects', icon: FolderGit2, label_ar: 'المشاريع', label_en: 'Projects' },
+  ];
+
+  const partnerDrawerLinks = [
+    { to: '/', icon: Home, label_ar: 'الرئيسية', label_en: 'Home' },
+    { to: '/projects', icon: FolderGit2, label_ar: 'المشاريع', label_en: 'Projects' },
+    { to: '/calendar', icon: Calendar, label_ar: 'جدول المواعيد', label_en: 'Calendar' },
+  ];
+
   return (
-    <div className="min-h-screen bg-black text-white py-8 px-4 sm:px-8">
-      <div className="max-w-4xl mx-auto space-y-8">
-        
-        {/* Navigation Bar */}
-        <div className="flex justify-between items-center pb-4 border-b border-white/10">
-          <button
-            onClick={() => navigate('/')}
-            className="p-2.5 rounded-lg bg-white/5 hover:bg-white/10 text-white transition-colors flex items-center gap-2 text-sm font-medium"
-          >
-            {isRTL ? <ArrowRight className="w-4 h-4" /> : <ArrowLeft className="w-4 h-4" />}
-            {isRTL ? "الرئيسية" : "Home"}
-          </button>
+    <div className="min-h-screen bg-background text-foreground transition-colors flex flex-col">
+      <SiteNavbar links={partnerLinks} drawerLinks={partnerDrawerLinks} />
 
-          <LanguageSwitcher />
-        </div>
-
+      <div className="max-w-4xl mx-auto space-y-8 w-full py-8 px-4 sm:px-8 flex-1">
         {/* Official Header Section: Sard AI Logo | Partner Logo / Name */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          className="p-8 rounded-2xl bg-gradient-to-b from-white/10 via-white/5 to-black border border-white/15 text-center shadow-2xl relative overflow-hidden"
+          className="p-8 rounded-2xl bg-card border border-border text-center shadow-sm relative overflow-hidden"
         >
           <div className="flex items-center justify-center gap-4 sm:gap-8 my-4">
             {/* Sard Logo */}
@@ -92,7 +112,7 @@ export default function PartnerDetailsPage() {
             </div>
 
             {/* Official Divider Bar */}
-            <div className="text-2xl sm:text-4xl text-brand-orange/60 font-light select-none">|</div>
+            <div className="text-2xl sm:text-4xl text-border font-light select-none">|</div>
 
             {/* Partner Logo / Name */}
             <div className="flex flex-col items-center gap-2">
@@ -103,16 +123,16 @@ export default function PartnerDetailsPage() {
                   className="w-16 h-16 sm:w-20 sm:h-20 object-contain"
                 />
               ) : (
-                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-brand-orange/20 rounded-xl border border-brand-orange/30 flex items-center justify-center text-brand-orange">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-brand-orange/15 rounded-xl border border-brand-orange/30 flex items-center justify-center text-brand-orange">
                   <Building2 className="w-10 h-10" />
                 </div>
               )}
-              <span className="text-xs sm:text-sm font-bold text-white max-w-[120px] truncate">{partnerName}</span>
+              <span className="text-xs sm:text-sm font-bold text-foreground max-w-[140px] truncate">{partnerName}</span>
             </div>
           </div>
 
-          <div className="mt-6 pt-4 border-t border-white/10">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-brand-orange/20 text-brand-orange text-xs font-semibold rounded-full border border-brand-orange/30">
+          <div className="mt-6 pt-4 border-t border-border">
+            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-brand-orange/15 text-brand-orange text-xs font-semibold rounded-full border border-brand-orange/30">
               <ShieldCheck className="w-3.5 h-3.5" />
               {isRTL ? "اتفاقية شراكة استراتيجية موثقة" : "Official Strategic Partnership"}
             </span>
@@ -124,18 +144,18 @@ export default function PartnerDetailsPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="p-8 rounded-2xl bg-white/5 border border-white/10 space-y-6"
+          className="p-8 rounded-2xl bg-card border border-border space-y-6 shadow-sm"
         >
-          <div className="flex items-center justify-between border-b border-white/10 pb-4">
+          <div className="flex items-center justify-between border-b border-border pb-4 flex-wrap gap-3">
             <div className="flex items-center gap-3 text-brand-orange">
               <FileText className="w-6 h-6" />
-              <h2 className="text-xl sm:text-2xl font-bold text-white">
+              <h2 className="text-xl sm:text-2xl font-bold text-foreground">
                 {isRTL ? "بيانات التعاقد والشراكة" : "Contract & Partnership Breakdown"}
               </h2>
             </div>
 
             {partner.contract_date && (
-              <div className="flex items-center gap-2 text-gray-400 text-sm bg-white/5 px-3 py-1.5 rounded-lg border border-white/10">
+              <div className="flex items-center gap-2 text-muted-foreground text-sm bg-secondary/80 px-3 py-1.5 rounded-lg border border-border">
                 <Calendar className="w-4 h-4 text-brand-orange" />
                 <span>{partner.contract_date}</span>
               </div>
@@ -144,11 +164,11 @@ export default function PartnerDetailsPage() {
 
           {/* Description */}
           {description && (
-            <div className="p-4 rounded-xl bg-black/40 border border-white/10 space-y-2">
+            <div className="p-4 rounded-xl bg-secondary/40 border border-border space-y-2">
               <span className="text-xs text-brand-orange uppercase tracking-wider font-semibold">
                 {isRTL ? "نبذة عن الشريك" : "Partner Overview"}
               </span>
-              <p className="text-gray-300 text-base leading-relaxed">{description}</p>
+              <p className="text-muted-foreground text-base leading-relaxed">{description}</p>
             </div>
           )}
 
@@ -158,11 +178,11 @@ export default function PartnerDetailsPage() {
               {isRTL ? "بنود وتفاصيل التعاقد الرسمية" : "Contract Details & Clauses"}
             </span>
             {contractDetails ? (
-              <div className="p-6 rounded-xl bg-black/60 border border-white/10 text-gray-200 leading-relaxed whitespace-pre-line text-base font-normal">
+              <div className="p-6 rounded-xl bg-secondary/30 border border-border text-foreground leading-relaxed whitespace-pre-line text-base font-normal">
                 {contractDetails}
               </div>
             ) : (
-              <div className="p-6 rounded-xl bg-black/60 border border-white/10 flex items-center gap-3 text-gray-400 italic">
+              <div className="p-6 rounded-xl bg-secondary/30 border border-border flex items-center gap-3 text-muted-foreground italic">
                 <CheckCircle className="w-5 h-5 text-brand-orange shrink-0" />
                 <span>
                   {isRTL
@@ -173,6 +193,66 @@ export default function PartnerDetailsPage() {
             )}
           </div>
         </motion.div>
+
+        {/* Related Projects Section (SU-T17) */}
+        {projects.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="p-8 rounded-2xl bg-card border border-border space-y-6 shadow-sm"
+          >
+            <div className="flex items-center gap-3 border-b border-border pb-4">
+              <Briefcase className="w-6 h-6 text-brand-orange" />
+              <h2 className="text-xl sm:text-2xl font-bold text-foreground">
+                {isRTL ? "المشاريع المرتبطة" : "Related Projects"}
+              </h2>
+              <Badge variant="secondary" className="bg-brand-orange/15 text-brand-orange font-bold text-xs">
+                {projects.length}
+              </Badge>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {projects.map((project, index) => {
+                const title = isRTL ? project.title_ar : project.title_en;
+                const desc = isRTL ? project.description_ar : project.description_en;
+                return (
+                  <motion.div
+                    key={project.id}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.08 }}
+                  >
+                    <Link
+                      to={`/project/${project.id}`}
+                      className="flex gap-4 p-4 rounded-xl bg-secondary/40 hover:bg-secondary border border-border/80 hover:border-brand-orange/50 transition-all group h-full"
+                    >
+                      {project.image_url && (
+                        <img
+                          src={project.image_url}
+                          alt={title}
+                          className="w-24 h-20 rounded-lg object-cover border border-border shrink-0"
+                        />
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-foreground group-hover:text-brand-orange transition-colors truncate">
+                          {title}
+                        </h3>
+                        {desc && (
+                          <p className="text-xs text-muted-foreground line-clamp-2 mt-1 leading-relaxed">
+                            {desc}
+                          </p>
+                        )}
+                      </div>
+                      <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-brand-orange transition-colors shrink-0 mt-1" />
+                    </Link>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
+
       </div>
     </div>
   );
