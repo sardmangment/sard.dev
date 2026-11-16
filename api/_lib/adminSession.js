@@ -19,6 +19,14 @@ const LOCAL_DEV_ORIGINS = [
 export function isOriginAllowed(origin) {
   if (!origin) return false;
   if (PRODUCTION_ORIGINS.includes(origin)) return true;
+  try {
+    const url = new URL(origin);
+    if (url.protocol === 'https:' && (url.hostname.endsWith('.pages.dev') || url.hostname.endsWith('.vercel.app'))) {
+      return true;
+    }
+  } catch {
+    // invalid URL format
+  }
   if (process.env.NODE_ENV !== 'production' && LOCAL_DEV_ORIGINS.includes(origin)) {
     return true;
   }

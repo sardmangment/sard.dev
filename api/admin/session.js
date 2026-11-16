@@ -18,7 +18,7 @@ export const config = { runtime: 'edge' };
 
 export default async function handler(req) {
   const origin = req.headers.get('origin') || '';
-  const clientIp = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+  const clientIp = req.headers.get('cf-connecting-ip') || req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
   const userAgent = req.headers.get('user-agent') || 'unknown';
 
   // Strict same-origin verification

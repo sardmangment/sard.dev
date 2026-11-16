@@ -31,6 +31,14 @@ const MAX_SYSTEM_CHARS = 12000;
 function isOriginAllowed(origin) {
   if (!origin) return false;
   if (PRODUCTION_ORIGINS.includes(origin)) return true;
+  try {
+    const url = new URL(origin);
+    if (url.protocol === "https:" && (url.hostname.endsWith(".pages.dev") || url.hostname.endsWith(".vercel.app"))) {
+      return true;
+    }
+  } catch {
+    // invalid URL format
+  }
   if (process.env.NODE_ENV !== "production" && LOCAL_DEV_ORIGINS.includes(origin)) {
     return true;
   }
@@ -70,7 +78,7 @@ function validatePayload(body) {
 
 export default async function handler(req) {
   const origin = req.headers.get("origin") || "";
-  const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const clientIp = req.headers.get("cf-connecting-ip") || req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
 
   if (!isOriginAllowed(origin)) {
     return new Response(JSON.stringify({ error: "Unauthorized origin" }), {
