@@ -76,7 +76,7 @@ function validatePayload(body) {
   return true;
 }
 
-export default async function handler(req) {
+export default async function handler(req, env = (typeof globalThis !== 'undefined' && globalThis.__CF_ENV__) ? globalThis.__CF_ENV__ : {}) {
   const origin = req.headers.get("origin") || "";
   const clientIp = req.headers.get("cf-connecting-ip") || req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
 
@@ -123,7 +123,7 @@ export default async function handler(req) {
   }
 
   // Server-only secret. Read only GEMINI_API_KEY. Never read VITE_-prefixed variable.
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey = env.GEMINI_API_KEY || (typeof process !== 'undefined' ? process.env.GEMINI_API_KEY : '');
   if (!apiKey) {
     return new Response(
       JSON.stringify({ error: "Server AI proxy is pending server-side GEMINI_API_KEY configuration." }),

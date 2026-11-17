@@ -19,7 +19,7 @@ const TIME_SLOTS = [
   '12:00 AM',
 ];
 
-export default async function handler(req) {
+export default async function handler(req, env = (typeof globalThis !== 'undefined' && globalThis.__CF_ENV__) ? globalThis.__CF_ENV__ : {}) {
   // 1. Origin verification (reject cross-origin requests from untrusted origins)
   const origin = req.headers.get('origin');
   if (origin && !isOriginAllowed(origin)) {
@@ -65,8 +65,8 @@ export default async function handler(req) {
     }
   }
 
-  const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || 'https://hnihrwignetxwudoqntp.supabase.co';
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const supabaseUrl = env.SUPABASE_URL || env.VITE_SUPABASE_URL || (typeof process !== 'undefined' ? (process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL) : '') || 'https://hnihrwignetxwudoqntp.supabase.co';
+  const serviceRoleKey = env.SUPABASE_SERVICE_ROLE_KEY || (typeof process !== 'undefined' ? process.env.SUPABASE_SERVICE_ROLE_KEY : '');
 
   if (!serviceRoleKey) {
     return new Response(

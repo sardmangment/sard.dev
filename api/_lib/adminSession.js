@@ -96,8 +96,9 @@ export function buildClearCookie() {
 }
 
 function getSupabaseConfig() {
-  const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || 'https://hnihrwignetxwudoqntp.supabase.co';
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const env = (typeof globalThis !== 'undefined' && globalThis.__CF_ENV__) ? globalThis.__CF_ENV__ : {};
+  const supabaseUrl = env.SUPABASE_URL || env.VITE_SUPABASE_URL || (typeof process !== 'undefined' ? (process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL) : '') || 'https://hnihrwignetxwudoqntp.supabase.co';
+  const serviceRoleKey = env.SUPABASE_SERVICE_ROLE_KEY || (typeof process !== 'undefined' ? process.env.SUPABASE_SERVICE_ROLE_KEY : '');
   return { supabaseUrl, serviceRoleKey };
 }
 

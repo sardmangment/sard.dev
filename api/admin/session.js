@@ -16,7 +16,7 @@ import { hitAdminLoginAttempt, recordAdminLoginFailureGlobal } from '../_lib/rat
 
 export const config = { runtime: 'edge' };
 
-export default async function handler(req) {
+export default async function handler(req, env = (typeof globalThis !== 'undefined' && globalThis.__CF_ENV__) ? globalThis.__CF_ENV__ : {}) {
   const origin = req.headers.get('origin') || '';
   const clientIp = req.headers.get('cf-connecting-ip') || req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
   const userAgent = req.headers.get('user-agent') || 'unknown';
@@ -65,7 +65,7 @@ export default async function handler(req) {
 
   // POST: Login
   if (req.method === 'POST') {
-    const expectedPasscode = process.env.ADMIN_PASSCODE;
+    const expectedPasscode = env.ADMIN_PASSCODE || (typeof process !== 'undefined' ? process.env.ADMIN_PASSCODE : '');
     if (!expectedPasscode || expectedPasscode.length < 16) {
       return new Response(
         JSON.stringify({ error: 'Server configuration error: ADMIN_PASSCODE must be at least 16 characters.' }),

@@ -2,14 +2,14 @@
 import handler from '../../../api/admin/session.js';
 
 export async function onRequest(context) {
-  if (typeof process === 'undefined') {
-    globalThis.process = { env: {} };
+  const env = context.env || {};
+  globalThis.__CF_ENV__ = env;
+  if (typeof process !== 'undefined' && process.env) {
+    try {
+      Object.assign(process.env, env);
+    } catch (err) {
+      void err;
+    }
   }
-  if (!process.env) {
-    process.env = {};
-  }
-  if (context.env) {
-    Object.assign(process.env, context.env);
-  }
-  return handler(context.request);
+  return handler(context.request, env);
 }
