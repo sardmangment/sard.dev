@@ -33,7 +33,7 @@ function isOriginAllowed(origin) {
   if (PRODUCTION_ORIGINS.includes(origin)) return true;
   try {
     const url = new URL(origin);
-    if (url.protocol === "https:" && (url.hostname.endsWith(".pages.dev") || url.hostname.endsWith(".vercel.app"))) {
+    if (url.protocol === "https:" && (url.hostname === "sard-unified.pages.dev" || url.hostname.endsWith(".sard-unified.pages.dev"))) {
       return true;
     }
   } catch {

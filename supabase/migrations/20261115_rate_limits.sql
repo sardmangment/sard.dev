@@ -44,7 +44,7 @@ BEGIN
 END;
 $$;
 
-REVOKE EXECUTE ON FUNCTION public.hit_rate_limit(text, int, int) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.hit_rate_limit(text, int, int) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.hit_rate_limit(text, int, int) TO service_role;
 
 -- Periodic cleanup function: Prunes rate limit rows older than 7 days
@@ -57,5 +57,5 @@ AS $$
   DELETE FROM public.rate_limits WHERE window_start < NOW() - INTERVAL '7 days';
 $$;
 
-REVOKE EXECUTE ON FUNCTION public.cleanup_expired_rate_limits() FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.cleanup_expired_rate_limits() FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.cleanup_expired_rate_limits() TO service_role;
