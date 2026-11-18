@@ -1,0 +1,19 @@
+# Cloudflare Pages headers (CC-14)
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: DENY
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+
+/team
+  X-Robots-Tag: noindex, nofollow
+/member/*
+  X-Robots-Tag: noindex, nofollow
+/admin
+  X-Robots-Tag: noindex, nofollow
+/calendar/manage/*
+  X-Robots-Tag: noindex, nofollow
+/privacy
+  X-Robots-Tag: noindex
+/terms
+  X-Robots-Tag: noindex

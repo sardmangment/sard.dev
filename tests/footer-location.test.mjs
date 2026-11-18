@@ -7,20 +7,18 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-test('HF-15: Footer component specifies Alexandria only (DEV-100)', () => {
+test('HF-15 / C-A10-A11: Footer shows the approved address "Alexandria, Egypt" (DEV-100)', () => {
   const footerPath = path.resolve(__dirname, '../src/components/layout/Footer.tsx');
   const footerContent = fs.readFileSync(footerPath, 'utf8');
+  const en = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../src/locales/en/translation.json'), 'utf8'));
+  const ar = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../src/locales/ar/translation.json'), 'utf8'));
 
-  assert.ok(
-    footerContent.includes("t('الإسكندرية', 'Alexandria')"),
-    'Footer must contain t(\'الإسكندرية\', \'Alexandria\')'
-  );
-  assert.ok(
-    !footerContent.includes('Cairo'),
-    'Footer must not contain "Cairo"'
-  );
-  assert.ok(
-    !footerContent.includes('القاهرة'),
-    'Footer must not contain "القاهرة"'
-  );
+  assert.ok(footerContent.includes("t('footer.address')"), 'Footer must render footer.address');
+  assert.strictEqual(en.footer.address, 'Alexandria, Egypt');
+  assert.strictEqual(ar.footer.address, 'الإسكندرية، مصر');
+  assert.ok(!footerContent.includes('Cairo'), 'Footer must not contain "Cairo"');
+  assert.ok(!footerContent.includes('القاهرة'), 'Footer must not contain "القاهرة"');
+  assert.ok(!footerContent.includes('/team'), 'Footer must not link to the Team page (C-G03)');
+  assert.ok(!/twitter\.com|x\.com/.test(footerContent), 'Footer must not link to X/Twitter (C-A17)');
+  assert.ok(footerContent.includes('to="/privacy"') && footerContent.includes('to="/terms"'), 'Footer must link the legal notices');
 });

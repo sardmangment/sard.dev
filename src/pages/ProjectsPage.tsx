@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { SiteNavbar } from '@/components/SiteNavbar';
 import { Footer } from '@/components/layout/Footer';
@@ -45,6 +46,7 @@ interface ContactInfo {
 
 export const ProjectsPage = () => {
   const { t } = useLanguage();
+  const { t: tr } = useTranslation();
 
   // Independent Projects state
   const [projects, setProjects] = useState<Project[]>([]);
@@ -136,10 +138,10 @@ export const ProjectsPage = () => {
             className="text-center mb-12"
           >
             <h1 className="text-3xl sm:text-4xl font-bold mb-4 text-foreground">
-              {t('معرض المشاريع', 'Projects Gallery')}
+              {t('العروض التوضيحية للمشاريع', 'Project Demonstrations')}
             </h1>
             <p className="text-muted-foreground max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
-              {t('استعرض جميع مشاريعنا وأعمالنا المتميزة', 'Browse all our projects and outstanding works')}
+              {tr('projectsPage.demoNotice')}
             </p>
           </motion.div>
 
@@ -211,6 +213,9 @@ export const ProjectsPage = () => {
                         </div>
                       </div>
                       <CardHeader>
+                        <span className="self-start inline-flex px-2.5 py-1 rounded-full text-[11px] font-semibold bg-brand-orange/15 text-brand-orange border border-brand-orange/30" data-testid="demo-badge">
+                          {tr('projectsPage.demoBadge')}
+                        </span>
                         <h3 className="text-xl font-semibold text-foreground">
                           {t(project.title_ar, project.title_en)}
                         </h3>

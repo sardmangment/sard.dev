@@ -1,49 +1,22 @@
 import { motion } from 'framer-motion';
 import { TextPressure } from './TextPressure';
-import { Brain, Cpu, Database, Zap, Globe, Shield } from 'lucide-react';
+import { Link2, TrendingUp, ShieldCheck, Brain } from 'lucide-react';
+import { PILLARS, SERVICES } from '../content/services';
+
+const PILLAR_ICONS = { connect: Link2, grow: TrendingUp, control: ShieldCheck, intelligence: Brain };
 import { useTranslation } from 'react-i18next';
 
 export const ServicesSection = () => {
   const { t } = useTranslation();
   
-  const services = [
-    {
-      icon: Brain,
-      title: t('services.aiPowered.title'),
-      description: t('services.aiPowered.description'),
-      direction: { x: -100, y: 0 },
-    },
-    {
-      icon: Cpu,
-      title: t('services.automation.title'),
-      description: t('services.automation.description'),
-      direction: { x: 100, y: 0 },
-    },
-    {
-      icon: Database,
-      title: t('services.dataIntelligence.title'),
-      description: t('services.dataIntelligence.description'),
-      direction: { x: -100, y: 0 },
-    },
-    {
-      icon: Zap,
-      title: t('services.performance.title'),
-      description: t('services.performance.description'),
-      direction: { x: 100, y: 0 },
-    },
-    {
-      icon: Globe,
-      title: t('services.cloud.title'),
-      description: t('services.cloud.description'),
-      direction: { x: -100, y: 0 },
-    },
-    {
-      icon: Shield,
-      title: t('services.security.title'),
-      description: t('services.security.description'),
-      direction: { x: 100, y: 0 },
-    },
-  ];
+  const services = SERVICES.map((service, index) => ({
+    id: service.id,
+    pillar: service.pillar,
+    icon: PILLAR_ICONS[service.pillar],
+    title: t(`services.items.${service.id}.title`),
+    description: t(`services.items.${service.id}.description`),
+    direction: { x: index % 2 === 0 ? -100 : 100, y: 0 },
+  }));
 
   return (
     <section id="services" className="py-32 bg-background text-foreground relative overflow-hidden transition-colors">
@@ -67,10 +40,28 @@ export const ServicesSection = () => {
           />
         </motion.div>
 
+        <p className="max-w-3xl mx-auto text-center text-muted-foreground text-sm sm:text-base leading-relaxed -mt-6 sm:-mt-12 mb-12">
+          {t('services.subtitle')}
+        </p>
+
+        <div className="space-y-14">
+          {PILLARS.map((pillar) => {
+            const PillarIcon = PILLAR_ICONS[pillar];
+            return (
+              <div key={pillar} data-pillar={pillar}>
+                <div className="flex items-center gap-3 mb-6">
+                  <span className="w-10 h-10 rounded-xl bg-brand-orange/15 border border-brand-orange/30 flex items-center justify-center">
+                    <PillarIcon className="w-5 h-5 text-brand-orange" />
+                  </span>
+                  <div>
+                    <h3 className="text-lg sm:text-xl font-extrabold tracking-wider text-foreground">{t(`services.pillars.${pillar}.title`)}</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground">{t(`services.pillars.${pillar}.description`)}</p>
+                  </div>
+                </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-          {services.map((service, index) => (
+          {services.filter((s) => s.pillar === pillar).map((service, index) => (
             <motion.div
-              key={index}
+              key={service.id}
               initial={{ opacity: 0, ...service.direction, y: 30 }}
               whileInView={{ opacity: 1, x: 0, y: 0 }}
               viewport={{ once: true, margin: '-100px' }} 
@@ -100,10 +91,14 @@ export const ServicesSection = () => {
                 <service.icon className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-brand-orange" />
               </motion.div>
 
-              <h3 className="relative z-10 text-xl sm:text-2xl font-bold text-foreground mb-3 sm:mb-4">{service.title}</h3>
+              <h3 className="relative z-10 text-lg sm:text-xl font-bold text-foreground mb-3">{service.title}</h3>
               <p className="relative z-10 text-sm sm:text-base text-muted-foreground leading-relaxed">{service.description}</p>
             </motion.div>
           ))}
+        </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>

@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /team
+Disallow: /member/
+Disallow: /admin
+Disallow: /calendar/manage/
+Disallow: /api/
+
+Sitemap: https://sard.dev/sitemap.xml

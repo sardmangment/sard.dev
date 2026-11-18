@@ -10,7 +10,7 @@ export const VisionSection = () => {
     t('vision.paragraph1'),
     t('vision.paragraph2'),
     t('vision.paragraph3'),
-  ];
+  ].filter(Boolean);
 
   return (
     <section className="py-32 bg-gradient-to-b from-secondary/25 via-background to-background relative overflow-hidden transition-colors">
@@ -74,6 +74,7 @@ export const VisionSection = () => {
             </motion.div>
           ))}
 
+          {t('vision.quote') && (
           <motion.div
             initial={{ opacity: 0, scale: 0.9, y: 30 }}
             whileInView={{ opacity: 1, scale: 1, y: 0 }}
@@ -88,6 +89,7 @@ export const VisionSection = () => {
               "{t('vision.quote')}"
             </div>
           </motion.div>
+          )}
         </div>
       </div>
     </section>

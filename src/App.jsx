@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useParams } from "react-router-dom";
 
 import { HeroSection } from './components/HeroSection';
@@ -8,70 +9,95 @@ import { ValuesSection } from './components/ValuesSection';
 import { PartnersSection } from './components/PartnersSection';
 import { CTASection } from './components/CTASection';
 import { Footer } from './components/Footer';
-import ChatPage from "./components/ChatPage";
-import PartnerDetailsPage from "./pages/PartnerDetailsPage";
-import CalendarPage from "./pages/CalendarPage";
-import ManageAppointmentPage from "./pages/ManageAppointmentPage";
-import AdminPage from "./pages/AdminPage";
-import ProjectsPage from "./pages/ProjectsPage.tsx";
-import ProjectDetailsPage from "./pages/ProjectDetailsPage.tsx";
-import MemberVerifyPage from "./pages/MemberVerifyPage.tsx";
 import NotFound from "./pages/NotFound";
+
+// CC-15: route-level code splitting (Home stays in the main bundle).
+const ChatPage = lazy(() => import("./components/ChatPage"));
+const PartnerDetailsPage = lazy(() => import("./pages/PartnerDetailsPage"));
+const CalendarPage = lazy(() => import("./pages/CalendarPage"));
+const ManageAppointmentPage = lazy(() => import("./pages/ManageAppointmentPage"));
+const AdminPage = lazy(() => import("./pages/AdminPage"));
+const ProjectsPage = lazy(() => import("./pages/ProjectsPage.tsx"));
+const ProjectDetailsPage = lazy(() => import("./pages/ProjectDetailsPage.tsx"));
+const MemberVerifyPage = lazy(() => import("./pages/MemberVerifyPage.tsx"));
+const AboutPage = lazy(() => import("./pages/AboutPage"));
+const FaqPage = lazy(() => import("./pages/FaqPage"));
+const ContactPage = lazy(() => import("./pages/ContactPage"));
+const LegalNoticePage = lazy(() => import("./pages/LegalNoticePage"));
+const TeamPage = lazy(() => import("./pages/TeamPage"));
 
 function PartnershipRedirect() {
   const { id } = useParams();
   return <Navigate to={`/partners/${id}`} replace />;
 }
 
+function RouteFallback() {
+  return (
+    <div className="min-h-screen bg-background flex items-center justify-center" role="status" aria-live="polite">
+      <div className="w-8 h-8 rounded-full border-2 border-brand-orange border-t-transparent animate-spin" />
+    </div>
+  );
+}
+
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
+      <Suspense fallback={<RouteFallback />}>
+        <Routes>
 
-        {/* 🏠 Home Page */}
-        <Route
-          path="/"
-          element={
-            <div className="bg-background text-foreground min-h-screen selection:bg-brand-orange/20 selection:text-foreground">
-              <HeroSection />
-              <PartnersSection />
-              <AboutSection />
-              <ServicesSection />
-              <VisionSection />
-              <ValuesSection />
-              <CTASection />
-              <Footer />
-            </div>
-          }
-        />
+          {/* 🏠 Home Page */}
+          <Route
+            path="/"
+            element={
+              <div className="bg-background text-foreground min-h-screen selection:bg-brand-orange/20 selection:text-foreground">
+                <HeroSection />
+                <PartnersSection />
+                <AboutSection />
+                <ServicesSection />
+                <VisionSection />
+                <ValuesSection />
+                <CTASection />
+                <Footer />
+              </div>
+            }
+          />
 
-        {/* 🤝 Partner Contract Details Page */}
-        <Route path="/partners/:id" element={<PartnerDetailsPage />} />
+          {/* ℹ️ Content pages (CC-13, CC-22, CC-23, CC-24) */}
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/faq" element={<FaqPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/privacy" element={<LegalNoticePage kind="privacy" />} />
+          <Route path="/terms" element={<LegalNoticePage kind="terms" />} />
 
-        {/* 🔀 Legacy Partnership Redirect */}
-        <Route path="/partnership/:id" element={<PartnershipRedirect />} />
+          {/* 🤝 Partner Page (public summary only, C-F03) */}
+          <Route path="/partners/:id" element={<PartnerDetailsPage />} />
 
-        {/* 🚀 Projects Gallery & Details */}
-        <Route path="/projects" element={<ProjectsPage />} />
-        <Route path="/project/:id" element={<ProjectDetailsPage />} />
+          {/* 🔀 Legacy Partnership Redirect */}
+          <Route path="/partnership/:id" element={<PartnershipRedirect />} />
 
-        {/* 🛡️ Member Verification */}
-        <Route path="/member/:id" element={<MemberVerifyPage />} />
+          {/* 🚀 Projects Gallery & Details (demonstrations, C-F01) */}
+          <Route path="/projects" element={<ProjectsPage />} />
+          <Route path="/project/:id" element={<ProjectDetailsPage />} />
 
-        {/* 🤖 AI Chat Page */}
-        <Route path="/ai" element={<ChatPage />} />
+          {/* 🛡️ Team (direct link only, not in nav/footer, noindex — C-G03/D-35) & Member Verification */}
+          <Route path="/team" element={<TeamPage />} />
+          <Route path="/member/:id" element={<MemberVerifyPage />} />
 
-        {/* 📅 Calendar Booking Page & Management */}
-        <Route path="/calendar" element={<CalendarPage />} />
-        <Route path="/calendar/manage/:id" element={<ManageAppointmentPage />} />
+          {/* 🤖 AI Chat Page */}
+          <Route path="/ai" element={<ChatPage />} />
 
-        {/* 🔐 Admin Dashboard Page */}
-        <Route path="/admin" element={<AdminPage />} />
+          {/* 📅 Calendar Booking Page & Management */}
+          <Route path="/calendar" element={<CalendarPage />} />
+          <Route path="/calendar/manage/:id" element={<ManageAppointmentPage />} />
 
-        {/* ❓ 404 Catch-All */}
-        <Route path="*" element={<NotFound />} />
+          {/* 🔐 Admin Dashboard Page */}
+          <Route path="/admin" element={<AdminPage />} />
 
-      </Routes>
+          {/* ❓ 404 Catch-All */}
+          <Route path="*" element={<NotFound />} />
+
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }

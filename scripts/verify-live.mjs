@@ -10,14 +10,14 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export const APPROVED_13_SLOTS = [
-  '12:00 PM', '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM',
-  '05:00 PM', '06:00 PM', '07:00 PM', '08:00 PM', '09:00 PM',
-  '10:00 PM', '11:00 PM', '12:00 AM'
+// D-31: ten hourly slots, 10:00 AM … 07:00 PM, Saturday–Thursday (Friday closed).
+export const APPROVED_SLOTS = [
+  '10:00 AM', '11:00 AM', '12:00 PM', '01:00 PM', '02:00 PM',
+  '03:00 PM', '04:00 PM', '05:00 PM', '06:00 PM', '07:00 PM',
 ];
 
 /**
- * Scan dates from CURRENT_DATE + 60 to +90 and find the first available slot among 13 approved slots.
+ * Scan dates from CURRENT_DATE + 60 to +90 and find the first available slot among the approved slots, skipping Fridays.
  * Never goes past +90 days and never returns 2099.
  */
 export async function findFreeTestSlot(supabaseUrl, anonKey, customFetch = fetch) {
@@ -26,6 +26,7 @@ export async function findFreeTestSlot(supabaseUrl, anonKey, customFetch = fetch
   for (let offset = 60; offset <= 90; offset++) {
     const d = new Date(now.getTime() + offset * 86400 * 1000);
     const dateStr = d.toISOString().split('T')[0];
+    if (new Date(`${dateStr}T12:00:00Z`).getUTCDay() === 5) continue; // Friday closed (D-31)
 
     try {
       const res = await customFetch(`${supabaseUrl}/rest/v1/rpc/get_booked_slots_for_date`, {
@@ -41,7 +42,7 @@ export async function findFreeTestSlot(supabaseUrl, anonKey, customFetch = fetch
       if (res.ok) {
         const booked = await res.json();
         const bookedSlots = Array.isArray(booked) ? booked.map((b) => b.time_slot || b) : [];
-        const freeSlot = APPROVED_13_SLOTS.find((s) => !bookedSlots.includes(s));
+        const freeSlot = APPROVED_SLOTS.find((s) => !bookedSlots.includes(s));
         if (freeSlot) {
           return { date: dateStr, slot: freeSlot, offset };
         }

@@ -10,9 +10,15 @@ BEGIN;
 
 DO $$
 DECLARE
-  v_test_date date := CURRENT_DATE + 30;
-  v_yesterday date := CURRENT_DATE - 1;
-  v_too_far_date date := CURRENT_DATE + 91;
+  -- D-31: Cairo dates; the test date is the first non-Friday on or after today + 30
+  v_cairo_today date := (now() AT TIME ZONE 'Africa/Cairo')::date;
+  v_test_date date := CASE WHEN EXTRACT(ISODOW FROM (now() AT TIME ZONE 'Africa/Cairo')::date + 30) = 5
+                           THEN (now() AT TIME ZONE 'Africa/Cairo')::date + 31
+                           ELSE (now() AT TIME ZONE 'Africa/Cairo')::date + 30 END;
+  v_friday date := (now() AT TIME ZONE 'Africa/Cairo')::date + 30
+                   + ((5 - EXTRACT(ISODOW FROM (now() AT TIME ZONE 'Africa/Cairo')::date + 30)::int + 7) % 7);
+  v_yesterday date := (now() AT TIME ZONE 'Africa/Cairo')::date - 1;
+  v_too_far_date date := (now() AT TIME ZONE 'Africa/Cairo')::date + 91;
   v_test_email text := 'd17_first_last@example.com';
   v_res record;
   v_caught boolean;
@@ -74,7 +80,35 @@ BEGIN
   END IF;
   RAISE NOTICE '✅ CHECK 2a-bis PASSED: Untrimmed slot correctly rejected with INVALID_SLOT.';
 
-  -- 2b: Yesterday date (< CURRENT_DATE)
+  -- 2a-ter: Former evening slot '09:00 PM' is outside business hours (D-31)
+  v_caught := false;
+  BEGIN
+    PERFORM public.book_appointment(v_test_date, '09:00 PM', 'A', v_test_email, 'Service', '', 'd17_checks_test');
+  EXCEPTION WHEN SQLSTATE 'SB002' OR OTHERS THEN
+    IF SQLERRM LIKE '%INVALID_SLOT%' THEN
+      v_caught := true;
+    END IF;
+  END;
+  IF NOT v_caught THEN
+    RAISE EXCEPTION 'CHECK 2a-ter FAILED: Out-of-hours slot 09:00 PM was not rejected.';
+  END IF;
+  RAISE NOTICE '✅ CHECK 2a-ter PASSED: 09:00 PM rejected with INVALID_SLOT.';
+
+  -- 2a-quater: Friday is closed (D-31)
+  v_caught := false;
+  BEGIN
+    PERFORM public.book_appointment(v_friday, '10:00 AM', 'A', v_test_email, 'Service', '', 'd17_checks_test');
+  EXCEPTION WHEN SQLSTATE 'SB006' OR OTHERS THEN
+    IF SQLERRM LIKE '%CLOSED_DAY%' THEN
+      v_caught := true;
+    END IF;
+  END;
+  IF NOT v_caught THEN
+    RAISE EXCEPTION 'CHECK 2a-quater FAILED: Friday booking was not rejected.';
+  END IF;
+  RAISE NOTICE '✅ CHECK 2a-quater PASSED: Friday rejected with CLOSED_DAY.';
+
+  -- 2b: Yesterday date (< Cairo today)
   v_caught := false;
   BEGIN
     PERFORM public.book_appointment(v_yesterday, '01:00 PM', 'A', v_test_email, 'Service', '', 'd17_checks_test');
@@ -88,7 +122,7 @@ BEGIN
   END IF;
   RAISE NOTICE '✅ CHECK 2b PASSED: Past date correctly rejected with DATE_OUT_OF_RANGE.';
 
-  -- 2c: Today + 91 date (> CURRENT_DATE + 90)
+  -- 2c: Today + 91 date (> Cairo today + 90)
   v_caught := false;
   BEGIN
     PERFORM public.book_appointment(v_too_far_date, '01:00 PM', 'A', v_test_email, 'Service', '', 'd17_checks_test');

@@ -17,6 +17,14 @@ CREATE UNIQUE INDEX IF NOT EXISTS uq_calendar_appointments_manage_token_hash
   ON public.calendar_appointments (manage_token_hash) 
   WHERE manage_token_hash IS NOT NULL;
 
+-- Allow recognized source channels for web, AI chat, admin dashboard, admin API, and test suites
+ALTER TABLE public.calendar_appointments 
+  DROP CONSTRAINT IF EXISTS calendar_appointments_created_via_check;
+
+ALTER TABLE public.calendar_appointments 
+  ADD CONSTRAINT calendar_appointments_created_via_check 
+  CHECK (created_via IN ('web_form', 'ai_chat', 'admin_agent', 'admin_dashboard', 'admin_api', 'verify_live', 'd17_checks_test'));
+
 -- ============================================================================
 -- 2. Drop Obsolete Insecure Functions (Email-Based Lookup & Cancellation)
 -- Email address is not proof of ownership. Replaced by token-based procedures.
@@ -49,10 +57,12 @@ GRANT EXECUTE ON FUNCTION public.get_booked_slots_for_date(date) TO anon, authen
 -- Stores SHA-256 hash in database; returns raw token exactly ONCE to client.
 -- Error Codes (P0001 / custom SQLSTATEs):
 --   - SB001 (INVALID_EMAIL): Email regex check failed or length > 255
---   - SB002 (INVALID_SLOT): Slot is not one of 13 approved TIME_SLOTS
---   - SB003 (DATE_OUT_OF_RANGE): Date is not between CURRENT_DATE and CURRENT_DATE + 90
+--   - SB002 (INVALID_SLOT): Slot is not one of the 10 approved TIME_SLOTS (10:00 AM … 07:00 PM, D-31)
+--   - SB003 (DATE_OUT_OF_RANGE): Date is not between today and today + 90 (Africa/Cairo date)
 --   - SB004 (FIELD_TOO_LONG): Name > 100, service > 255, or notes > 1000 characters
 --   - SB005 (DAILY_LIMIT_REACHED): Email reached maximum of 3 bookings for date (D-29)
+--   - SB006 (CLOSED_DAY): Date is a Friday (business days Saturday–Thursday, D-31)
+--   - SB007 (SLOT_IN_PAST): Same-day slot that has already started (Africa/Cairo time, D-31)
 --   - 23505 (unique_violation): Concurrent slot collision (uq_confirmed_slot)
 -- ============================================================================
 CREATE OR REPLACE FUNCTION public.book_appointment(
@@ -85,20 +95,33 @@ DECLARE
   v_daily_count int;
   v_raw_token text;
   v_token_hash text;
+  -- D-31: business dates and times are evaluated in Cairo time, not the server's UTC date
+  v_cairo_now timestamp := (now() AT TIME ZONE 'Africa/Cairo');
+  v_today date := (now() AT TIME ZONE 'Africa/Cairo')::date;
 BEGIN
-  -- 1. Date validation: must be between CURRENT_DATE and CURRENT_DATE + 90
-  IF p_date IS NULL OR p_date < CURRENT_DATE OR p_date > (CURRENT_DATE + 90) THEN
+  -- 1. Date validation: must be between today and today + 90 (Cairo date)
+  IF p_date IS NULL OR p_date < v_today OR p_date > (v_today + 90) THEN
     RAISE EXCEPTION 'DATE_OUT_OF_RANGE: Bookings are available from today up to 90 days ahead.' USING ERRCODE = 'SB003';
   END IF;
 
-  -- 2. Time slot validation: must match one of the 13 approved slots exactly
+  -- 1b. Business days: Saturday–Thursday; Friday is closed (ISODOW 5 = Friday)
+  IF EXTRACT(ISODOW FROM p_date) = 5 THEN
+    RAISE EXCEPTION 'CLOSED_DAY: Bookings are not available on Fridays.' USING ERRCODE = 'SB006';
+  END IF;
+
+  -- 2. Time slot validation: must match one of the 10 approved slots exactly (10:00 AM … 07:00 PM,
+  --    hourly starts; the last meeting ends at 8:00 PM — D-31)
   -- Reject untrimmed values: the raw p_time_slot is what gets inserted, so ' 12:00 PM' would bypass uq_confirmed_slot
   IF p_time_slot IS NULL OR p_time_slot <> TRIM(p_time_slot) OR p_time_slot NOT IN (
-    '12:00 PM', '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM',
-    '05:00 PM', '06:00 PM', '07:00 PM', '08:00 PM', '09:00 PM',
-    '10:00 PM', '11:00 PM', '12:00 AM'
+    '10:00 AM', '11:00 AM', '12:00 PM', '01:00 PM', '02:00 PM',
+    '03:00 PM', '04:00 PM', '05:00 PM', '06:00 PM', '07:00 PM'
   ) THEN
     RAISE EXCEPTION 'INVALID_SLOT: Please check your booking details.' USING ERRCODE = 'SB002';
+  END IF;
+
+  -- 2b. Same-day slots that have already started cannot be booked (Cairo time)
+  IF p_date = v_today AND to_timestamp(p_time_slot, 'HH12:MI AM')::time <= v_cairo_now::time THEN
+    RAISE EXCEPTION 'SLOT_IN_PAST: This time has already passed.' USING ERRCODE = 'SB007';
   END IF;
 
   -- 3. Email validation: lowercase, trim, regex ^[^@\s]+@[^@\s]+\.[^@\s]+$, max 255 chars
@@ -121,10 +144,10 @@ BEGIN
   PERFORM pg_advisory_xact_lock(hashtext('book:' || v_clean_email || ':' || p_date::text));
 
   SELECT count(*) INTO v_daily_count
-  FROM public.calendar_appointments
-  WHERE LOWER(client_email) = v_clean_email
-    AND date = p_date
-    AND status = 'confirmed';
+  FROM public.calendar_appointments ca
+  WHERE LOWER(ca.client_email) = v_clean_email
+    AND ca.date = p_date
+    AND ca.status = 'confirmed';
 
   IF v_daily_count >= 3 THEN
     RAISE EXCEPTION 'DAILY_LIMIT_REACHED: You have reached the limit of 3 bookings per day for this email.' USING ERRCODE = 'SB005';

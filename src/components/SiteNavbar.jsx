@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Menu, X } from 'lucide-react';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import sardLogo from '../assets/logo.png';
+import { SITE_NAV } from '../config/navigation';
 
 /**
  * SiteNavbar
@@ -21,7 +22,7 @@ export function SiteNavbar({
   drawerCta = null,
   sticky = false,
 }) {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isRTL = i18n.language?.startsWith('ar') || (typeof document !== 'undefined' && document.documentElement.dir === 'rtl');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -48,7 +49,18 @@ export function SiteNavbar({
     };
   }, [isDrawerOpen]);
 
-  const mainDrawerLinks = drawerLinks.filter((l) => !l.isSection);
+  // Page-specific drawer links first, then any site-wide link not already present.
+  const pageMain = drawerLinks.filter((l) => !l.isSection);
+  const mainDrawerLinks = [
+    ...pageMain,
+    ...SITE_NAV.filter((s) => !pageMain.some((l) => (l.to || l.href) === (s.to || s.href))).map((s) => ({
+      to: s.to,
+      href: s.href,
+      label_ar: t(s.labelKey, { lng: 'ar' }),
+      label_en: t(s.labelKey, { lng: 'en' }),
+    })),
+  ];
+  const desktopSiteLinks = SITE_NAV.filter((s) => !s.drawerOnly);
   const sectionDrawerLinks = drawerLinks.filter((l) => l.isSection);
 
   return (
@@ -64,14 +76,27 @@ export function SiteNavbar({
             <Link to="/" className="flex items-center gap-3 group">
               <img
                 src={sardLogo}
-                alt="Sard AI"
+                alt="Sard"
                 className="w-10 h-10 sm:w-11 sm:h-11 object-contain transition-transform group-hover:scale-105"
               />
-              <span className="text-xl font-bold text-foreground tracking-wide">Sard AI</span>
+              <span className="text-xl font-bold text-foreground tracking-wide">{t('brand.shortName')}</span>
             </Link>
 
             {/* Desktop Navigation Links + Controls */}
             <nav aria-label="Main Navigation" className="flex items-center gap-3">
+              <div className="hidden lg:flex items-center gap-1 me-1">
+                {desktopSiteLinks.map((s) =>
+                  s.href ? (
+                    <a key={s.href} href={s.href} className="px-2.5 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors">
+                      {t(s.labelKey)}
+                    </a>
+                  ) : (
+                    <Link key={s.to} to={s.to} className="px-2.5 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors">
+                      {t(s.labelKey)}
+                    </Link>
+                  )
+                )}
+              </div>
               {links.map((link) => {
                 const Icon = link.icon;
                 return (
@@ -137,8 +162,8 @@ export function SiteNavbar({
                 {/* Header with logo & close button */}
                 <div className="flex items-center justify-between border-b border-border pb-4">
                   <div className="flex items-center gap-2.5">
-                    <img src={sardLogo} alt="Sard AI" className="w-8 h-8 object-contain" />
-                    <span className="font-bold text-foreground text-lg">Sard AI</span>
+                    <img src={sardLogo} alt="Sard" className="w-8 h-8 object-contain" />
+                    <span className="font-bold text-foreground text-lg">{t('brand.shortName')}</span>
                   </div>
                   <button
                     type="button"
@@ -158,16 +183,21 @@ export function SiteNavbar({
 
                   {mainDrawerLinks.map((link) => {
                     const Icon = link.icon;
-                    return (
-                      <Link
-                        key={link.to || link.href}
-                        to={link.to}
-                        onClick={() => setIsDrawerOpen(false)}
-                        className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-foreground hover:bg-muted hover:text-brand-orange transition-colors font-medium text-sm"
-                      >
+                    const cls = "flex items-center gap-3 px-3 py-2.5 rounded-xl text-foreground hover:bg-muted hover:text-brand-orange transition-colors font-medium text-sm";
+                    const body = (
+                      <>
                         {Icon && <Icon className="w-4 h-4 text-brand-orange" />}
                         <span>{isRTL ? link.label_ar : link.label_en}</span>
+                      </>
+                    );
+                    return link.to ? (
+                      <Link key={link.to} to={link.to} onClick={() => setIsDrawerOpen(false)} className={cls}>
+                        {body}
                       </Link>
+                    ) : (
+                      <a key={link.href} href={link.href} onClick={() => setIsDrawerOpen(false)} className={cls}>
+                        {body}
+                      </a>
                     );
                   })}
 
@@ -208,7 +238,7 @@ export function SiteNavbar({
                   </Link>
                 )}
                 <div className="text-center text-[11px] text-muted-foreground">
-                  © 2026 Sard AI
+                  © {new Date().getFullYear()} {t('brand.legalName')}
                 </div>
               </div>
             </motion.aside>

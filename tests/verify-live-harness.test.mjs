@@ -1,7 +1,7 @@
 // tests/verify-live-harness.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { findFreeTestSlot, runVerification, APPROVED_13_SLOTS } from '../scripts/verify-live.mjs';
+import { findFreeTestSlot, runVerification, APPROVED_SLOTS } from '../scripts/verify-live.mjs';
 
 test('verify-live harness: findFreeTestSlot respects 90-day bound and approved 13 slots', async () => {
   const datesQueried = [];
@@ -12,18 +12,20 @@ test('verify-live harness: findFreeTestSlot respects 90-day bound and approved 1
     return {
       ok: true,
       status: 200,
-      json: async () => [{ time_slot: APPROVED_13_SLOTS[0] }],
+      json: async () => [{ time_slot: APPROVED_SLOTS[0] }],
     };
   };
 
   const slotInfo = await findFreeTestSlot('https://mock.supabase.co', 'mock-anon-key', mockFetch);
   assert.ok(slotInfo, 'Should return a free test slot');
-  assert.ok(APPROVED_13_SLOTS.includes(slotInfo.slot), 'Slot must be in APPROVED_13_SLOTS');
-  assert.notEqual(slotInfo.slot, APPROVED_13_SLOTS[0], 'Should not return the booked slot');
+  assert.ok(APPROVED_SLOTS.includes(slotInfo.slot), 'Slot must be in APPROVED_SLOTS');
+  assert.notEqual(slotInfo.slot, APPROVED_SLOTS[0], 'Should not return the booked slot');
 
   // Verify date bound: offset must be between 60 and 90
   assert.ok(slotInfo.offset >= 60 && slotInfo.offset <= 90, `Offset ${slotInfo.offset} must be between 60 and 90`);
   assert.ok(!slotInfo.date.startsWith('2099'), 'Date must never be 2099');
+  assert.notStrictEqual(new Date(`${slotInfo.date}T12:00:00Z`).getUTCDay(), 5, 'Test slot must never be a Friday (D-31)');
+  assert.ok(!datesQueried.some((d) => new Date(`${d}T12:00:00Z`).getUTCDay() === 5), 'Fridays must not be queried');
 
   const now = new Date();
   const slotDate = new Date(slotInfo.date);
@@ -36,7 +38,7 @@ test('verify-live harness: findFreeTestSlot returns null if no dates between +60
   const mockFetch = async () => ({
     ok: true,
     status: 200,
-    json: async () => APPROVED_13_SLOTS.map((s) => ({ time_slot: s })),
+    json: async () => APPROVED_SLOTS.map((s) => ({ time_slot: s })),
   });
 
   const slotInfo = await findFreeTestSlot('https://mock.supabase.co', 'mock-anon-key', mockFetch);

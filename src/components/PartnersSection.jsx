@@ -10,14 +10,13 @@ export const PartnersSection = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // CC-41 (C-F02/F03, D-41): only partners verified for publication, via RPC get_published_partners
+    // (migration 20261118_partners_publication.sql). No fallback to the table: until the RPC exists and a
+    // partner is marked published, nothing is shown (fail closed).
     async function fetchPartners() {
-      const { data, error } = await supabase
-        .from('partnerships')
-        .select('*')
-        .eq('is_active', true)
-        .order('display_order', { ascending: true });
+      const { data, error } = await supabase.rpc('get_published_partners');
 
-      if (!error && data) {
+      if (!error && Array.isArray(data)) {
         setPartners(data);
       }
       setLoading(false);

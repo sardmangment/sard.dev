@@ -4,7 +4,10 @@
 
 import { supabase } from '../integrations/supabase/client.js';
 
+// D-31: Saturday–Thursday, 10:00 AM – 8:00 PM Cairo time; ten hourly start slots (last starts 7:00 PM).
 export const TIME_SLOTS = [
+  '10:00 AM',
+  '11:00 AM',
   '12:00 PM',
   '01:00 PM',
   '02:00 PM',
@@ -13,12 +16,49 @@ export const TIME_SLOTS = [
   '05:00 PM',
   '06:00 PM',
   '07:00 PM',
-  '08:00 PM',
-  '09:00 PM',
-  '10:00 PM',
-  '11:00 PM',
-  '12:00 AM',
 ];
+
+// D-31 helpers: business dates are Cairo dates; Friday is closed.
+export const BUSINESS_TIME_ZONE = 'Africa/Cairo';
+
+function cairoParts(date = new Date()) {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: BUSINESS_TIME_ZONE,
+    year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
+  }).formatToParts(date);
+  const get = (type) => parts.find((p) => p.type === type)?.value;
+  return { date: `${get('year')}-${get('month')}-${get('day')}`, minutes: Number(get('hour')) * 60 + Number(get('minute')) };
+}
+
+export function cairoToday(now = new Date()) {
+  return cairoParts(now).date;
+}
+
+export function addDays(dateStr, days) {
+  const d = new Date(`${dateStr}T12:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString().split('T')[0];
+}
+
+export function isFriday(dateStr) {
+  return new Date(`${dateStr}T12:00:00Z`).getUTCDay() === 5;
+}
+
+export function slotToMinutes(slot) {
+  const m = /^(\d{2}):(\d{2}) (AM|PM)$/.exec(slot || '');
+  if (!m) return NaN;
+  let h = Number(m[1]) % 12;
+  if (m[3] === 'PM') h += 12;
+  return h * 60 + Number(m[2]);
+}
+
+// True when the slot on dateStr has already started in Cairo time.
+export function isSlotPast(dateStr, slot, now = new Date()) {
+  const c = cairoParts(now);
+  if (dateStr < c.date) return true;
+  if (dateStr > c.date) return false;
+  return slotToMinutes(slot) <= c.minutes;
+}
 
 export const STRICT_EMAIL_REGEX = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
@@ -43,6 +83,16 @@ export function getBookingErrorMessage(err, isRTL = false) {
     return isRTL
       ? 'يمكن الحجز من اليوم وحتى ٩٠ يوماً قادمة.'
       : 'Bookings are available from today up to 90 days ahead.';
+  }
+  if (code === 'CLOSED_DAY' || code === 'SB006' || msg.includes('CLOSED_DAY')) {
+    return isRTL
+      ? 'هذا اليوم غير متاح للحجز (مغلق يوم الجمعة).'
+      : 'This day is not available for bookings (closed on Fridays).';
+  }
+  if (code === 'SLOT_IN_PAST' || code === 'SB007' || msg.includes('SLOT_IN_PAST')) {
+    return isRTL
+      ? 'انقضى هذا الموعد بالفعل. يُرجى اختيار موعد لاحق.'
+      : 'This time has already passed. Please choose a later slot.';
   }
   if (code === 'INVALID_EMAIL' || code === 'SB001' || msg.includes('INVALID_EMAIL')) {
     return isRTL
@@ -106,6 +156,12 @@ function handleDatabaseError(error, context = 'Database operation') {
   }
   if (error.code === 'SB003' || error.message?.includes('DATE_OUT_OF_RANGE')) {
     throw new BookingValidationError('DATE_OUT_OF_RANGE', error.message || 'Date out of range');
+  }
+  if (error.code === 'SB006' || error.message?.includes('CLOSED_DAY')) {
+    throw new BookingValidationError('CLOSED_DAY', error.message || 'Closed day');
+  }
+  if (error.code === 'SB007' || error.message?.includes('SLOT_IN_PAST')) {
+    throw new BookingValidationError('SLOT_IN_PAST', error.message || 'Slot in past');
   }
   if (error.code === 'SB001' || error.message?.includes('INVALID_EMAIL')) {
     throw new BookingValidationError('INVALID_EMAIL', error.message || 'Invalid email');

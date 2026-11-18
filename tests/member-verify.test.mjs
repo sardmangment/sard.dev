@@ -25,17 +25,16 @@ test('Member Verification code audit: Decision D-19 compliance & safe column pro
   assert.ok(!code.includes('phone'), 'Must NOT request phone column in query or interface');
   assert.ok(!code.includes('linkedin'), 'Must NOT request linkedin column in query or interface');
 
-  // 3. Must specify safe column projection
+  // 3. C-G02: badge only — no join date, no projects, no bio
+  assert.ok(code.includes("rpc('get_member_badge'"), 'Must read the badge through the get_member_badge RPC');
+  assert.ok(!code.includes('join_date'), 'Must NOT read or show join_date (C-G02)');
+  assert.ok(!code.includes('team_member_projects'), 'Must NOT read or show member projects (C-G02)');
+  assert.ok(!code.includes('bio_'), 'Must NOT read or show bio (C-G02)');
   assert.ok(
-    code.includes('id, name_ar, name_en, role_ar, role_en, photo_url, bio_ar, bio_en, is_admin, is_active, join_date'),
-    'Must explicitly project safe columns only'
+    code.includes(".select('id, name_ar, name_en, role_ar, role_en, photo_url, is_active, updated_at')"),
+    'Fallback must project approved badge columns only'
   );
-
-  // 4. Must handle missing team_member_projects gracefully
-  assert.ok(
-    code.includes('team_member_projects'),
-    'Must handle team_member_projects query safely'
-  );
+  assert.ok(code.includes("member.disclaimer"), 'Must show the C-G02 disclaimer');
 });
 
 test('Member Verification live browser test: Invalid ID renders graceful not-found state', async () => {

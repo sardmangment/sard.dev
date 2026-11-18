@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { TextPressure } from './TextPressure';
 import { Lightbulb, Zap, TrendingUp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 
 export const AboutSection = () => {
   const { t } = useTranslation();
@@ -56,8 +57,7 @@ export const AboutSection = () => {
             className="text-center p-6 sm:p-8 rounded-2xl bg-card border border-border shadow-sm hover:shadow-md transition-shadow"
           >
             <Zap className="w-8 h-8 text-brand-orange mx-auto mb-3" />
-            <div className="text-3xl sm:text-4xl font-bold text-foreground mb-2">100%</div>
-            <div className="text-sm sm:text-base text-muted-foreground">{t('about.stats.mindset')}</div>
+            <div className="text-sm sm:text-base font-semibold text-foreground">{t('about.stats.mindset')}</div>
           </motion.div>
 
           <motion.div
@@ -65,10 +65,18 @@ export const AboutSection = () => {
             className="text-center p-6 sm:p-8 rounded-2xl bg-card border border-border shadow-sm hover:shadow-md transition-shadow"
           >
             <TrendingUp className="w-8 h-8 text-brand-orange mx-auto mb-3" />
-            <div className="text-3xl sm:text-4xl font-bold text-foreground mb-2">10x</div>
-            <div className="text-sm sm:text-base text-muted-foreground">{t('about.stats.solutions')}</div>
+            <div className="text-sm sm:text-base font-semibold text-foreground">{t('about.stats.solutions')}</div>
           </motion.div>
         </motion.div>
+
+        <div className="mt-10 text-center">
+          <Link
+            to="/about"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border-2 border-brand-orange text-brand-orange font-bold hover:bg-brand-orange/10 transition-colors"
+          >
+            {t('about.learnMore')}
+          </Link>
+        </div>
       </div>
     </section>
   );

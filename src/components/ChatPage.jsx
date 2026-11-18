@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Calendar, CheckCircle2, ArrowRight, ArrowLeft, Copy, Check, Home } from "lucide-react";
 import { Link } from "react-router-dom";
 import { saveAppointment, getBookingErrorMessage } from "../utils/calendarStorage";
+import { buildSystemInstruction } from "../content/assistantKnowledge";
 import { supabase } from "../integrations/supabase/client";
 import { useTranslation } from "react-i18next";
 import { SiteNavbar } from "./SiteNavbar";
@@ -58,52 +59,25 @@ export default function ChatPage() {
   const [started, setStarted] = useState(false);
   const [lastBooking, setLastBooking] = useState(null);
   const [copiedLink, setCopiedLink] = useState(false);
-  const [partnersInfo, setPartnersInfo] = useState("");
+  const [partnerNames, setPartnerNames] = useState([]);
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
+    // C-F03: names of publication-verified partners only; contract data never reaches the model.
     async function fetchPartners() {
-      const { data, error } = await supabase
-        .from('partnerships')
-        .select('*')
-        .eq('is_active', true);
-
-      if (!error && data && data.length > 0) {
-        const formatted = data.map(p => `
-Partner Name: ${p.partner_name_ar} / ${p.partner_name_en}
-Description: ${p.description_ar || ''} / ${p.description_en || ''}
-Contract Date: ${p.contract_date || 'N/A'}
-Contract Details: ${p.contract_details_ar || ''} / ${p.contract_details_en || ''}
-        `).join('\n---\n');
-
-        setPartnersInfo(formatted);
+      const { data, error } = await supabase.rpc('get_published_partners');
+      if (!error && Array.isArray(data)) {
+        setPartnerNames(data.map((p) => `${p.partner_name_en} (${p.partner_name_ar})`));
       }
     }
 
     fetchPartners();
   }, []);
 
-  const systemInstruction = `
-You are Sard AI Assistant (مساعد سرد للذكاء الاصطناعي).
-Respond accurately in the language used by the user (${isRTL ? "Arabic" : "English"}).
-
-Key Knowledge:
-1. B2B Services:
-   - Process Automation (أتمتة العمليات اليومية للشركات)
-   - Operational Cost Reduction & Money Saving (تقليل التكاليف التشغيلية وتوفير المال)
-   - Maximizing Efficiency & Productivity (رفع الكفاءة والإنتاجية لأقصى درجة)
-2. B2C Services:
-   - Personal daily tasks helper for individuals to complete work faster and simplify life.
-   - AI as a supportive friend/co-pilot, not a threat.
-3. Partnerships & Official Contracts Knowledge:
-Below are Sard AI's active strategic partnerships and contract details:
-${partnersInfo || "Sard AI maintains official partnerships with key industry leaders to provide integrated smart solutions."}
-
-4. Appointments & Calendar Booking:
-   - Working hours: 12:00 PM to 12:00 AM.
-   - If user asks to book a meeting (e.g., "أريد حجز موعد غداً الساعة 2 ظهراً"), acknowledge politely and append:
-     "[BOOKING_REQUEST: Date: YYYY-MM-DD | Time: HH:MM AM/PM | Name: GuestName | Service: ServiceName]" at the end.
-`;
+  const systemInstruction = buildSystemInstruction(i18n.getFixedT('en'), {
+    partnerNames,
+    replyLanguage: isRTL ? 'Arabic' : 'English',
+  });
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -193,8 +167,8 @@ ${partnersInfo || "Sard AI maintains official partnerships with key industry lea
       setMessages(prev => [...prev, {
         sender: "bot",
         text: isRTL
-          ? "أهلاً بك! يمكنك الاستفسار عن أتمتة الأعمال وسؤالنا عن شراكاتنا وتفاصيل عقودنا أو حجز موعد مباشرة من هنا."
-          : "Welcome! You can inquire about process automation, ask about our partnerships and contracts, or book a meeting directly."
+          ? "عذرًا، تعذّر الوصول إلى المساعد الآن. يمكنك المحاولة لاحقًا، أو حجز اجتماع استكشافي من صفحة المواعيد، أو التواصل معنا عبر support@sard.info."
+          : "Sorry, the assistant is unavailable right now. Please try again later, book a discovery meeting on the Calendar page, or contact us at support@sard.info."
       }]);
     }
 

@@ -1,85 +1,136 @@
 {
   "hero": {
-    "title": "Smart AI Solutions for Individuals & Businesses in Egypt & Beyond",
-    "description1": "Based in Egypt, Sard AI develops advanced AI solutions that empower businesses to automate daily operations, lower costs, and maximize throughput with ultra-fast speed and robust data protection.",
-    "description2": "We empower individuals and organizations to streamline tasks while actively supporting the targets of Egypt's Vision 2030 for a sustainable digital economy.",
+    "title": "Connect your business. Accelerate growth. Stay in control.",
+    "description1": "Integrated systems, intelligent automation, and actionable insights—built around your business.",
+    "description2": "Smart Integrated Solutions, Consulting & Supplies",
     "exploreButton": "Explore Our Solutions",
     "contactButton": "Contact Us",
-    "bookMeeting": "Book a Meeting",
+    "bookMeeting": "Book a Discovery Meeting",
     "tagline": "Your Smart Partner for Growth & Daily Life",
-    "egyptBadge": "🇪🇬 Based in Egypt | Data Privacy & Ultra Speed | Supporting Egypt Vision 2030"
+    "egyptBadge": "🇪🇬 Smart Systems and AI Solutions",
+    "askAssistant": "Ask Sard AI Assistant"
   },
   "about": {
-    "title": "About Us",
-    "paragraph1": "Sard AI is Egypt's premier AI destination for digital transformation and intelligent solutions, enabling companies and individuals to leverage cutting-edge AI safely and efficiently.",
-    "paragraph2": "We adhere to strict data privacy and security standards while actively contributing to Egypt's Vision 2030 for sustainable innovation and economic growth.",
-    "paragraph3": "We believe AI is a genuine partner that delivers ultra-fast automation, cost savings, and uncompromised privacy.",
+    "title": "About Sard",
+    "paragraph1": "Sard Integrated Smart Solutions is an Egyptian technology company helping organizations across sectors govern, connect, and grow their businesses.",
+    "paragraph2": "We bring together business management systems, websites, e-commerce platforms, custom applications, and AI-powered automation and analytics to turn fragmented operations into an integrated digital environment.",
+    "paragraph3": "Our approach connects people, processes, and data—giving leaders clearer visibility, stronger operational control, and a practical foundation for sustainable growth.",
     "stats": {
-      "solutions": "Aligned with Egypt Vision 2030",
-      "mindset": "Total Data Security & High Speed"
-    }
+      "solutions": "Supporting Egypt Vision 2030",
+      "mindset": "Governance, integration & intelligent automation"
+    },
+    "learnMore": "Learn more about Sard"
   },
   "partners": {
-    "title": "Our Partners",
-    "subtitle": "Proud to collaborate with top partners to build sustainable future-ready solutions"
+    "title": "Our Partners in Success",
+    "subtitle": "Organizations we have worked with under a signed agreement or actual joint work"
   },
   "services": {
     "title": "Our Services",
-    "aiPowered": {
-      "title": "Process Automation & Cost Reduction",
-      "description": "AI systems that eliminate manual routines, lower operational costs, and save money for businesses."
+    "subtitle": "Each service's scope and delivery approach are tailored to the client's needs, digital readiness, existing systems, and available integrations.",
+    "pillars": {
+      "connect": {
+        "title": "CONNECT",
+        "description": "Unify systems, channels, and operations."
+      },
+      "grow": {
+        "title": "GROW",
+        "description": "Expand your digital presence and reach."
+      },
+      "control": {
+        "title": "CONTROL",
+        "description": "Govern, protect, and support your operations."
+      },
+      "intelligence": {
+        "title": "INTELLIGENCE",
+        "description": "Automate work and turn data into decisions."
+      }
     },
-    "automation": {
-      "title": "Personal Daily Task Assistant",
-      "description": "Smart tools for individuals to streamline daily routines and complete work effortlessly."
-    },
-    "dataIntelligence": {
-      "title": "Data Intelligence & Productivity Boost",
-      "description": "Turn raw data into actionable decisions that maximize overall efficiency and throughput."
-    },
-    "performance": {
-      "title": "Ultra-Fast Business Acceleration",
-      "description": "Evolving intelligent systems designed to speed up workflows and raise quality standards with maximum speed."
-    },
-    "cloud": {
-      "title": "Smart Cloud Integration",
-      "description": "Fast and lightweight connection between your existing software and modern AI models."
-    },
-    "security": {
-      "title": "Data Protection & Complete Privacy",
-      "description": "Enterprise-grade protection ensuring complete data privacy and security for users and organizations."
+    "items": {
+      "processAutomation": {
+        "title": "Process Automation",
+        "description": "AI-supported systems that reduce manual routines across administrative and technical workflows."
+      },
+      "dailyTaskAssistant": {
+        "title": "Daily Task Assistant",
+        "description": "Smart tools that help individuals and teams streamline daily routines."
+      },
+      "dataIntelligence": {
+        "title": "Data Intelligence",
+        "description": "Turning data into actionable insights that support informed decisions."
+      },
+      "businessAcceleration": {
+        "title": "Business Acceleration",
+        "description": "Intelligent systems designed to speed up workflows and raise quality standards."
+      },
+      "smartCloud": {
+        "title": "Smart Cloud Integration",
+        "description": "Connecting your existing software with modern AI models and cloud services."
+      },
+      "dataProtection": {
+        "title": "Enterprise Data Protection",
+        "description": "Security controls covering data isolation, access management, and encryption in transit and at rest, within the agreed scope."
+      },
+      "businessSystems": {
+        "title": "Integrated Business Management Systems",
+        "description": "Connecting resource, customer, supplier, and operational management within a unified environment."
+      },
+      "webCommerce": {
+        "title": "Websites & E-Commerce Platforms",
+        "description": "Building a digital presence that supports service discovery, online sales, and customer acquisition."
+      },
+      "customApps": {
+        "title": "Custom Applications & Software Development",
+        "description": "Designing solutions around each organization's workflows and industry requirements."
+      },
+      "posOmnichannel": {
+        "title": "Point-of-Sale Systems & Omnichannel Integration",
+        "description": "Connecting sales, inventory, branches, and management through available integrations."
+      },
+      "governanceConsulting": {
+        "title": "Governance & Digital Transformation Consulting",
+        "description": "Assessing readiness, defining requirements, structuring roles and processes, and developing implementation roadmaps."
+      },
+      "onboardingSupport": {
+        "title": "Onboarding, Training & Technical Support",
+        "description": "Helping teams adopt, operate, and gain ongoing value from their solutions within the contracted scope."
+      }
     }
   },
   "vision": {
-    "title": "Our Vision",
-    "subtitle": "Driving Digital Transformation aligned with Egypt Vision 2030",
-    "paragraph1": "We envision a digital ecosystem where technology acts as a true partner easing daily life and expanding business profitability across Egypt and the region.",
-    "paragraph2": "We focus on automating business workflows to minimize financial waste and save time while guaranteeing strict data protection and privacy.",
-    "paragraph3": "Our key objective is to contribute directly to achieving the goals of Egypt's Vision 2030 for a digital and sustainable knowledge economy.",
-    "quote": "AI wasn't created to replace you, but to be the partner that saves your time and multiplies your success."
+    "title": "Our Vision & Mission",
+    "subtitle": "Intelligent, well-governed businesses in Egypt and the region",
+    "paragraph1": "Our vision is to be a leading strategic partner for intelligent, well-governed businesses in Egypt and the region—shaping a future where organizations of every size can connect their operations, anticipate change, and grow with confidence.",
+    "paragraph2": "Our mission is to empower organizations across sectors to connect their operations, strengthen governance, and unlock growth through integrated digital solutions and intelligent automation. We turn data into actionable insights and complex workflows into clear, measurable processes—helping people work more effectively and leaders make informed decisions.",
+    "paragraph3": "",
+    "quote": ""
   },
   "values": {
-    "title": "Our Values",
-    "subtitle": "Principles guiding our commitment to excellence",
-    "humanCentered": {
-      "title": "Human & Business Centered",
-      "description": "Designing practical solutions that fulfill personal goals and drive corporate growth."
+    "title": "Our Core Values",
+    "subtitle": "Six principles that guide how we work and what we build",
+    "v1": {
+      "title": "Strategic Partnership",
+      "description": "We build lasting relationships around a deep understanding of each client's business, shared goals, and long-term value."
     },
-    "collaborative": {
-      "title": "True Partnership",
-      "description": "Working closely with you as a strategic partner on your digital journey."
+    "v2": {
+      "title": "Governance & Accountability",
+      "description": "We embed clear responsibilities, transparent processes, and traceable decisions into the way we work and the solutions we design."
     },
-    "purposeDriven": {
-      "title": "Cost Efficiency & Maximum Output",
-      "description": "Every tool we build aims directly at saving costs and increasing productivity."
+    "v3": {
+      "title": "Practical Innovation",
+      "description": "We apply technology and AI to solve real business problems through usable, scalable solutions."
     },
-    "innovation": {
-      "title": "Advanced Ultra-Fast Automation",
-      "description": "Utilizing state-of-the-art AI models to speed up operational cycles at maximum efficiency."
+    "v4": {
+      "title": "Efficiency & Measurable Value",
+      "description": "We prioritize quality and measurable improvements in productivity, resource utilization, and business performance."
     },
-    "ethical": {
-      "title": "Data Protection & Privacy",
-      "description": "Uncompromising commitment to user privacy, data security, and AI ethics."
+    "v5": {
+      "title": "Trust & Data Protection",
+      "description": "We treat client data as a responsibility, guided by confidentiality, appropriate safeguards, and transparent data practices."
+    },
+    "v6": {
+      "title": "Human-Centered Growth",
+      "description": "We design technology that empowers people, reduces repetitive work, and supports learning and sustainable growth."
     }
   },
   "calendar": {
@@ -89,7 +140,7 @@
     "successTitle": "Appointment Successfully Booked!",
     "successDesc": "Your booking details have been saved in your browser.",
     "selectDate": "Select Date:",
-    "workingHours": "Default active business hours: 12:00 PM to 12:00 AM.",
+    "workingHours": "Business hours: Saturday–Thursday, 10:00 AM – 8:00 PM (Cairo time). Closed on Fridays.",
     "slotsLabel": "Time Slots Availability:",
     "booked": "Booked",
     "confirmTitle": "Complete Booking Request",
@@ -98,7 +149,10 @@
     "service": "Requested Service *",
     "notes": "Additional Notes",
     "confirmButton": "Confirm Booking",
-    "selectSlotFirst": "Select a slot first"
+    "selectSlotFirst": "Select a slot first",
+    "fridayClosed": "We are closed on Fridays. Please choose another day.",
+    "closedDayError": "This day is not available for bookings (closed on Fridays).",
+    "pastSlotError": "This time has already passed. Please choose a later slot."
   },
   "admin": {
     "title": "Admin Control Panel | Sard AI",
@@ -124,24 +178,165 @@
   "chat": {
     "title": "Sard AI Assistant",
     "welcomeTitle": "Welcome to Sard AI Assistant",
-    "welcomeDesc": "Your smart partner for process automation, cost reduction, data privacy, and task assistance.",
+    "welcomeDesc": "Ask about Sard’s integrated systems, automation, and services, or request a discovery meeting.",
     "inputPlaceholder": "Type your query or request an appointment...",
     "bookedBanner": "Meeting Confirmed via Chat!",
     "viewCalendar": "View Calendar"
   },
   "cta": {
-    "title": "Start Your Success Journey Today",
-    "description": "Let us help you automate your business operations, save costs, protect data, and align with Egypt Vision 2030 targets.",
-    "getStarted": "Book a Meeting Now",
-    "learnMore": "Chat with Sard AI",
-    "question": "Ready to maximize business efficiency, protect data privacy, and boost speed?",
-    "callToAction": "We are here to be your smart partner into the future."
+    "title": "Start with a Discovery Meeting",
+    "description": "Initial discovery consultations are free. Tell us about your business needs and we will explore suitable solutions together.",
+    "getStarted": "Book a Discovery Meeting",
+    "learnMore": "Ask Sard AI Assistant",
+    "question": "Prefer to talk to our team directly?",
+    "callToAction": "Contact Sard through its official channels."
   },
   "footer": {
-    "tagline": "Smart AI Solutions for Individuals & Businesses - Arab Republic of Egypt",
+    "tagline": "Smart Systems and AI Solutions",
     "rights": "All rights reserved.",
-    "privacy": "Privacy & Data Protection Policy",
+    "privacy": "Privacy Policy",
     "terms": "Terms of Service",
-    "contact": "Contact Us"
+    "contact": "Contact Us",
+    "address": "Alexandria, Egypt",
+    "follow": "Follow Us",
+    "pages": "Explore"
+  },
+  "brand": {
+    "legalName": "Sard Integrated Smart Solutions",
+    "shortName": "Sard",
+    "tagline": "Smart Systems and AI Solutions",
+    "secondaryTagline": "Smart Integrated Solutions, Consulting & Supplies",
+    "assistantName": "Sard AI Assistant"
+  },
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "services": "Services",
+    "projects": "Projects",
+    "faq": "FAQ",
+    "contact": "Contact",
+    "calendar": "Book a Meeting",
+    "ai": "Sard AI Assistant"
+  },
+  "aboutPage": {
+    "metaTitle": "About Sard | Sard Integrated Smart Solutions",
+    "metaDescription": "Sard Integrated Smart Solutions is an Egyptian technology company helping organizations across sectors govern, connect, and grow their businesses.",
+    "storyTitle": "Our Story & Direction",
+    "missionTitle": "Our Mission",
+    "visionTitle": "Our Vision",
+    "valuesTitle": "Our Core Values",
+    "pillarsTitle": "Our Value Pillars",
+    "howTitle": "How We Work",
+    "howBody": "We bring together business management systems, websites, e-commerce platforms, custom applications, and AI-powered automation and analytics. Each service's scope and delivery approach are tailored to the client's needs, digital readiness, existing systems, and available integrations. Services can be delivered individually or as part of an integrated project with clearly defined phases and measurable deliverables.",
+    "servicesLink": "Explore our services",
+    "ctaTitle": "Start with a discovery meeting",
+    "ctaBody": "Book a discovery meeting to explore your business needs and how Sard can support your goals."
+  },
+  "mission": {
+    "text": "Our mission is to empower organizations across sectors to connect their operations, strengthen governance, and unlock growth through integrated digital solutions and intelligent automation. We turn data into actionable insights and complex workflows into clear, measurable processes—helping people work more effectively and leaders make informed decisions."
+  },
+  "projectsPage": {
+    "demoBadge": "Demonstration",
+    "demoNotice": "Sard currently treats its client projects as confidential and does not publish client identities, data, or delivery details. At this stage, the website's project showcase is limited to demonstrations illustrating solution capabilities and use cases. These are explicitly labeled as demonstrations, without attribution to actual clients or presentation of illustrative results as verified achievements."
+  },
+  "faqPage": {
+    "metaTitle": "Frequently Asked Questions | Sard",
+    "title": "Frequently Asked Questions",
+    "subtitle": "Answers about Sard, our solutions, data privacy, consultations, and partnerships.",
+    "categories": {
+      "general": "General Information & Identity",
+      "solutions": "Solutions & Business Automation",
+      "privacy": "Data Privacy & Security",
+      "consultations": "Consultations & Appointments",
+      "partnerships": "Partnerships & Ecosystem"
+    }
+  },
+  "faq": {
+    "f001": {
+      "q": "What is Sard AI, and what does the company do?",
+      "a": "Sard Integrated Smart Solutions is an Egyptian technology company specializing in digital transformation, governance, and AI-powered business solutions. We develop integrated business management systems, websites, e-commerce platforms, and custom applications, alongside process automation and intelligent analytics—helping businesses connect their operations, accelerate growth, and make informed decisions."
+    },
+    "f002": {
+      "q": "How does Sard AI support the targets of Egypt Vision 2030?",
+      "a": "Sard AI supports Egypt Vision 2030’s digital transformation and innovation priorities by developing intelligent solutions tailored to local business needs. Through integrated systems, process automation, e-commerce, and AI-powered analytics, we help businesses strengthen governance, improve productivity, and expand their digital reach, supporting a more competitive, knowledge-based economy."
+    },
+    "f003": {
+      "q": "What business processes can Sard AI automate for enterprises?",
+      "a": "Sard AI automates administrative and technical workflows, data matching and financial reconciliation, and communication workflows with customers, suppliers, and government entities. Tailored to your enterprise’s systems and available integrations, these capabilities reduce manual effort, improve data accuracy, and accelerate business operations."
+    },
+    "f004": {
+      "q": "What measurable cost savings or ROI can organizations expect?",
+      "a": "The strongest ROI comes from automating high-volume tasks, reducing errors and rework, and improving resource utilization. Sard AI assesses each organization’s workflows and cost baseline to estimate potential savings and define measurable success indicators—including operating costs, processing time, and productivity. Sard AI assesses expected ROI and payback periods against implementation and ongoing costs, then validates them through actual results."
+    },
+    "f005": {
+      "q": "Where is client data hosted and processed?",
+      "a": "Client data hosting and processing locations are defined for each project according to business needs, applicable regulations, and the selected service providers—including third-party AI services. Security controls are documented within the agreed scope, covering data isolation, access management, and encryption in transit and at rest. Internationally recognized frameworks guide Sard’s approach: ISO/IEC 27001 for information security, ISO/IEC 27701 for privacy management, ISO 9001 for quality management, and ISO/IEC 42001 for AI management."
+    },
+    "f006": {
+      "q": "Does Sard AI store personal consultation or meeting notes in the browser?",
+      "a": "Sard’s intended privacy approach is to keep consultation details and meeting notes out of persistent browser storage. The exact storage and retention practices depend on the deployed service and should be confirmed in its privacy notice."
+    },
+    "f007": {
+      "q": "How can I schedule, view, or cancel a discovery meeting with Sard AI?",
+      "a": "Book a discovery meeting to explore your business needs and how Sard AI can support your goals. Visit our Calendar page (/calendar) and choose an available slot, Saturday through Thursday, from 10:00 AM to 8:00 PM, Cairo time. To view your booking details, refer to your confirmation message. If you need to cancel, use the cancellation option provided with your booking or contact our team for assistance."
+    },
+    "f008": {
+      "q": "Are initial discovery consultations free of charge?",
+      "a": "Yes. Initial discovery consultations are free when you contact Sard AI to discuss your business needs and explore suitable solutions. On-site visits for requirements assessment, detailed analysis, and specialist consulting are scheduled after a service agreement is signed, within an agreed scope of work."
+    },
+    "f009": {
+      "q": "How can our organization establish a strategic partnership with Sard AI?",
+      "a": "Sard AI welcomes strategic partnerships with organizations across all sectors seeking to advance business governance, digital transformation, and intelligent automation. Whether the opportunity involves joint solution development, technology integration, or market expansion, contact our team with an overview of your organization and collaboration goals. Together, we can define a partnership framework with clear responsibilities, shared value, and measurable outcomes."
+    }
+  },
+  "contactPage": {
+    "metaTitle": "Contact Sard | Sard Integrated Smart Solutions",
+    "title": "Contact Sard",
+    "subtitle": "Reach our team through Sard’s official channels, or book a free discovery meeting.",
+    "primaryCta": "Book a Discovery Meeting",
+    "email": "Email",
+    "phone": "Phone",
+    "whatsapp": "WhatsApp",
+    "whatsappAction": "Chat on WhatsApp",
+    "location": "Location",
+    "hours": "Working Hours",
+    "hoursValue": "Saturday–Thursday, 10:00 AM – 8:00 PM (Cairo time)",
+    "social": "Follow Sard",
+    "whatsappPrefill": "Hello Sard, I would like to inquire about your business automation solutions."
+  },
+  "legal": {
+    "privacyTitle": "Privacy Policy",
+    "termsTitle": "Terms of Service",
+    "underReviewTitle": "Under Legal Review",
+    "underReviewBody": "This document is undergoing review before its approved version is published. For questions about privacy or the terms governing Sard’s services, please contact our official company channels.",
+    "contactLink": "Contact Sard"
+  },
+  "bookingNotice": {
+    "text": "By booking, you agree that Sard uses your name and email to manage this appointment.",
+    "link": "Privacy notice"
+  },
+  "member": {
+    "disclaimer": "The badge confirms affiliation only; it does not authorize the holder to sign agreements, collect payments, or make commitments on Sard’s behalf.",
+    "verifiedBadge": "Verified by Sard",
+    "active": "Active member of Sard",
+    "notActive": "This person is not currently affiliated with Sard.",
+    "verifiedOn": "Verification updated",
+    "officialChannels": "For any inquiry, please contact Sard through its official channels."
+  },
+  "team": {
+    "metaTitle": "Sard Team",
+    "title": "The Sard Team",
+    "intro": "The Team page presents Sard members’ professional identities and organizational roles. All client inquiries and collaboration requests are directed exclusively to Sard’s official channels.",
+    "currentTitle": "Current Team",
+    "alumniTitle": "Sard Alumni",
+    "alumniIntro": "The “Sard Alumni” section honors former team members, with their consent, through a brief acknowledgment of their previous roles and contributions. Alumni are clearly identified as former members, without implying current employment or authority to represent Sard.",
+    "formerMember": "Former team member",
+    "internsTitle": "Sard Internship Contributors",
+    "internsTagline": "They learned, contributed, and made an impact.",
+    "internsIntro": "We value our interns’ contributions and believe promising ideas grow through opportunities to explore, build, and collaborate.",
+    "internsNote": "Inclusion recognizes an internship contribution and does not establish employment status or authority to represent Sard.",
+    "currentIntern": "Current Intern",
+    "completedInternship": "Completed Internship",
+    "empty": "No profiles are published in this section yet."
   }
 }

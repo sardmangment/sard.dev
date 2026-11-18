@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { SiteNavbar } from '@/components/SiteNavbar';
 import { Footer } from '@/components/layout/Footer';
@@ -56,6 +57,7 @@ interface ContactInfo {
 export const ProjectDetailsPage = () => {
   const { id } = useParams();
   const { t, isRTL } = useLanguage();
+  const { t: tr } = useTranslation();
   const [project, setProject] = useState<Project | null>(null);
   const [images, setImages] = useState<ProjectImage[]>([]);
   const [partnership, setPartnership] = useState<Partnership | null>(null);
@@ -88,14 +90,11 @@ export const ProjectDetailsPage = () => {
 
         if (projData.partnership_id) {
           try {
-            const partnershipRes = await supabase
-              .from('partnerships')
-              .select('id, partner_name_ar, partner_name_en')
-              .eq('id', projData.partnership_id)
-              .maybeSingle();
-
-            if (partnershipRes.data) {
-              setPartnership(partnershipRes.data as Partnership);
+            // Only partners verified for publication may be linked (C-F02, RPC get_published_partner).
+            const partnershipRes = await supabase.rpc('get_published_partner' as never, { p_id: projData.partnership_id } as never);
+            const row = Array.isArray(partnershipRes.data) ? partnershipRes.data[0] : partnershipRes.data;
+            if (!partnershipRes.error && row) {
+              setPartnership(row as unknown as Partnership);
             }
           } catch (partErr) {
             console.warn('Error fetching partnership for project:', partErr);
@@ -208,9 +207,13 @@ export const ProjectDetailsPage = () => {
             {/* Project Info & Metadata Layout */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2 space-y-6">
+                <span className="inline-flex px-3 py-1 rounded-full text-xs font-semibold bg-brand-orange/15 text-brand-orange border border-brand-orange/30" data-testid="demo-badge">
+                  {tr('projectsPage.demoBadge')}
+                </span>
                 <h1 className="text-3xl sm:text-4xl font-extrabold text-foreground tracking-tight">
                   {t(project.title_ar, project.title_en)}
                 </h1>
+                <p className="text-xs text-muted-foreground leading-relaxed">{tr('projectsPage.demoNotice')}</p>
 
                 {(project.description_ar || project.description_en) && (
                   <div className="prose prose-neutral max-w-none">

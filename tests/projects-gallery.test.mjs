@@ -26,8 +26,8 @@ test('Projects Gallery (/projects) Playwright live rendering, fallback, and resp
     await heading.waitFor({ state: 'visible', timeout: 5000 });
     const headingText = await heading.textContent();
     assert.ok(
-      headingText.includes('معرض المشاريع') || headingText.includes('Projects Gallery'),
-      `Heading must be Projects Gallery, got: ${headingText}`
+      headingText.includes('العروض التوضيحية للمشاريع') || headingText.includes('Project Demonstrations'),
+      `Heading must be Project Demonstrations (C-F01), got: ${headingText}`
     );
 
     // Verify Navbar is mounted

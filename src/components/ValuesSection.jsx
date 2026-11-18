@@ -1,38 +1,20 @@
 import { motion } from 'framer-motion';
 import { TextPressure } from './TextPressure';
-import { Heart, Users, Target, Sparkles, Shield } from 'lucide-react';
+import { Handshake, Scale, Lightbulb, Gauge, Shield, Heart } from 'lucide-react';
+import { VALUE_KEYS } from '../content/services';
+
+const VALUE_ICONS = [Handshake, Scale, Lightbulb, Gauge, Shield, Heart];
 import { useTranslation } from 'react-i18next';
 
 export const ValuesSection = () => {
   const { t } = useTranslation();
   
-  const values = [
-    {
-      icon: Heart,
-      title: t('values.humanCentered.title'),
-      description: t('values.humanCentered.description'),
-    },
-    {
-      icon: Users,
-      title: t('values.collaborative.title'),
-      description: t('values.collaborative.description'),
-    },
-    {
-      icon: Target,
-      title: t('values.purposeDriven.title'),
-      description: t('values.purposeDriven.description'),
-    },
-    {
-      icon: Sparkles,
-      title: t('values.innovation.title'),
-      description: t('values.innovation.description'),
-    },
-    {
-      icon: Shield,
-      title: t('values.ethical.title'),
-      description: t('values.ethical.description'),
-    },
-  ];
+  const values = VALUE_KEYS.map((key, index) => ({
+    key,
+    icon: VALUE_ICONS[index],
+    title: t(`values.${key}.title`),
+    description: t(`values.${key}.description`),
+  }));
 
   return (
     <section className="py-32 bg-background text-foreground relative overflow-hidden transition-colors">
@@ -61,7 +43,7 @@ export const ValuesSection = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto">
           {values.map((value, index) => (
             <motion.div
-              key={index}
+              key={value.key}
               initial={{ opacity: 0, y: 50, rotate: -3 }}
               whileInView={{ opacity: 1, y: 0, rotate: 0 }}
               viewport={{ once: true, margin: '-100px' }}

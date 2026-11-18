@@ -5,6 +5,10 @@ import {
   getBookedSlotsForDate,
   saveAppointment,
   TIME_SLOTS,
+  cairoToday,
+  addDays,
+  isFriday,
+  isSlotPast,
   getBookingErrorMessage
 } from '../utils/calendarStorage';
 import { useTranslation } from 'react-i18next';
@@ -31,22 +35,25 @@ export default function CalendarPage() {
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language === 'ar';
 
-  const todayDateObj = new Date();
-  const todayStr = todayDateObj.toISOString().split('T')[0];
+  // D-31: dates are Cairo dates; Friday is shown but closed.
+  const todayStr = cairoToday();
 
-  // Generate current week dates starting from today
+  // Generate the next 7 days starting from today (Cairo)
   const weekDays = Array.from({ length: 7 }, (_, i) => {
-    const d = new Date();
-    d.setDate(todayDateObj.getDate() + i);
+    const dateStr = addDays(todayStr, i);
+    const d = new Date(`${dateStr}T12:00:00Z`);
     return {
-      dateStr: d.toISOString().split('T')[0],
-      dayNameAr: d.toLocaleDateString('ar-EG', { weekday: 'short' }),
-      dayNameEn: d.toLocaleDateString('en-US', { weekday: 'short' }),
-      dayNumber: d.getDate()
+      dateStr,
+      dayNameAr: d.toLocaleDateString('ar-EG', { weekday: 'short', timeZone: 'UTC' }),
+      dayNameEn: d.toLocaleDateString('en-US', { weekday: 'short', timeZone: 'UTC' }),
+      dayNumber: d.getUTCDate(),
+      closed: isFriday(dateStr),
     };
   });
+  const firstOpenDay = isFriday(todayStr) ? addDays(todayStr, 1) : todayStr;
 
-  const [selectedDate, setSelectedDate] = useState(todayStr);
+  const [selectedDate, setSelectedDate] = useState(firstOpenDay);
+  const selectedDayClosed = isFriday(selectedDate);
   const [selectedSlot, setSelectedSlot] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -346,11 +353,17 @@ export default function CalendarPage() {
                     <button
                       key={day.dateStr}
                       type="button"
+                      disabled={day.closed}
+                      aria-disabled={day.closed}
+                      data-closed={day.closed ? 'true' : undefined}
+                      title={day.closed ? t('calendar.fridayClosed') : undefined}
                       onClick={() => {
                         setSelectedDate(day.dateStr);
                         setSelectedSlot('');
                       }}
-                      className={`min-w-[64px] sm:min-w-0 flex-1 p-2 sm:p-2.5 rounded-xl border flex flex-col items-center justify-center shrink-0 sm:shrink transition-all ${isSelected
+                      className={`min-w-[64px] sm:min-w-0 flex-1 p-2 sm:p-2.5 rounded-xl border flex flex-col items-center justify-center shrink-0 sm:shrink transition-all ${day.closed
+                        ? "bg-muted/40 border-border text-muted-foreground/50 cursor-not-allowed line-through"
+                        : isSelected
                         ? "bg-brand-orange text-black font-bold border-brand-orange shadow-md scale-105"
                         : "bg-secondary/60 border-border text-foreground hover:border-brand-orange/60"
                         }`}
@@ -396,9 +409,15 @@ export default function CalendarPage() {
                 )}
               </div>
 
+              {selectedDayClosed && (
+                <p role="status" className="text-sm text-muted-foreground bg-muted/40 p-3 rounded-xl border border-border" data-testid="friday-closed">
+                  {t('calendar.fridayClosed')}
+                </p>
+              )}
+              {!selectedDayClosed && (
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {TIME_SLOTS.map((slot) => {
-                  const isBooked = bookedSlots.includes(slot);
+                  const isBooked = bookedSlots.includes(slot) || isSlotPast(selectedDate, slot);
                   const isSelected = selectedSlot === slot;
 
                   if (isBooked) {
@@ -436,6 +455,7 @@ export default function CalendarPage() {
                   );
                 })}
               </div>
+              )}
             </div>
 
           </div>
@@ -520,6 +540,12 @@ export default function CalendarPage() {
               {bookingError && (
                 <p className="text-xs text-red-600 font-semibold">{bookingError}</p>
               )}
+
+              {/* D-34 interim data-collection notice (O-10); legal review pending (C-I03) */}
+              <p className="text-[11px] text-muted-foreground leading-relaxed" data-testid="booking-notice">
+                {t('bookingNotice.text')}{' '}
+                <Link to="/privacy" className="text-brand-orange hover:underline">{t('bookingNotice.link')}</Link>
+              </p>
 
               <button
                 type="submit"
