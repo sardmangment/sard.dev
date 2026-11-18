@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Menu, X } from 'lucide-react';
@@ -10,6 +10,10 @@ import { SITE_NAV } from '../config/navigation';
 /**
  * SiteNavbar
  * Standard top navigation and mobile drawer across all public SARD pages (DEV-96).
+ * Enhanced per UI/UX Pro Max and modern enterprise standards:
+ * - Unified typography across all navigation elements
+ * - Clean mobile header: Zero button-pill collisions with the brand logo
+ * - Responsive breakpoints: Clean desktop nav + slide-out mobile drawer
  *
  * @param {Array} links Desktop links: [{ to, icon, label_ar, label_en, className }]
  * @param {Array} drawerLinks Drawer links: [{ to, href, icon, label_ar, label_en, isSection }]
@@ -23,6 +27,7 @@ export function SiteNavbar({
   sticky = false,
 }) {
   const { t, i18n } = useTranslation();
+  const location = useLocation();
   const isRTL = i18n.language?.startsWith('ar') || (typeof document !== 'undefined' && document.documentElement.dir === 'rtl');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -66,66 +71,81 @@ export function SiteNavbar({
   return (
     <>
       <header
-        className={`w-full border-b border-border bg-background/85 backdrop-blur-md ${
-          sticky ? 'sticky top-0 z-30 shadow-sm' : 'relative z-20'
+        className={`w-full border-b border-border/70 bg-background/90 backdrop-blur-md transition-colors ${
+          sticky ? 'sticky top-0 z-30 shadow-xs' : 'relative z-20'
         }`}
       >
-        <div className="container mx-auto px-4 sm:px-6">
-          <div className="flex flex-row items-center justify-between gap-4 py-3 sm:py-3.5">
-            {/* Logo */}
-            <Link to="/" className="flex items-center gap-3 group">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-row items-center justify-between gap-4 h-16 sm:h-18">
+            {/* Logo & Brand Wordmark */}
+            <Link to="/" className="flex items-center gap-2.5 sm:gap-3 group shrink-0">
               <img
                 src={sardLogo}
                 alt="Sard"
-                className="w-10 h-10 sm:w-11 sm:h-11 object-contain transition-transform group-hover:scale-105"
+                className="w-9 h-9 sm:w-10 sm:h-10 object-contain transition-transform duration-200 group-hover:scale-105"
               />
-              <span className="text-xl font-bold text-foreground tracking-wide">{t('brand.shortName')}</span>
+              <span className="text-lg sm:text-xl font-bold tracking-tight text-foreground">
+                {t('brand.shortName')}
+              </span>
             </Link>
 
-            {/* Desktop Navigation Links + Controls */}
-            <nav aria-label="Main Navigation" className="flex items-center gap-3">
-              <div className="hidden lg:flex items-center gap-1 me-1">
-                {desktopSiteLinks.map((s) =>
-                  s.href ? (
-                    <a key={s.href} href={s.href} className="px-2.5 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors">
-                      {t(s.labelKey)}
-                    </a>
-                  ) : (
-                    <Link key={s.to} to={s.to} className="px-2.5 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors">
-                      {t(s.labelKey)}
-                    </Link>
-                  )
-                )}
-              </div>
+            {/* Desktop Center Navigation Links */}
+            <nav aria-label="Main Navigation" className="hidden md:flex items-center gap-1 xl:gap-2">
+              {desktopSiteLinks.map((s) => {
+                const isActive = location.pathname === s.to;
+                const linkClass = `px-3 py-1.5 rounded-lg text-xs xl:text-sm font-semibold tracking-wide transition-colors ${
+                  isActive
+                    ? 'text-brand-orange bg-brand-orange/10 font-bold'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-secondary/60'
+                }`;
+                return s.href ? (
+                  <a key={s.href} href={s.href} className={linkClass}>
+                    {t(s.labelKey)}
+                  </a>
+                ) : (
+                  <Link key={s.to} to={s.to} className={linkClass}>
+                    {t(s.labelKey)}
+                  </Link>
+                );
+              })}
+            </nav>
+
+            {/* Actions: Page-specific links, Language Switcher, and Mobile Hamburger */}
+            <div className="flex items-center gap-2 sm:gap-3">
+              {/* Page-specific desktop links: Hidden on mobile (< md) to avoid header collision */}
               {links.map((link) => {
                 const Icon = link.icon;
+                const isCta = link.to === '/calendar' || link.to === '/ai' || link.isCta;
                 return (
                   <Link
                     key={link.to}
                     to={link.to}
-                    className={`flex items-center gap-2 px-3.5 py-2 rounded-xl bg-secondary/80 hover:bg-secondary border border-border text-foreground text-xs sm:text-sm font-semibold transition-colors shadow-sm ${
-                      link.className || ''
-                    }`}
+                    className={`hidden md:inline-flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 ${
+                      isCta
+                        ? 'bg-brand-orange text-white hover:bg-brand-orange/90 shadow-xs hover:shadow-sm'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-secondary/60 border border-transparent hover:border-border/60'
+                    } ${link.className || ''}`}
                   >
-                    {Icon && <Icon className="w-4 h-4 text-brand-orange" />}
+                    {Icon && <Icon className={`w-4 h-4 ${isCta ? 'text-white' : 'text-brand-orange'}`} />}
                     <span>{isRTL ? link.label_ar : link.label_en}</span>
                   </Link>
                 );
               })}
 
+              {/* Language Switcher */}
               <LanguageSwitcher />
 
-              {/* Mobile Hamburger Toggle */}
+              {/* Mobile Hamburger Menu (Hidden on md: >= 768px) */}
               <button
                 type="button"
                 onClick={() => setIsDrawerOpen(true)}
                 aria-label={isRTL ? "فتح قائمة التنقل" : "Open navigation menu"}
                 aria-expanded={isDrawerOpen}
-                className="sm:hidden p-2 rounded-xl bg-secondary/80 hover:bg-secondary border border-border text-foreground transition-colors flex items-center justify-center cursor-pointer shadow-sm"
+                className="md:hidden w-10 h-10 rounded-full border border-border/80 bg-secondary/60 hover:bg-secondary text-foreground flex items-center justify-center cursor-pointer transition-colors shadow-xs"
               >
-                <Menu className="w-5 h-5 text-brand-orange" />
+                <Menu className="w-5 h-5 text-foreground" />
               </button>
-            </nav>
+            </div>
           </div>
         </div>
       </header>
@@ -133,7 +153,7 @@ export function SiteNavbar({
       {/* Mobile Navigation Drawer */}
       <AnimatePresence>
         {isDrawerOpen && (
-          <div className="fixed inset-0 z-50 sm:hidden">
+          <div className="fixed inset-0 z-50 md:hidden">
             {/* Backdrop with Click to Close */}
             <motion.div
               initial={{ opacity: 0 }}
@@ -141,7 +161,7 @@ export function SiteNavbar({
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
               onClick={() => setIsDrawerOpen(false)}
-              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              className="absolute inset-0 bg-black/60 backdrop-blur-xs"
               aria-hidden="true"
             />
 
@@ -153,14 +173,14 @@ export function SiteNavbar({
               transition={{ type: 'spring', damping: 25, stiffness: 250 }}
               className={`absolute top-0 bottom-0 ${
                 isRTL ? 'right-0 border-l' : 'left-0 border-r'
-              } w-[280px] max-w-[85vw] bg-card border-border p-6 flex flex-col justify-between shadow-2xl z-10 overflow-y-auto text-foreground`}
+              } w-[300px] max-w-[85vw] bg-card border-border p-6 flex flex-col justify-between shadow-2xl z-10 overflow-y-auto text-foreground`}
               role="dialog"
               aria-modal="true"
               aria-label={isRTL ? "قائمة التنقل" : "Navigation menu"}
             >
               <div className="space-y-6">
                 {/* Header with logo & close button */}
-                <div className="flex items-center justify-between border-b border-border pb-4">
+                <div className="flex items-center justify-between border-b border-border/80 pb-4">
                   <div className="flex items-center gap-2.5">
                     <img src={sardLogo} alt="Sard" className="w-8 h-8 object-contain" />
                     <span className="font-bold text-foreground text-lg">{t('brand.shortName')}</span>
@@ -169,24 +189,29 @@ export function SiteNavbar({
                     type="button"
                     onClick={() => setIsDrawerOpen(false)}
                     aria-label={isRTL ? "إغلاق القائمة" : "Close menu"}
-                    className="p-1.5 rounded-lg bg-secondary hover:bg-secondary/80 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                    className="w-9 h-9 rounded-full bg-secondary hover:bg-secondary/80 text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors cursor-pointer"
                   >
                     <X className="w-5 h-5" />
                   </button>
                 </div>
 
                 {/* Primary Nav Links */}
-                <nav className="flex flex-col space-y-2">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground px-3">
+                <nav className="flex flex-col space-y-1.5">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground px-3 mb-1">
                     {isRTL ? "الصفحات الرئيسية" : "Main Navigation"}
                   </span>
 
                   {mainDrawerLinks.map((link) => {
                     const Icon = link.icon;
-                    const cls = "flex items-center gap-3 px-3 py-2.5 rounded-xl text-foreground hover:bg-muted hover:text-brand-orange transition-colors font-medium text-sm";
+                    const isActive = link.to && location.pathname === link.to;
+                    const cls = `flex items-center gap-3 px-3.5 py-3 rounded-xl transition-all font-medium text-sm min-h-[44px] ${
+                      isActive
+                        ? 'bg-brand-orange/15 text-brand-orange font-bold'
+                        : 'text-foreground hover:bg-muted hover:text-brand-orange'
+                    }`;
                     const body = (
                       <>
-                        {Icon && <Icon className="w-4 h-4 text-brand-orange" />}
+                        {Icon && <Icon className={`w-4 h-4 ${isActive ? 'text-brand-orange' : 'text-muted-foreground'}`} />}
                         <span>{isRTL ? link.label_ar : link.label_en}</span>
                       </>
                     );
@@ -202,7 +227,7 @@ export function SiteNavbar({
                   })}
 
                   {sectionDrawerLinks.length > 0 && (
-                    <div className="pt-2 border-t border-border">
+                    <div className="pt-3 mt-2 border-t border-border/80">
                       <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground px-3 block mb-2">
                         {isRTL ? "أقسام الصفحة" : "Page Sections"}
                       </span>
@@ -213,7 +238,7 @@ export function SiteNavbar({
                             key={section.href}
                             href={section.href}
                             onClick={() => setIsDrawerOpen(false)}
-                            className="flex items-center gap-3 px-3 py-2 rounded-xl text-muted-foreground hover:bg-muted hover:text-foreground transition-colors text-sm"
+                            className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-muted-foreground hover:bg-muted hover:text-foreground transition-colors text-sm min-h-[44px]"
                           >
                             {Icon && <Icon className="w-4 h-4 text-brand-orange" />}
                             <span>{isRTL ? section.label_ar : section.label_en}</span>
@@ -226,12 +251,12 @@ export function SiteNavbar({
               </div>
 
               {/* Drawer Footer with Quick CTA */}
-              <div className="pt-4 border-t border-border space-y-3">
+              <div className="pt-4 border-t border-border/80 space-y-3">
                 {drawerCta && (
                   <Link
                     to={drawerCta.to}
                     onClick={() => setIsDrawerOpen(false)}
-                    className="w-full py-2.5 px-4 bg-brand-orange text-black font-bold rounded-xl text-center text-sm flex items-center justify-center gap-2 shadow-md shadow-brand-orange/20 hover:bg-brand-orange-400 transition-colors"
+                    className="w-full py-3 px-4 bg-brand-orange text-white font-bold rounded-xl text-center text-sm flex items-center justify-center gap-2 shadow-sm hover:bg-brand-orange/90 transition-colors min-h-[44px]"
                   >
                     {drawerCta.icon && <drawerCta.icon className="w-4 h-4" />}
                     <span>{isRTL ? drawerCta.label_ar : drawerCta.label_en}</span>
