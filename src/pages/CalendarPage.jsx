@@ -331,10 +331,10 @@ export default function CalendarPage() {
         )}
 
         {/* Main Booking Interface */}
-        <div className="grid lg:grid-cols-12 gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
-          {/* Date Picker & Current Week Buttons + Slots */}
-          <div className="lg:col-span-7 bg-card border border-border rounded-2xl p-6 space-y-6 shadow-sm">
+          {/* Date Picker & Current Week Buttons + Slots (min-w-0: let the week bar scroll instead of widening the card) */}
+          <div className="min-w-0 lg:col-span-7 bg-card border border-border rounded-2xl p-6 space-y-6 shadow-sm">
 
             {/* Week Days Quick Bar */}
             <div className="space-y-3">
@@ -461,7 +461,7 @@ export default function CalendarPage() {
           </div>
 
           {/* Booking Confirmation Form */}
-          <div className="lg:col-span-5 bg-card border border-border rounded-2xl p-6 space-y-5 shadow-sm">
+          <div className="min-w-0 lg:col-span-5 bg-card border border-border rounded-2xl p-6 space-y-5 shadow-sm">
             <h3 className="text-lg font-bold text-foreground pb-2 border-b border-border">
               {t('calendar.confirmDetails')}
             </h3>
@@ -500,10 +500,12 @@ export default function CalendarPage() {
 
               <div>
                 <label className="block text-xs font-bold text-foreground mb-1">
-                  {t('calendar.emailLabel')}
+                  {t('calendar.emailLabel')} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="email"
+                  required
+                  dir="ltr"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder={t('calendar.emailPlaceholder')}
@@ -549,7 +551,7 @@ export default function CalendarPage() {
 
               <button
                 type="submit"
-                disabled={!selectedSlot || !name || submitting}
+                disabled={!selectedSlot || !name || !email || submitting}
                 className="w-full py-3 rounded-xl bg-brand-orange text-black font-bold text-sm hover:bg-brand-orange-400 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md disabled:opacity-50"
               >
                 {submitting ? (

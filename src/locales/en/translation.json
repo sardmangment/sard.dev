@@ -152,7 +152,19 @@
     "selectSlotFirst": "Select a slot first",
     "fridayClosed": "We are closed on Fridays. Please choose another day.",
     "closedDayError": "This day is not available for bookings (closed on Fridays).",
-    "pastSlotError": "This time has already passed. Please choose a later slot."
+    "pastSlotError": "This time has already passed. Please choose a later slot.",
+    "confirmDetails": "Confirm Your Booking",
+    "selectedSlotTitle": "Selected date and time",
+    "chooseSlot": "Choose a time slot",
+    "nameLabel": "Full Name",
+    "namePlaceholder": "Your full name",
+    "emailLabel": "Email Address",
+    "emailPlaceholder": "name@company.com",
+    "serviceLabel": "Requested Service",
+    "notesLabel": "Additional Notes",
+    "notesPlaceholder": "Briefly describe what you would like to discuss (optional)",
+    "saving": "Booking…",
+    "bookNow": "Confirm Booking"
   },
   "admin": {
     "title": "Admin Control Panel | Sard AI",

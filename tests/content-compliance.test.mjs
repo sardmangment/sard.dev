@@ -62,6 +62,17 @@ test('Every locale key exists in both languages (no untranslated holes)', () => 
   assert.deepEqual([...arKeys].filter((k) => !enKeys.has(k)), [], 'keys missing in en');
 });
 
+test('Every t() key used by the calendar booking pages exists in both locales', () => {
+  const get = (d, k) => k.split('.').reduce((o, p) => (o == null ? undefined : o[p]), d);
+  for (const f of ['src/pages/CalendarPage.jsx', 'src/pages/ManageAppointmentPage.jsx']) {
+    const keys = [...new Set([...read(f).matchAll(/\bt\(\s*['"]([\w.]+)['"]/g)].map((m) => m[1]))];
+    for (const [lang, dict] of [['en', en], ['ar', ar]]) {
+      const missing = keys.filter((k) => typeof get(dict, k) !== 'string');
+      assert.deepEqual(missing, [], `${f}: keys missing in ${lang}`);
+    }
+  }
+});
+
 test('No numeric ROI/savings claims or guarantees in public copy (C-E05)', () => {
   for (const [lang, dict] of [['en', en], ['ar', ar]]) {
     for (const [k, v] of leaves(dict)) {

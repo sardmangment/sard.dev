@@ -152,7 +152,19 @@
     "selectSlotFirst": "اختر الموعد أولاً",
     "fridayClosed": "نعتذر، لا تتوفر مواعيد يوم الجمعة. يُرجى اختيار يوم آخر.",
     "closedDayError": "هذا اليوم غير متاح للحجز (مغلق يوم الجمعة).",
-    "pastSlotError": "انقضى هذا الموعد بالفعل. يُرجى اختيار موعد لاحق."
+    "pastSlotError": "انقضى هذا الموعد بالفعل. يُرجى اختيار موعد لاحق.",
+    "confirmDetails": "تأكيد تفاصيل الحجز",
+    "selectedSlotTitle": "اليوم والموعد المختار",
+    "chooseSlot": "اختر موعدًا",
+    "nameLabel": "الاسم بالكامل",
+    "namePlaceholder": "اكتب اسمك بالكامل",
+    "emailLabel": "البريد الإلكتروني",
+    "emailPlaceholder": "name@company.com",
+    "serviceLabel": "الخدمة المطلوبة",
+    "notesLabel": "ملاحظات إضافية",
+    "notesPlaceholder": "اكتب باختصار ما تود مناقشته (اختياري)",
+    "saving": "جارٍ الحجز…",
+    "bookNow": "تأكيد الحجز"
   },
   "admin": {
     "title": "لوحة تحكم الأدمن | Sard AI",
