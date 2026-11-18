@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import aiLogo from '../assets/ai-logo.png';
+import aiLogo from '../assets/ai-robot.jpg';
 import SplitText from './SplitText';
 import { SiteNavbar } from './SiteNavbar';
 import { useTranslation } from 'react-i18next';
@@ -116,7 +116,7 @@ export const HeroSection = () => {
                 whileTap={{ scale: 0.98 }}
                 className="px-8 py-3.5 border-2 border-brand-orange text-brand-orange bg-brand-orange/10 flex items-center gap-3.5 font-bold rounded-xl hover:bg-brand-orange/20 transition-all text-base sm:text-lg cursor-pointer shadow-sm"
               >
-                <img src={aiLogo} alt="" className="w-10 h-10 sm:w-11 sm:h-11 object-contain shrink-0" />
+                <img src={aiLogo} alt="Sard AI" className="w-10 h-10 sm:w-11 sm:h-11 object-contain shrink-0 mix-blend-multiply rounded-md" />
                 <span>{t('hero.askAssistant')}</span>
                 {isRTL ? <ArrowLeft className="w-5 h-5" /> : <ArrowRight className="w-5 h-5" />}
               </motion.button>
