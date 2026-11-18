@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Calendar, MessageSquare } from 'lucide-react';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import sardLogo from '../assets/logo.png';
 import { SITE_NAV } from '../config/navigation';
@@ -54,19 +54,19 @@ export function SiteNavbar({
     };
   }, [isDrawerOpen]);
 
-  // Page-specific drawer links first, then any site-wide link not already present.
-  const pageMain = drawerLinks.filter((l) => !l.isSection);
-  const mainDrawerLinks = [
-    ...pageMain,
-    ...SITE_NAV.filter((s) => !pageMain.some((l) => (l.to || l.href) === (s.to || s.href))).map((s) => ({
-      to: s.to,
-      href: s.href,
-      label_ar: t(s.labelKey, { lng: 'ar' }),
-      label_en: t(s.labelKey, { lng: 'en' }),
-    })),
-  ];
+  // Unified navigation: the same site-wide links on every page (SITE_NAV is the single source).
+  // `links` and non-section `drawerLinks` from pages are accepted for compatibility but no longer
+  // change the header; only in-page section anchors (isSection) are added to the drawer.
+  void links;
+  const mainDrawerLinks = SITE_NAV.map((s) => ({
+    to: s.to,
+    href: s.href,
+    label_ar: t(s.labelKey, { lng: 'ar' }),
+    label_en: t(s.labelKey, { lng: 'en' }),
+  }));
   const desktopSiteLinks = SITE_NAV.filter((s) => !s.drawerOnly);
   const sectionDrawerLinks = drawerLinks.filter((l) => l.isSection);
+  const cta = drawerCta || { to: '/calendar', icon: Calendar, label_ar: t('nav.calendar', { lng: 'ar' }), label_en: t('nav.calendar', { lng: 'en' }) };
 
   return (
     <>
@@ -93,7 +93,7 @@ export function SiteNavbar({
             <nav aria-label="Main Navigation" className="hidden md:flex items-center gap-1 xl:gap-2">
               {desktopSiteLinks.map((s) => {
                 const isActive = location.pathname === s.to;
-                const linkClass = `px-3 py-1.5 rounded-lg text-xs xl:text-sm font-semibold tracking-wide transition-colors ${
+                const linkClass = `px-2 lg:px-3 py-1.5 rounded-lg text-xs xl:text-sm font-semibold tracking-wide whitespace-nowrap transition-colors ${
                   isActive
                     ? 'text-brand-orange bg-brand-orange/10 font-bold'
                     : 'text-muted-foreground hover:text-foreground hover:bg-secondary/60'
@@ -112,25 +112,25 @@ export function SiteNavbar({
 
             {/* Actions: Page-specific links, Language Switcher, and Mobile Hamburger */}
             <div className="flex items-center gap-2 sm:gap-3">
-              {/* Page-specific desktop links: Hidden on mobile (< md) to avoid header collision */}
-              {links.map((link) => {
-                const Icon = link.icon;
-                const isCta = link.to === '/calendar' || link.to === '/ai' || link.isCta;
-                return (
-                  <Link
-                    key={link.to}
-                    to={link.to}
-                    className={`hidden md:inline-flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 ${
-                      isCta
-                        ? 'bg-brand-orange text-white hover:bg-brand-orange/90 shadow-xs hover:shadow-sm'
-                        : 'text-muted-foreground hover:text-foreground hover:bg-secondary/60 border border-transparent hover:border-border/60'
-                    } ${link.className || ''}`}
-                  >
-                    {Icon && <Icon className={`w-4 h-4 ${isCta ? 'text-white' : 'text-brand-orange'}`} />}
-                    <span>{isRTL ? link.label_ar : link.label_en}</span>
-                  </Link>
-                );
-              })}
+              {/* Site-wide actions: identical on every page (hidden on mobile; available in the drawer) */}
+              <Link
+                to="/ai"
+                className={`hidden lg:inline-flex items-center gap-2 px-3.5 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-colors border ${
+                  location.pathname === '/ai'
+                    ? 'border-brand-orange/40 text-brand-orange bg-brand-orange/10'
+                    : 'border-border/70 text-foreground hover:bg-secondary/60'
+                }`}
+              >
+                <MessageSquare className="w-4 h-4 text-brand-orange" />
+                <span>{t('nav.ai')}</span>
+              </Link>
+              <Link
+                to="/calendar"
+                className="hidden md:inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap bg-brand-orange text-white hover:bg-brand-orange/90 shadow-xs hover:shadow-sm transition-colors"
+              >
+                <Calendar className="w-4 h-4 text-white" />
+                <span>{t('nav.calendar')}</span>
+              </Link>
 
               {/* Language Switcher */}
               <LanguageSwitcher />
@@ -252,16 +252,14 @@ export function SiteNavbar({
 
               {/* Drawer Footer with Quick CTA */}
               <div className="pt-4 border-t border-border/80 space-y-3">
-                {drawerCta && (
-                  <Link
-                    to={drawerCta.to}
-                    onClick={() => setIsDrawerOpen(false)}
-                    className="w-full py-3 px-4 bg-brand-orange text-white font-bold rounded-xl text-center text-sm flex items-center justify-center gap-2 shadow-sm hover:bg-brand-orange/90 transition-colors min-h-[44px]"
-                  >
-                    {drawerCta.icon && <drawerCta.icon className="w-4 h-4" />}
-                    <span>{isRTL ? drawerCta.label_ar : drawerCta.label_en}</span>
-                  </Link>
-                )}
+                <Link
+                  to={cta.to}
+                  onClick={() => setIsDrawerOpen(false)}
+                  className="w-full py-3 px-4 bg-brand-orange text-white font-bold rounded-xl text-center text-sm flex items-center justify-center gap-2 shadow-sm hover:bg-brand-orange/90 transition-colors min-h-[44px]"
+                >
+                  {cta.icon && <cta.icon className="w-4 h-4" />}
+                  <span>{isRTL ? cta.label_ar : cta.label_en}</span>
+                </Link>
                 <div className="text-center text-[11px] text-muted-foreground">
                   © {new Date().getFullYear()} {t('brand.legalName')}
                 </div>
