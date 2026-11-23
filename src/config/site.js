@@ -12,7 +12,7 @@ export const SITE = {
   // D-38: map embed shows only once verified coordinates are supplied.
   mapCoordinates: null,
   social: [
-    { id: 'instagram', label: 'Instagram', url: 'https://instagram.com/sard_dev' },
+    { id: 'instagram', label: 'Instagram', url: 'https://www.instagram.com/sardsmartsolutions/' },
     { id: 'linkedin', label: 'LinkedIn', url: 'https://www.linkedin.com/company/sard-it-solutions/' },
     { id: 'facebook', label: 'Facebook', url: 'https://www.facebook.com/profile.php?id=61585180859465' },
   ],

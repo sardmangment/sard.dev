@@ -5,34 +5,35 @@
 @tailwind utilities;
 
 @layer base {
+  /* DEV-188 brand palette: navy #1e3a86, orange #e67e26, gray #c8d1d9 */
   :root {
     --background: 0 0% 99%;
-    --foreground: 220 20% 20%;
+    --foreground: 223.8 63.4% 32.2%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 20% 20%;
+    --card-foreground: 223.8 63.4% 32.2%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 20% 20%;
+    --popover-foreground: 223.8 63.4% 32.2%;
 
-    --primary: 24 95% 53%;
+    --primary: 27.5 79.3% 52.5%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 220 20% 20%;
+    --secondary: 208 20% 95%;
+    --secondary-foreground: 223.8 63.4% 32.2%;
 
-    --muted: 220 14% 96%;
-    --muted-foreground: 220 10% 50%;
+    --muted: 208 20% 95%;
+    --muted-foreground: 222 25% 42%;
 
-    --accent: 220 60% 20%;
+    --accent: 223.8 63.4% 32.2%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 24 95% 53%;
+    --border: 208.2 18.3% 81.8%;
+    --input: 208.2 18.3% 81.8%;
+    --ring: 27.5 79.3% 52.5%;
 
     --radius: 0.75rem;
   }

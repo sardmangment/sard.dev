@@ -61,7 +61,7 @@ function FastShaderBlob() {
 
             float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 2.5);
 
-            vec3 orangeColor = vec3(0.937, 0.612, 0.0); // Brand Orange #ef9c00
+            vec3 orangeColor = vec3(0.902, 0.494, 0.149); // Brand Orange #e67e26
             vec3 goldColor   = vec3(1.0, 0.8, 0.2);
             vec3 cyanAccent  = vec3(0.1, 0.7, 0.9);
 
