@@ -248,8 +248,10 @@
     "text": "Our mission is to empower organizations across sectors to connect their operations, strengthen governance, and unlock growth through integrated digital solutions and intelligent automation. We turn data into actionable insights and complex workflows into clear, measurable processes—helping people work more effectively and leaders make informed decisions."
   },
   "projectsPage": {
-    "demoBadge": "Demonstration",
-    "demoNotice": "Sard currently treats its client projects as confidential and does not publish client identities, data, or delivery details. At this stage, the website's project showcase is limited to demonstrations illustrating solution capabilities and use cases. These are explicitly labeled as demonstrations, without attribution to actual clients or presentation of illustrative results as verified achievements."
+    "title": "Our Projects",
+    "subtitle": "A selection of the solutions Sard is currently working on.",
+    "statusBadge": "In Development",
+    "confidentialityNote": "We do not disclose client names or data, to protect their confidentiality."
   },
   "faqPage": {
     "metaTitle": "Frequently Asked Questions | Sard",

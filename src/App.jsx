@@ -71,7 +71,7 @@ function App() {
           {/* 🔀 Legacy Partnership Redirect */}
           <Route path="/partnership/:id" element={<PartnershipRedirect />} />
 
-          {/* 🚀 Projects Gallery & Details (demonstrations, C-F01) */}
+          {/* 🚀 Projects Gallery & Details (Sard's current projects, no client names — DEV-188) */}
           <Route path="/projects" element={<ProjectsPage />} />
           <Route path="/project/:id" element={<ProjectDetailsPage />} />
 

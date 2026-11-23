@@ -208,12 +208,12 @@ export const ProjectDetailsPage = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2 space-y-6">
                 <span className="inline-flex px-3 py-1 rounded-full text-xs font-semibold bg-brand-orange/15 text-brand-orange border border-brand-orange/30" data-testid="demo-badge">
-                  {tr('projectsPage.demoBadge')}
+                  {tr('projectsPage.statusBadge')}
                 </span>
                 <h1 className="text-3xl sm:text-4xl font-extrabold text-foreground tracking-tight">
                   {t(project.title_ar, project.title_en)}
                 </h1>
-                <p className="text-xs text-muted-foreground leading-relaxed">{tr('projectsPage.demoNotice')}</p>
+                <p className="text-xs text-muted-foreground leading-relaxed">{tr('projectsPage.confidentialityNote')}</p>
 
                 {(project.description_ar || project.description_en) && (
                   <div className="prose prose-neutral max-w-none">

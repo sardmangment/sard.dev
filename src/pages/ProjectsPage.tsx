@@ -138,10 +138,10 @@ export const ProjectsPage = () => {
             className="text-center mb-12"
           >
             <h1 className="text-3xl sm:text-4xl font-bold mb-4 text-foreground">
-              {t('العروض التوضيحية للمشاريع', 'Project Demonstrations')}
+              {tr('projectsPage.title')}
             </h1>
             <p className="text-muted-foreground max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
-              {tr('projectsPage.demoNotice')}
+              {tr('projectsPage.subtitle')}
             </p>
           </motion.div>
 
@@ -207,14 +207,11 @@ export const ProjectsPage = () => {
                           }`}
                         >
                           <FolderGit2 className="h-10 w-10 stroke-[1.5] mb-2 opacity-60 group-hover:scale-110 group-hover:text-brand-orange transition-all" />
-                          <span className="text-xs font-medium opacity-70">
-                            {t('مشروع موثق', 'Verified Project')}
-                          </span>
                         </div>
                       </div>
                       <CardHeader>
                         <span className="self-start inline-flex px-2.5 py-1 rounded-full text-[11px] font-semibold bg-brand-orange/15 text-brand-orange border border-brand-orange/30" data-testid="demo-badge">
-                          {tr('projectsPage.demoBadge')}
+                          {tr('projectsPage.statusBadge')}
                         </span>
                         <h3 className="text-xl font-semibold text-foreground">
                           {t(project.title_ar, project.title_en)}
@@ -273,6 +270,11 @@ export const ProjectsPage = () => {
               </Link>
             </motion.div>
           )}
+
+          {/* Confidentiality note (DEV-188: moved from the page subtitle) */}
+          <p className="mt-12 text-center text-xs text-muted-foreground">
+            {tr('projectsPage.confidentialityNote')}
+          </p>
         </div>
       </main>
 
