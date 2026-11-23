@@ -33,7 +33,7 @@ export const CTASection = () => {
           <SplitText
             text={t('cta.title')}
             className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl py-2 font-bold text-foreground mb-6 sm:mb-8"
-            delay={100}
+            delay={35}
             duration={0.6}
             ease="power3.out"
             splitType="chars"

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600&family=Inter:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -49,6 +49,17 @@ html[dir="rtl"] {
 html[dir="ltr"] {
   direction: ltr;
   font-family: "Inter", sans-serif;
+}
+
+/* DEV-188: Tailwind's large text sizes set line-height: 1, which makes wrapped Arabic
+   headings (with diacritics such as shadda) overlap. Give Arabic large text room. */
+html[dir="rtl"] :is([class*="text-3xl"], [class*="text-4xl"], [class*="text-5xl"], [class*="text-6xl"], [class*="text-7xl"]) {
+  line-height: 1.5;
+}
+
+/* Split-text animation: a word is one unbreakable unit. */
+.split-word {
+  white-space: nowrap;
 }
 
 /* Seamless Marquee Animation */

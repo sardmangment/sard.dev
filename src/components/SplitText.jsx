@@ -72,7 +72,11 @@ const SplitText = ({
       }
 
       // Split English text
-      const split = new GSAPSplitText(el, { type: splitType });
+      // DEV-188: "chars" alone lets a line break inside a word; nest chars in words.
+      const split = new GSAPSplitText(el, {
+        type: splitType === "chars" ? "words,chars" : splitType,
+        wordsClass: "split-word",
+      });
       const targets =
         splitType === "chars"
           ? split.chars
@@ -106,7 +110,6 @@ const SplitText = ({
       dir={isArabic ? "rtl" : "ltr"}
       lang={isArabic ? "ar" : "en"}
       style={{
-        textAlign: isArabic ? "right" : "left",
         direction: isArabic ? "rtl" : "ltr",
         wordWrap: "break-word",
         willChange: "transform, opacity",

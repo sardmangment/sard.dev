@@ -8,7 +8,7 @@ export const TextPressure = ({ text, className = '' }) => {
       {words.map((word, index) => (
         <motion.span
           key={index}
-          className="inline-block mr-2"
+          className="inline-block me-2 last:me-0"
           initial={{ scale: 0.5, opacity: 0 }}
           whileInView={{ scale: 1, opacity: 1 }}
           viewport={{ once: true }}
