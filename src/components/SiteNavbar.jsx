@@ -77,16 +77,13 @@ export function SiteNavbar({
       >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-row items-center justify-between gap-4 h-16 sm:h-18">
-            {/* Logo & Brand Wordmark */}
-            <Link to="/" className="flex items-center gap-2.5 sm:gap-3 group shrink-0">
+            {/* Logo */}
+            <Link to="/" aria-label={t('brand.shortName')} className="flex items-center group shrink-0">
               <img
                 src={sardLogo}
                 alt="Sard"
-                className="w-9 h-9 sm:w-10 sm:h-10 object-contain transition-transform duration-200 group-hover:scale-105"
+                className="h-8 sm:h-9 w-auto object-contain transition-transform duration-200 group-hover:scale-105"
               />
-              <span className="text-lg sm:text-xl font-bold tracking-tight text-foreground">
-                {t('brand.shortName')}
-              </span>
             </Link>
 
             {/* Desktop Center Navigation Links */}
@@ -181,10 +178,7 @@ export function SiteNavbar({
               <div className="space-y-6">
                 {/* Header with logo & close button */}
                 <div className="flex items-center justify-between border-b border-border/80 pb-4">
-                  <div className="flex items-center gap-2.5">
-                    <img src={sardLogo} alt="Sard" className="w-8 h-8 object-contain" />
-                    <span className="font-bold text-foreground text-lg">{t('brand.shortName')}</span>
-                  </div>
+                  <img src={sardLogo} alt="Sard" className="h-7 w-auto object-contain" />
                   <button
                     type="button"
                     onClick={() => setIsDrawerOpen(false)}

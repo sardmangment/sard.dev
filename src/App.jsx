@@ -4,8 +4,6 @@ import { BrowserRouter, Routes, Route, Navigate, useParams } from "react-router-
 import { HeroSection } from './components/HeroSection';
 import { AboutSection } from './components/AboutSection';
 import { ServicesSection } from './components/ServicesSection';
-import { VisionSection } from './components/VisionSection';
-import { ValuesSection } from './components/ValuesSection';
 import { PartnersSection } from './components/PartnersSection';
 import { CTASection } from './components/CTASection';
 import { Footer } from './components/Footer';
@@ -54,8 +52,6 @@ function App() {
                 <PartnersSection />
                 <AboutSection />
                 <ServicesSection />
-                <VisionSection />
-                <ValuesSection />
                 <CTASection />
                 <Footer />
               </div>

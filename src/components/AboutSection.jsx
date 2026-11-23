@@ -6,11 +6,8 @@ import { Link } from 'react-router-dom';
 
 export const AboutSection = () => {
   const { t } = useTranslation();
-  const paragraphs = [
-    t('about.paragraph1'),
-    t('about.paragraph2'),
-    t('about.paragraph3'),
-  ];
+  // DEV-188: home shows the first paragraph only; the full story lives on /about.
+  const paragraphs = [t('about.paragraph1')];
 
   return (
     <section id="about" className="py-24 bg-gradient-to-b from-background via-secondary/20 to-background relative overflow-hidden transition-colors">

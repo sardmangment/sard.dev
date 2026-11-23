@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion';
-import aiLogo from '../assets/ai-robot.jpg';
 import SplitText from './SplitText';
 import { SiteNavbar } from './SiteNavbar';
 import { useTranslation } from 'react-i18next';
@@ -67,14 +66,14 @@ export const HeroSection = () => {
         <div className="container mx-auto px-4 sm:px-6 relative z-10 w-full">
           <div className="max-w-4xl mx-auto text-center space-y-6">
 
-          {/* Egypt & Vision 2030 Badge */}
+          {/* Hero Badge */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-orange/15 border border-brand-orange/30 text-brand-orange text-xs sm:text-sm font-semibold shadow-sm"
           >
             <ShieldCheck className="w-4 h-4 shrink-0 text-brand-orange" />
-            <span>{t('hero.egyptBadge')}</span>
+            <span>{t('hero.badge')}</span>
           </motion.div>
           
           <div>
@@ -88,9 +87,6 @@ export const HeroSection = () => {
           <div className="space-y-4 max-w-3xl mx-auto">
             <p className="text-foreground/80 text-base sm:text-lg md:text-xl leading-relaxed font-normal">
               {t('hero.description1')}
-            </p>
-            <p className="text-muted-foreground text-sm sm:text-base md:text-lg leading-relaxed">
-              {t('hero.description2')}
             </p>
           </div>
 
@@ -114,9 +110,8 @@ export const HeroSection = () => {
               <motion.button
                 whileHover={{ scale: 1.04, y: -2 }}
                 whileTap={{ scale: 0.98 }}
-                className="px-8 py-3.5 border-2 border-brand-orange text-brand-orange bg-brand-orange/10 flex items-center gap-3.5 font-bold rounded-xl hover:bg-brand-orange/20 transition-all text-base sm:text-lg cursor-pointer shadow-sm"
+                className="px-8 py-4 border-2 border-brand-orange text-brand-orange bg-brand-orange/10 flex items-center gap-3 font-bold rounded-xl hover:bg-brand-orange/20 transition-all text-base cursor-pointer shadow-sm"
               >
-                <img src={aiLogo} alt="Sard AI" className="w-12 h-12 sm:w-14 sm:h-14 object-contain shrink-0 mix-blend-multiply" />
                 <span>{t('hero.askAssistant')}</span>
                 {isRTL ? <ArrowLeft className="w-5 h-5" /> : <ArrowRight className="w-5 h-5" />}
               </motion.button>
