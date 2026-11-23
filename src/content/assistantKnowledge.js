@@ -39,6 +39,10 @@ Vision: ${tEn('vision.paragraph1')}
 Services (grouped by value pillar; scope is tailored to each client's needs, digital readiness, existing systems, and available integrations):
 ${services}
 
+Current Sard projects (shown on /projects; both are in development, so never describe them as launched or quote results):
+- Sard for Fit: an intelligent business operating platform that connects a company's website with sales, inventory, workforce, and operations in one system, with AI-powered analysis.
+- Sard Visuals: interactive real estate presentation experiences combining digital and smart physical maquettes, helping developers and sales teams present and explore their projects.
+
 Approved answers (use their substance; do not add facts beyond them):
 ${faqs}
 

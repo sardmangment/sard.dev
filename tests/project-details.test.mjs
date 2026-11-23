@@ -52,7 +52,7 @@ test('Project Details live browser test with valid ID, not-found state, and scre
     await title.waitFor({ state: 'visible', timeout: 5000 });
     const titleText = await title.textContent();
     assert.ok(
-      titleText.includes('منظومة حوكمة وأتمتة العمليات') || titleText.includes('Operational Governance'),
+      titleText.includes('Sard for Fit'),
       `Project title expected for valid ID, got: ${titleText}`
     );
 
