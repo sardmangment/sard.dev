@@ -34,7 +34,7 @@ test('FAQ-001…009 exist in both locales with question and answer', () => {
     }
   }
   // Verbatim anchors from the CEO-approved dictionary (C-…)
-  assert.ok(en.faq.f001.a.startsWith('Sard Integrated Smart Solutions is an Egyptian technology company'));
+  assert.ok(en.faq.f001.a.startsWith('Sard Integrated Smart Solutions is a technology company based in Alexandria, Egypt, serving organizations across the Arab world'));
   assert.ok(en.faq.f005.a.includes('ISO/IEC 42001 for AI management.'));
   assert.equal(en.hero.title, 'Connect your business. Accelerate growth. Stay in control.');
   assert.equal(en.legal.underReviewTitle, 'Under Legal Review');
