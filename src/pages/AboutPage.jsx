@@ -31,7 +31,9 @@ export default function AboutPage() {
         </div>
       </Section>
 
-      <div className="container mx-auto px-4 sm:px-6 max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-6 py-4">
+      {/* DEV-191 (trial): mission & vision on a silver band with white cards */}
+      <div className="bg-brand-gray-light py-10 sm:py-14 my-6">
+      <div className="container mx-auto px-4 sm:px-6 max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-6">
         <article aria-labelledby="mission-title" className="p-6 sm:p-8 rounded-2xl bg-card border border-border">
           <h2 id="mission-title" className="text-xl sm:text-2xl font-bold mb-3">{t('aboutPage.missionTitle')}</h2>
           <p className="text-foreground/85 leading-relaxed">{t('mission.text')}</p>
@@ -40,6 +42,7 @@ export default function AboutPage() {
           <h2 id="vision-title" className="text-xl sm:text-2xl font-bold mb-3">{t('aboutPage.visionTitle')}</h2>
           <p className="text-foreground/85 leading-relaxed">{t('vision.paragraph1')}</p>
         </article>
+      </div>
       </div>
 
       <Section id="values" title={t('aboutPage.valuesTitle')}>
@@ -54,6 +57,8 @@ export default function AboutPage() {
         </ol>
       </Section>
 
+      {/* DEV-191 (trial): pillars on a silver band with white cards */}
+      <div className="bg-brand-gray-light py-6 sm:py-10 my-6">
       <Section id="pillars" title={t('aboutPage.pillarsTitle')}>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {PILLARS.map((p) => (
@@ -69,6 +74,7 @@ export default function AboutPage() {
           ))}
         </div>
       </Section>
+      </div>
 
       <Section id="how" title={t('aboutPage.howTitle')}>
         <p className="text-base sm:text-lg text-foreground/85 leading-relaxed">{t('aboutPage.howBody')}</p>
@@ -81,7 +87,7 @@ export default function AboutPage() {
         <div className="p-6 sm:p-10 rounded-2xl bg-brand-orange/10 border border-brand-orange/30 text-center">
           <h2 className="text-2xl sm:text-3xl font-bold mb-3">{t('aboutPage.ctaTitle')}</h2>
           <p className="text-foreground/80 mb-6">{t('aboutPage.ctaBody')}</p>
-          <Link to="/calendar" className="inline-flex items-center gap-2 px-6 py-3 bg-brand-orange text-black font-bold rounded-xl hover:bg-brand-orange-400 transition-colors">
+          <Link to="/calendar" className="inline-flex items-center gap-2 px-6 py-3 bg-brand-orange text-brand-gray-light font-bold rounded-xl hover:bg-brand-orange-400 transition-colors">
             <Calendar className="w-5 h-5" />
             {t('hero.bookMeeting')}
           </Link>

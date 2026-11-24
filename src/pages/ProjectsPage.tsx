@@ -10,6 +10,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { motion } from 'framer-motion';
+import { ProjectStatusBadge } from '@/components/ProjectStatusBadge';
+import { PageHeader } from '@/components/PageShell';
 
 interface Project {
   id: string;
@@ -20,6 +22,8 @@ interface Project {
   image_url?: string;
   project_link?: string;
   display_order?: number;
+  status?: string;
+  project_date?: string;
 }
 
 interface SiteSettings {
@@ -130,20 +134,10 @@ export const ProjectsPage = () => {
     <div className="min-h-screen bg-background flex flex-col">
       <SiteNavbar links={projectLinks} drawerLinks={projectDrawerLinks} />
 
-      <main className="pt-8 sm:pt-12 pb-16 flex-1">
+      <main className="pb-16 flex-1">
+        {/* DEV-191: same deep-navy header band as the other content pages */}
+        <PageHeader title={tr('projectsPage.title')} subtitle={tr('projectsPage.subtitle')} />
         <div className="container mx-auto px-4 sm:px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-12"
-          >
-            <h1 className="text-3xl sm:text-4xl font-bold mb-4 text-foreground">
-              {tr('projectsPage.title')}
-            </h1>
-            <p className="text-muted-foreground max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
-              {tr('projectsPage.subtitle')}
-            </p>
-          </motion.div>
 
           {/* Projects Content: Loading Skeleton, Error State, Projects Grid, or Empty State */}
           {projectsLoading ? (
@@ -210,9 +204,7 @@ export const ProjectsPage = () => {
                         </div>
                       </div>
                       <CardHeader>
-                        <span className="self-start inline-flex px-2.5 py-1 rounded-full text-[11px] font-semibold bg-brand-orange/15 text-brand-orange border border-brand-orange/30" data-testid="demo-badge">
-                          {tr('projectsPage.statusBadge')}
-                        </span>
+                        <ProjectStatusBadge status={project.status} className="self-start text-[11px]" />
                         <h3 className="text-xl font-semibold text-foreground">
                           {t(project.title_ar, project.title_en)}
                         </h3>
@@ -271,16 +263,12 @@ export const ProjectsPage = () => {
             </motion.div>
           )}
 
-          {/* Confidentiality note (DEV-188: moved from the page subtitle) */}
-          <p className="mt-12 text-center text-xs text-muted-foreground">
-            {tr('projectsPage.confidentialityNote')}
-          </p>
         </div>
       </main>
 
       {/* Footer: Skeleton while loading, full Footer when ready */}
       {footerLoading ? (
-        <footer className="bg-secondary/40 text-foreground py-12 border-t border-border">
+        <footer className="bg-brand-gray-light text-foreground py-12 border-t border-brand-navy/15">
           <div className="container mx-auto px-4 sm:px-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="space-y-3">

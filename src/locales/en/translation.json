@@ -8,7 +8,7 @@
     "bookMeeting": "Book a Discovery Meeting",
     "tagline": "Your Smart Partner for Growth & Daily Life",
     "badge": "Smart Systems and AI Solutions",
-    "askAssistant": "Ask Sard AI Assistant"
+    "askAssistant": "Think with Sard"
   },
   "about": {
     "title": "About Sard",
@@ -188,8 +188,8 @@
     "addToList": "Add to Calendar"
   },
   "chat": {
-    "title": "Sard AI Assistant",
-    "welcomeTitle": "Welcome to Sard AI Assistant",
+    "title": "Think with Sard",
+    "welcomeTitle": "Welcome to Think with Sard",
     "welcomeDesc": "Ask about Sard’s integrated systems, automation, and services, or request a discovery meeting.",
     "inputPlaceholder": "Type your query or request an appointment...",
     "bookedBanner": "Meeting Confirmed via Chat!",
@@ -199,7 +199,7 @@
     "title": "Start with a Discovery Meeting",
     "description": "Initial discovery consultations are free. Tell us about your business needs and we will explore suitable solutions together.",
     "getStarted": "Book a Discovery Meeting",
-    "learnMore": "Ask Sard AI Assistant",
+    "learnMore": "Think with Sard",
     "question": "Prefer to talk to our team directly?",
     "callToAction": "Contact Sard through its official channels."
   },
@@ -218,7 +218,7 @@
     "shortName": "Sard",
     "tagline": "Smart Systems and AI Solutions",
     "secondaryTagline": "Smart Integrated Solutions, Consulting & Supplies",
-    "assistantName": "Sard AI Assistant"
+    "assistantName": "Think with Sard"
   },
   "nav": {
     "home": "Home",
@@ -228,7 +228,7 @@
     "faq": "FAQ",
     "contact": "Contact",
     "calendar": "Book a Meeting",
-    "ai": "Sard AI Assistant"
+    "ai": "Think with Sard"
   },
   "aboutPage": {
     "metaTitle": "About Sard | Sard Integrated Smart Solutions",
@@ -250,8 +250,8 @@
   "projectsPage": {
     "title": "Our Projects",
     "subtitle": "A selection of the solutions Sard is currently working on.",
-    "statusBadge": "In Development",
-    "confidentialityNote": "We do not disclose client names or data, to protect their confidentiality."
+    "statusInDevelopment": "In Development",
+    "statusLaunched": "Launched"
   },
   "faqPage": {
     "metaTitle": "Frequently Asked Questions | Sard",

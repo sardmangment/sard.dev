@@ -37,7 +37,7 @@ export default function ContactPage() {
         <div className="text-center">
           <Link
             to="/calendar"
-            className="inline-flex items-center gap-2 px-7 py-3.5 bg-brand-orange text-black font-bold rounded-xl shadow-lg shadow-brand-orange/25 hover:bg-brand-orange-400 transition-colors"
+            className="inline-flex items-center gap-2 px-7 py-3.5 bg-brand-orange text-brand-gray-light font-bold rounded-xl shadow-lg shadow-brand-orange/25 hover:bg-brand-orange-400 transition-colors"
           >
             <Calendar className="w-5 h-5" aria-hidden="true" />
             {t('contactPage.primaryCta')}

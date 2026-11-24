@@ -33,20 +33,20 @@ export const Footer = ({ companyName }: FooterProps) => {
   ];
 
   return (
-    <footer className="bg-secondary/40 text-foreground border-t border-border py-12 transition-colors">
+    <footer className="bg-brand-gray-light text-foreground border-t border-brand-navy/15 py-12 transition-colors">
       <div className="container mx-auto px-4 sm:px-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="space-y-3">
             <h3 className="text-xl font-bold tracking-tight text-foreground">{name}</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">{t('footer.tagline')}</p>
+            <p className="text-sm text-brand-navy/85 leading-relaxed">{t('footer.tagline')}</p>
           </div>
 
           <div className="space-y-3">
             <h4 className="text-sm font-bold uppercase tracking-wider text-brand-orange">{t('footer.pages')}</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
+            <ul className="space-y-2 text-sm text-brand-navy/85">
               {pageLinks.map((l) => (
                 <li key={l.to}>
-                  <Link to={l.to} className="hover:text-brand-orange transition-colors">{l.label}</Link>
+                  <Link to={l.to} className="hover:text-brand-orange-700 transition-colors">{l.label}</Link>
                 </li>
               ))}
             </ul>
@@ -54,26 +54,26 @@ export const Footer = ({ companyName }: FooterProps) => {
 
           <div className="space-y-3">
             <h4 className="text-sm font-bold uppercase tracking-wider text-brand-orange">{t('footer.contact')}</h4>
-            <div className="space-y-2 text-sm text-muted-foreground">
-              <a href={`mailto:${SITE.email}`} className="flex items-center gap-2 hover:text-brand-orange transition-colors">
-                <Mail className="h-4 w-4 text-brand-orange shrink-0" />
+            <div className="space-y-2 text-sm text-brand-navy/85">
+              <a href={`mailto:${SITE.email}`} className="flex items-center gap-2 hover:text-brand-orange-700 transition-colors">
+                <Mail className="h-4 w-4 text-brand-orange-700 shrink-0" />
                 <span>{SITE.email}</span>
               </a>
-              <a href={`tel:${SITE.phone.tel}`} className="flex items-center gap-2 hover:text-brand-orange transition-colors">
-                <Phone className="h-4 w-4 text-brand-orange shrink-0" />
+              <a href={`tel:${SITE.phone.tel}`} className="flex items-center gap-2 hover:text-brand-orange-700 transition-colors">
+                <Phone className="h-4 w-4 text-brand-orange-700 shrink-0" />
                 <span dir="ltr">{SITE.phone.intl}</span>
               </a>
               <a
                 href={whatsappUrl(t('contactPage.whatsappPrefill'))}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 hover:text-brand-orange transition-colors"
+                className="flex items-center gap-2 hover:text-brand-orange-700 transition-colors"
               >
-                <MessageCircle className="h-4 w-4 text-brand-orange shrink-0" />
+                <MessageCircle className="h-4 w-4 text-brand-orange-700 shrink-0" />
                 <span>{t('contactPage.whatsapp')}</span>
               </a>
               <div className="flex items-start gap-2">
-                <MapPin className="h-4 w-4 text-brand-orange shrink-0 mt-0.5" />
+                <MapPin className="h-4 w-4 text-brand-orange-700 shrink-0 mt-0.5" />
                 <span>{t('footer.address')}</span>
               </div>
             </div>
@@ -101,11 +101,11 @@ export const Footer = ({ companyName }: FooterProps) => {
           </div>
         </div>
 
-        <div className="mt-10 pt-6 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
+        <div className="mt-10 pt-6 border-t border-brand-navy/15 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-brand-navy/85">
           <p>© {new Date().getFullYear()} {name}. {t('footer.rights')}</p>
           <div className="flex items-center gap-5">
-            <Link to="/privacy" className="hover:text-brand-orange transition-colors">{t('footer.privacy')}</Link>
-            <Link to="/terms" className="hover:text-brand-orange transition-colors">{t('footer.terms')}</Link>
+            <Link to="/privacy" className="hover:text-brand-orange-700 transition-colors">{t('footer.privacy')}</Link>
+            <Link to="/terms" className="hover:text-brand-orange-700 transition-colors">{t('footer.terms')}</Link>
           </div>
         </div>
       </div>

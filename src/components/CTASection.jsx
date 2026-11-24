@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import SplitText from './SplitText';
+import { PrimeTag } from './PrimeTag';
 import { Rocket } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -59,7 +60,7 @@ export const CTASection = () => {
               <motion.button
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.98 }}
-                className="group relative px-8 sm:px-10 py-4 sm:py-5 bg-brand-orange text-black font-bold text-base sm:text-lg rounded-xl overflow-hidden shadow-lg shadow-brand-orange/30 w-full sm:w-auto hover:bg-brand-orange-400 transition-all cursor-pointer"
+                className="group relative px-8 sm:px-10 py-4 sm:py-5 bg-brand-orange text-brand-gray-light font-bold text-base sm:text-lg rounded-xl overflow-hidden shadow-lg shadow-brand-orange/30 w-full sm:w-auto hover:bg-brand-orange-400 transition-all cursor-pointer"
               >
                 <span className="relative z-10 flex items-center justify-center gap-2">
                   {t('cta.getStarted')}
@@ -74,7 +75,7 @@ export const CTASection = () => {
                 whileTap={{ scale: 0.98 }}
                 className="relative px-8 sm:px-10 py-4 sm:py-5 border-2 border-brand-orange text-brand-orange font-bold text-base sm:text-lg rounded-xl overflow-hidden group shadow-sm hover:bg-brand-orange/10 w-full sm:w-auto transition-all cursor-pointer"
               >
-                <span className="relative z-10">{t('cta.learnMore')}</span>
+                <span className="relative z-10 inline-flex items-center gap-2">{t('cta.learnMore')}<PrimeTag /></span>
               </motion.button>
             </Link>
           </motion.div>

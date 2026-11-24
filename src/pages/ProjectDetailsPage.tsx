@@ -8,6 +8,7 @@ import { Footer } from '@/components/layout/Footer';
 import { ArrowLeft, ArrowRight, ExternalLink, Calendar, Link2, Home, FolderGit2, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
+import { ProjectStatusBadge } from '@/components/ProjectStatusBadge';
 
 interface Project {
   id: string;
@@ -19,6 +20,8 @@ interface Project {
   project_link?: string;
   partnership_id?: string;
   created_at: string;
+  status?: string;
+  project_date?: string;
 }
 
 interface ProjectImage {
@@ -207,13 +210,10 @@ export const ProjectDetailsPage = () => {
             {/* Project Info & Metadata Layout */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2 space-y-6">
-                <span className="inline-flex px-3 py-1 rounded-full text-xs font-semibold bg-brand-orange/15 text-brand-orange border border-brand-orange/30" data-testid="demo-badge">
-                  {tr('projectsPage.statusBadge')}
-                </span>
+                <ProjectStatusBadge status={project.status} className="px-3 text-xs" />
                 <h1 className="text-3xl sm:text-4xl font-extrabold text-foreground tracking-tight">
                   {t(project.title_ar, project.title_en)}
                 </h1>
-                <p className="text-xs text-muted-foreground leading-relaxed">{tr('projectsPage.confidentialityNote')}</p>
 
                 {(project.description_ar || project.description_en) && (
                   <div className="prose prose-neutral max-w-none">
@@ -252,11 +252,12 @@ export const ProjectDetailsPage = () => {
                   </h3>
 
                   <div className="space-y-3.5 text-sm">
-                    {project.created_at && (
+                    {/* DEV-191: show the project's own date; fall back to when the row was created */}
+                    {(project.project_date || project.created_at) && (
                       <div className="flex items-center gap-2.5 text-muted-foreground">
                         <Calendar className="h-4 w-4 text-brand-orange shrink-0" />
                         <span>
-                          {new Date(project.created_at).toLocaleDateString(isRTL ? 'ar-EG' : 'en-US', {
+                          {new Date(project.project_date || project.created_at).toLocaleDateString(isRTL ? 'ar-EG' : 'en-US', {
                             year: 'numeric',
                             month: 'long',
                             day: 'numeric',

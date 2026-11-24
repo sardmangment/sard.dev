@@ -11,7 +11,7 @@ export const ServicesSection = () => {
   const { t } = useTranslation();
 
   return (
-    <section id="services" className="py-24 bg-background text-foreground relative overflow-hidden transition-colors">
+    <section id="services" className="py-24 bg-brand-gray-light text-foreground relative overflow-hidden transition-colors">
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: -50 }}
@@ -22,7 +22,7 @@ export const ServicesSection = () => {
         >
           <TextPressure
             text={t('services.title')}
-            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground text-center"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-brand-orange text-center"
           />
         </motion.div>
 

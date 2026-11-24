@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import SplitText from './SplitText';
+import { PrimeTag } from './PrimeTag';
 import { SiteNavbar } from './SiteNavbar';
 import { useTranslation } from 'react-i18next';
 import { Link } from "react-router-dom";   
@@ -62,7 +63,8 @@ export const HeroSection = () => {
         drawerCta={homeDrawerCta}
       />
 
-      <section className="min-h-[85vh] relative overflow-hidden bg-background text-foreground flex items-center justify-center py-8 transition-colors">
+      {/* DEV-191: colour option 3 chosen by Eng. Abdullah (deep navy, glow, dot pattern) */}
+      <section className="hero-navy min-h-[85vh] relative overflow-hidden text-white flex items-center justify-center py-8">
         <div className="container mx-auto px-4 sm:px-6 relative z-10 w-full">
           <div className="max-w-4xl mx-auto text-center space-y-6">
 
@@ -70,7 +72,7 @@ export const HeroSection = () => {
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-orange/15 border border-brand-orange/30 text-brand-orange text-xs sm:text-sm font-semibold shadow-sm"
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/25 text-white text-xs sm:text-sm font-semibold shadow-sm"
           >
             <ShieldCheck className="w-4 h-4 shrink-0 text-brand-orange" />
             <span>{t('hero.badge')}</span>
@@ -80,12 +82,12 @@ export const HeroSection = () => {
             <SplitText
               text={t('hero.title')}
               direction={isRTL ? "rtl" : "ltr"}
-              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-foreground leading-tight"
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-[#f0913e] leading-tight"
             />
           </div>
 
           <div className="space-y-4 max-w-3xl mx-auto">
-            <p className="text-foreground/80 text-base sm:text-lg md:text-xl leading-relaxed font-normal">
+            <p className="text-white/85 text-base sm:text-lg md:text-xl leading-relaxed font-normal">
               {t('hero.description1')}
             </p>
           </div>
@@ -98,7 +100,7 @@ export const HeroSection = () => {
               <motion.button
                 whileHover={{ scale: 1.04, y: -2 }}
                 whileTap={{ scale: 0.98 }}
-                className="px-8 py-4 bg-brand-orange text-black font-bold rounded-xl shadow-lg shadow-brand-orange/25 flex items-center gap-3 text-base cursor-pointer hover:bg-brand-orange-400 transition-all"
+                className="px-8 py-4 bg-brand-gray text-brand-navy font-bold rounded-xl shadow-lg shadow-black/25 flex items-center gap-3 text-base cursor-pointer hover:bg-white transition-all"
               >
                 <Calendar className="w-5 h-5" />
                 <span>{t('hero.bookMeeting')}</span>
@@ -110,9 +112,10 @@ export const HeroSection = () => {
               <motion.button
                 whileHover={{ scale: 1.04, y: -2 }}
                 whileTap={{ scale: 0.98 }}
-                className="px-8 py-4 border-2 border-brand-orange text-brand-orange bg-brand-orange/10 flex items-center gap-3 font-bold rounded-xl hover:bg-brand-orange/20 transition-all text-base cursor-pointer shadow-sm"
+                className="px-8 py-4 border-2 border-brand-gray text-brand-gray bg-transparent flex items-center gap-3 font-bold rounded-xl hover:bg-white/10 transition-all text-base cursor-pointer"
               >
                 <span>{t('hero.askAssistant')}</span>
+                <PrimeTag />
                 {isRTL ? <ArrowLeft className="w-5 h-5" /> : <ArrowRight className="w-5 h-5" />}
               </motion.button>
             </Link>

@@ -57,6 +57,19 @@ html[dir="rtl"] :is([class*="text-3xl"], [class*="text-4xl"], [class*="text-5xl"
   line-height: 1.5;
 }
 
+/* DEV-191: home hero, colour option 3 (deep navy with soft glow and dot pattern). */
+.hero-navy {
+  background: radial-gradient(ellipse at 50% 30%, #1e3a86 0%, #0f1d47 70%);
+}
+.hero-navy::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(200, 209, 217, 0.12) 1px, transparent 1px);
+  background-size: 22px 22px;
+  pointer-events: none;
+}
+
 /* Split-text animation: a word is one unbreakable unit. */
 .split-word {
   white-space: nowrap;

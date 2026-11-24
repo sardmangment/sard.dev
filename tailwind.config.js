@@ -52,7 +52,11 @@ export default {
           900: '#733f13',
         },
         'brand-navy': '#1e3a86',
-        'brand-gray': '#c8d1d9',
+        // DEFAULT = official silver (buttons, accents); light = softer tint for large backgrounds
+        'brand-gray': {
+          DEFAULT: '#c8d1d9',
+          light: '#f5f5f5',
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
