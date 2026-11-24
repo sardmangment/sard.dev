@@ -4,6 +4,7 @@ export const SITE_NAV = [
   { to: '/about', labelKey: 'nav.about' },
   { to: '/projects', labelKey: 'nav.projects' },
   { to: '/careers', labelKey: 'nav.careers' },
+  { to: '/collaborations', labelKey: 'nav.collaborations' },
   { to: '/faq', labelKey: 'nav.faq' },
   { to: '/contact', labelKey: 'nav.contact' },
   { to: '/calendar', labelKey: 'nav.calendar', drawerOnly: true },

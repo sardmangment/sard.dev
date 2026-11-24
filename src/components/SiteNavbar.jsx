@@ -110,23 +110,26 @@ export function SiteNavbar({
             {/* Actions: Page-specific links, Language Switcher, and Mobile Hamburger */}
             <div className="flex items-center gap-2 sm:gap-3">
               {/* Site-wide actions: identical on every page (hidden on mobile; available in the drawer) */}
+              {/* DEV-193: with 7 site links, the two pills show icon-only at medium widths (label kept for screen readers) */}
               <Link
                 to="/ai"
-                className={`hidden lg:inline-flex items-center gap-2 px-3.5 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-colors border ${
+                title={t('nav.ai')}
+                className={`hidden lg:inline-flex items-center gap-2 px-2.5 xl:px-3.5 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-colors border ${
                   location.pathname === '/ai'
                     ? 'border-brand-orange/40 text-brand-orange bg-brand-orange/10'
                     : 'border-border/70 text-foreground hover:bg-secondary/60'
                 }`}
               >
-                <MessageSquare className="w-4 h-4 text-brand-orange" />
-                <span>{t('nav.ai')}</span>
+                <MessageSquare className="w-4 h-4 text-brand-orange" aria-hidden="true" />
+                <span className="sr-only xl:not-sr-only">{t('nav.ai')}</span>
               </Link>
               <Link
                 to="/calendar"
-                className="hidden md:inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap bg-brand-orange text-white hover:bg-brand-orange/90 shadow-xs hover:shadow-sm transition-colors"
+                title={t('nav.calendar')}
+                className="hidden md:inline-flex items-center gap-2 px-2.5 lg:px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap bg-brand-orange text-white hover:bg-brand-orange/90 shadow-xs hover:shadow-sm transition-colors"
               >
-                <Calendar className="w-4 h-4 text-white" />
-                <span>{t('nav.calendar')}</span>
+                <Calendar className="w-4 h-4 text-white" aria-hidden="true" />
+                <span className="sr-only lg:not-sr-only">{t('nav.calendar')}</span>
               </Link>
 
               {/* Language Switcher */}

@@ -226,6 +226,7 @@
     "services": "Services",
     "projects": "Projects",
     "careers": "Careers",
+    "collaborations": "Collaborations",
     "faq": "FAQ",
     "contact": "Contact",
     "calendar": "Book a Meeting",
@@ -317,6 +318,27 @@
         "cv_missing": "Attach your CV."
       }
     }
+  },
+  "collaborationsPage": {
+    "metaTitle": "Collaborations | Sard Integrated Smart Solutions",
+    "title": "Collaborations",
+    "subtitle": "Entities, companies and institutions Sard works with.",
+    "filterAll": "All",
+    "kind": {
+      "academic": "Academic",
+      "business": "Business",
+      "training": "Training",
+      "other": "Other"
+    },
+    "since": "Since {{date}}",
+    "visit": "Visit website",
+    "emptyTitle": "Collaborations coming soon",
+    "emptyBody": "We will share the entities we collaborate with here soon. Interested in working with Sard? Get in touch.",
+    "ctaTitle": "Want to collaborate with Sard?",
+    "ctaBody": "We welcome collaborations with companies, institutions and businesses across the Arab world.",
+    "cta": "Contact us",
+    "error": "We could not load the collaborations right now.",
+    "retry": "Try again"
   },
   "faqPage": {
     "metaTitle": "Frequently Asked Questions | Sard",
