@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
@@ -6,10 +6,22 @@ import {
   adminCancelAppointment,
   TIME_SLOTS 
 } from '../utils/calendarStorage';
-import { Lock, Calendar, Trash2, PlusCircle, Bot, Cpu, LogOut } from 'lucide-react';
+import { Lock, Calendar, Trash2, PlusCircle, Bot, Cpu, LogOut, FolderKanban, Briefcase, Handshake, Inbox } from 'lucide-react';
 import sardLogo from '../assets/logo.png';
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
+import ContentManager from '../components/admin/ContentManager';
+import ApplicationsManager from '../components/admin/ApplicationsManager';
+
+// DEV-194: dashboard sections. Appointments is the original admin view; content sections use /api/admin/content.
+const ADMIN_TABS = [
+  { id: 'appointments', icon: Calendar },
+  { id: 'projects', icon: FolderKanban },
+  { id: 'openings', icon: Briefcase },
+  { id: 'applications', icon: Inbox },
+  { id: 'collaborations', icon: Handshake },
+];
+const CONTENT_TABS = new Set(['projects', 'openings', 'collaborations']);
 
 const SERVICE_OPTIONS = [
   'أتمتة الأعمال وتوفير التكاليف',
@@ -30,6 +42,9 @@ export default function AdminPage() {
   const [errorMsg, setErrorMsg] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
   const [bookings, setBookings] = useState([]);
+  const [activeTab, setActiveTab] = useState('appointments');
+  const csrfRef = useRef(null);
+  useEffect(() => { csrfRef.current = csrfToken; }, [csrfToken]);
 
   // AI Agent state
   const [agentPrompt, setAgentPrompt] = useState('');
@@ -141,6 +156,47 @@ export default function AdminPage() {
     }
     return null;
   };
+
+  // DEV-194: JSON / multipart request to an admin endpoint. Sends the CSRF header on writes,
+  // retries once with a fresh token on 403, and returns to the login screen on 401.
+  // Errors carry { status, code, fields } from the API (never raw database text).
+  const adminRequest = useCallback(async (path, { method = 'GET', body, form } = {}) => {
+    const run = async (token) => {
+      const headers = {};
+      if (body !== undefined) headers['Content-Type'] = 'application/json';
+      if (method !== 'GET') headers['x-csrf-token'] = token || '';
+      const res = await fetch(path, {
+        method,
+        credentials: 'same-origin',
+        headers,
+        body: form || (body !== undefined ? JSON.stringify(body) : undefined),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        const err = new Error(data.error || `HTTP ${res.status}`);
+        err.status = res.status;
+        err.code = data.error;
+        err.fields = data.fields;
+        throw err;
+      }
+      return data;
+    };
+    try {
+      return await run(csrfRef.current);
+    } catch (err) {
+      if (err.status === 403 && method !== 'GET') {
+        const res = await fetch('/api/admin/session', { credentials: 'same-origin' }).catch(() => null);
+        const data = res && res.ok ? await res.json().catch(() => ({})) : {};
+        if (data.authenticated && data.csrfToken) {
+          csrfRef.current = data.csrfToken;
+          setCsrfToken(data.csrfToken);
+          return run(data.csrfToken);
+        }
+      }
+      if (err.status === 401) setIsAuthenticated(false);
+      throw err;
+    }
+  }, []);
 
   const executeWithCsrfRetry = async (action) => {
     try {
@@ -310,7 +366,7 @@ export default function AdminPage() {
       <div className="max-w-6xl mx-auto space-y-8">
         
         {/* Header Bar */}
-        <div className="flex justify-between items-center pb-4 border-b border-border">
+        <div className="flex flex-wrap justify-between items-center gap-3 pb-4 border-b border-border">
           <div className="flex items-center gap-3">
             <img src={sardLogo} alt="Sard AI" className="w-10 h-10 object-contain" />
             <div>
@@ -319,7 +375,7 @@ export default function AdminPage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <LanguageSwitcher />
             <button
               onClick={handleLogout}
@@ -338,6 +394,30 @@ export default function AdminPage() {
           </div>
         </div>
 
+        {/* DEV-194: section tabs */}
+        <nav role="tablist" aria-label={t('admin.dashboardTitle')} className="flex flex-wrap gap-2">
+          {ADMIN_TABS.map(({ id, icon }) => { const TabIcon = icon; return (
+            <button
+              key={id}
+              type="button"
+              role="tab"
+              aria-selected={activeTab === id}
+              data-testid={`admin-tab-${id}`}
+              onClick={() => setActiveTab(id)}
+              className={`shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border transition-colors cursor-pointer ${
+                activeTab === id ? 'bg-brand-navy text-white border-brand-navy' : 'bg-card text-foreground border-border hover:border-brand-navy/40'
+              }`}
+            >
+              <TabIcon className="w-4 h-4" aria-hidden="true" />
+              {t(`admin.tabs.${id}`)}
+            </button>
+          ); })}
+        </nav>
+
+        {CONTENT_TABS.has(activeTab) && <ContentManager key={activeTab} type={activeTab} request={adminRequest} />}
+        {activeTab === 'applications' && <ApplicationsManager request={adminRequest} />}
+
+        {activeTab === 'appointments' && (<>
         {/* AI Agent Box */}
         <div className="p-6 rounded-2xl bg-secondary/35 border border-brand-orange/30 space-y-4 shadow-sm">
           <div className="flex items-center gap-3 text-brand-orange">
@@ -476,6 +556,7 @@ export default function AdminPage() {
           </div>
 
         </div>
+        </>)}
 
       </div>
     </div>
