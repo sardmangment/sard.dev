@@ -528,7 +528,31 @@
     "termsTitle": "Terms of Service",
     "underReviewTitle": "Under Legal Review",
     "underReviewBody": "This document is undergoing review before its approved version is published. For questions about privacy or the terms governing Sard’s services, please contact our official company channels.",
-    "contactLink": "Contact Sard"
+    "contactLink": "Contact Sard",
+    "recruitment": {
+      "title": "Job and training applications",
+      "intro": "This section explains how Sard handles the information you send through the application form on the Careers page. The rest of this document is still under legal review.",
+      "s1": {
+        "title": "What we collect",
+        "body": "Your name, email and phone number; your city, a LinkedIn or portfolio link and a short note if you add them; your CV (PDF); the opening you applied for; and the date of your application and consent. To protect the form from misuse we also keep a one-way coded (hashed) form of your IP address, not the address itself, and your browser type."
+      },
+      "s2": {
+        "title": "Why we use it",
+        "body": "Only to review your application and to contact you about it or about a suitable opportunity at Sard. We do not use it for marketing, and we do not sell it or share it with others for their own purposes."
+      },
+      "s3": {
+        "title": "Who can see it",
+        "body": "Only authorized members of Sard’s team, through a password-protected administration dashboard. Your CV is kept in private storage that is not publicly accessible, and it is opened only through a temporary link that expires after one minute. The data is stored by the cloud providers that host Sard’s website, on Sard’s behalf."
+      },
+      "s4": {
+        "title": "How long we keep it",
+        "body": "We keep your application only for as long as it is needed for recruitment. You can ask us to delete it at any time."
+      },
+      "s5": {
+        "title": "Your choices",
+        "body": "To see, correct or delete your data, or to withdraw your consent, email us from the address you applied with. Deleting an application also deletes its CV."
+      }
+    }
   },
   "bookingNotice": {
     "text": "By booking, you agree that Sard uses your name and email to manage this appointment.",

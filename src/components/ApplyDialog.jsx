@@ -157,7 +157,7 @@ export function ApplyDialog({ opening, isAr, onClose }) {
                 <input type="checkbox" name="consent" value="yes" className="mt-1 w-4 h-4 accent-brand-orange" aria-invalid={!!errors.consent} />
                 <span>
                   {t('careersPage.form.consent')}{' '}
-                  <Link to="/privacy" target="_blank" className="font-semibold text-brand-orange-700 hover:underline">{t('careersPage.form.privacyLink')}</Link>
+                  <Link to="/privacy#recruitment" target="_blank" className="font-semibold text-brand-orange-700 hover:underline">{t('careersPage.form.privacyLink')}</Link>
                 </span>
               </label>
               {errors.consent && <p className="text-xs font-semibold text-red-600" role="alert">{t('careersPage.form.errors.consent')}</p>}
