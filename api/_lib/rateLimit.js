@@ -76,3 +76,15 @@ export async function recordAdminLoginFailureGlobal() {
     console.warn('admin_login_global_threshold_check_failed:', err.message);
   }
 }
+
+/**
+ * Careers applications (DEV-192):
+ * - 5 submissions per hour per IP
+ * - 20 submissions per day per IP
+ * Fails closed (throws) if the shared store is unavailable.
+ */
+export async function checkCareersApplyRateLimit(ip) {
+  const hashedIp = await sha256Hex(ip || 'unknown');
+  if (!(await callRateLimitRpc(`careers-apply:${hashedIp}:hour`, 3600, 5))) return false;
+  return await callRateLimitRpc(`careers-apply:${hashedIp}:day`, 86400, 20);
+}

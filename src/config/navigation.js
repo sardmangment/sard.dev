@@ -3,6 +3,7 @@ export const SITE_NAV = [
   { to: '/', labelKey: 'nav.home' },
   { to: '/about', labelKey: 'nav.about' },
   { to: '/projects', labelKey: 'nav.projects' },
+  { to: '/careers', labelKey: 'nav.careers' },
   { to: '/faq', labelKey: 'nav.faq' },
   { to: '/contact', labelKey: 'nav.contact' },
   { to: '/calendar', labelKey: 'nav.calendar', drawerOnly: true },

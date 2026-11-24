@@ -225,6 +225,7 @@
     "about": "About",
     "services": "Services",
     "projects": "Projects",
+    "careers": "Careers",
     "faq": "FAQ",
     "contact": "Contact",
     "calendar": "Book a Meeting",
@@ -252,6 +253,70 @@
     "subtitle": "A selection of the solutions Sard is currently working on.",
     "statusInDevelopment": "In Development",
     "statusLaunched": "Launched"
+  },
+  "careersPage": {
+    "metaTitle": "Careers | Sard Integrated Smart Solutions",
+    "title": "Careers",
+    "subtitle": "Jobs and training programmes currently open at Sard.",
+    "filter": {
+      "all": "All",
+      "job": "Jobs",
+      "training": "Training"
+    },
+    "kindJob": "Job",
+    "kindTraining": "Training",
+    "workMode": {
+      "onsite": "On-site",
+      "remote": "Remote",
+      "hybrid": "Hybrid"
+    },
+    "apply": "Apply now",
+    "closes": "Apply by {{date}}",
+    "emptyTitle": "No openings right now",
+    "emptyBody": "Check this page for new jobs and training programmes, or send us your CV and we will contact you when a suitable opportunity opens.",
+    "sendCv": "Send your CV",
+    "noFitTitle": "Don't see the right fit?",
+    "noFitBody": "Send us your CV and we will contact you when a suitable opportunity opens.",
+    "error": "We could not load the openings right now.",
+    "retry": "Try again",
+    "form": {
+      "applyingFor": "Applying for",
+      "generalTitle": "General application",
+      "fullName": "Full name",
+      "email": "Email",
+      "phone": "Phone number",
+      "city": "City",
+      "profileUrl": "LinkedIn or portfolio link",
+      "message": "A short note about you (optional)",
+      "cv": "CV (PDF, up to 5 MB)",
+      "cvHint": "Choose a PDF file",
+      "consent": "I agree that Sard keeps my details and CV for recruitment purposes only, under the",
+      "privacyLink": "Privacy Policy",
+      "submit": "Send application",
+      "sending": "Sending…",
+      "close": "Close",
+      "successTitle": "Application received",
+      "successBody": "Thank you for your interest in joining Sard. Our team will review your application and contact you if there is a suitable opportunity.",
+      "errors": {
+        "required": "This field is required.",
+        "email": "Enter a valid email address.",
+        "phone": "Enter a valid phone number.",
+        "url": "Enter a link starting with https://",
+        "invalid": "Check this field.",
+        "cv_missing": "Attach your CV.",
+        "cv_type": "Your CV must be a PDF file.",
+        "cv_too_large": "The file is larger than 5 MB.",
+        "consent": "You must agree to send the application."
+      },
+      "serverErrors": {
+        "generic": "We could not send your application right now. Please try again shortly.",
+        "rate_limited": "Too many applications in a short time. Please try again later.",
+        "opening_unavailable": "This opening is no longer available.",
+        "cv_type": "Your CV must be a PDF file.",
+        "cv_too_large": "The file is larger than 5 MB.",
+        "cv_missing": "Attach your CV."
+      }
+    }
   },
   "faqPage": {
     "metaTitle": "Frequently Asked Questions | Sard",

@@ -54,6 +54,7 @@ Official contact channels (the ONLY contact details you may give):
 - Phone/WhatsApp: ${SITE.phone.intl}
 - Location: ${SITE.address.en}
 - Discovery meetings: the Calendar page (/calendar)
+- Jobs and training openings: the Careers page (/careers); applications go to the email above unless an opening links to its own form
 
 Strict rules:
 - Never state percentages, ROI figures, cost-saving amounts, productivity multipliers, delivery or response-time guarantees. Explain that targets are defined per project after assessing the client's baseline, and suggest a free discovery meeting.

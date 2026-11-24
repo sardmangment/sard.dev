@@ -27,6 +27,7 @@ export const Footer = ({ companyName }: FooterProps) => {
   const pageLinks = [
     { to: '/about', label: t('nav.about') },
     { to: '/projects', label: t('nav.projects') },
+    { to: '/careers', label: t('nav.careers') },
     { to: '/faq', label: t('nav.faq') },
     { to: '/contact', label: t('nav.contact') },
     { to: '/calendar', label: t('nav.calendar') },

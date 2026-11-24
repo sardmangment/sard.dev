@@ -23,6 +23,7 @@ const FaqPage = lazy(() => import("./pages/FaqPage"));
 const ContactPage = lazy(() => import("./pages/ContactPage"));
 const LegalNoticePage = lazy(() => import("./pages/LegalNoticePage"));
 const TeamPage = lazy(() => import("./pages/TeamPage"));
+const CareersPage = lazy(() => import("./pages/CareersPage"));
 
 function PartnershipRedirect() {
   const { id } = useParams();
@@ -77,6 +78,9 @@ function App() {
 
           {/* 🛡️ Team (direct link only, not in nav/footer, noindex — C-G03/D-35) & Member Verification */}
           <Route path="/team" element={<TeamPage />} />
+
+          {/* 💼 Careers: jobs & training (DEV-192) */}
+          <Route path="/careers" element={<CareersPage />} />
           <Route path="/member/:id" element={<MemberVerifyPage />} />
 
           {/* 🤖 AI Chat Page */}
