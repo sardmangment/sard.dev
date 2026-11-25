@@ -34,6 +34,10 @@ import { Stepper } from '../components/Stepper';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+// Dates ("2026-11-28") and times ("12:00 PM") keep left-to-right order inside the Arabic (RTL) page,
+// otherwise they render as "PM 12:00".
+const Ltr = ({ children, className = '' }) => <bdi dir="ltr" className={`whitespace-nowrap ${className}`}>{children}</bdi>;
+
 export default function CalendarPage() {
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language === 'ar';
@@ -249,9 +253,11 @@ export default function CalendarPage() {
                     {isRTL ? "تم تأكيد موعدك بنجاح!" : "Your appointment is confirmed!"}
                   </p>
                   <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-                    {isRTL
-                      ? `تم حجز موعدك يوم ${lastBookedAppointment.date} في تمام الساعة ${lastBookedAppointment.timeSlot || lastBookedAppointment.time_slot}.`
-                      : `Booked for ${lastBookedAppointment.date} at ${lastBookedAppointment.timeSlot || lastBookedAppointment.time_slot}.`}
+                    {isRTL ? (
+                      <>تم حجز موعدك يوم <Ltr>{lastBookedAppointment.date}</Ltr> في تمام الساعة <Ltr>{lastBookedAppointment.timeSlot || lastBookedAppointment.time_slot}</Ltr>.</>
+                    ) : (
+                      <>Booked for <Ltr>{lastBookedAppointment.date}</Ltr> at <Ltr>{lastBookedAppointment.timeSlot || lastBookedAppointment.time_slot}</Ltr>.</>
+                    )}
                   </p>
                 </div>
               </div>
@@ -342,7 +348,7 @@ export default function CalendarPage() {
                   className="p-3 rounded-xl bg-secondary/40 border border-border flex items-center justify-between text-xs gap-2"
                 >
                   <div className="space-y-0.5 truncate">
-                    <p className="font-bold text-foreground">{b.date} - {b.slot}</p>
+                    <p className="font-bold text-foreground"><Ltr>{b.date}</Ltr> - <Ltr>{b.slot}</Ltr></p>
                     <p className="text-[11px] text-muted-foreground truncate">{b.service}</p>
                   </div>
 
@@ -371,7 +377,7 @@ export default function CalendarPage() {
                   <CalendarIcon className="w-4 h-4 text-brand-orange" />
                   {isRTL ? "أيام هذا الأسبوع:" : "Current Week:"}
                 </span>
-                <span className="text-xs text-brand-orange font-mono">{selectedDate}</span>
+                <span className="text-xs text-brand-orange font-mono"><Ltr>{selectedDate}</Ltr></span>
               </label>
 
               <div className="flex sm:grid sm:grid-cols-7 gap-2 overflow-x-auto pb-2 text-center -mx-1 px-1 scrollbar-thin">
@@ -454,7 +460,7 @@ export default function CalendarPage() {
                         key={slot}
                         className="p-3 rounded-xl bg-muted/50 border border-border text-muted-foreground/60 cursor-not-allowed flex items-center justify-between opacity-50 select-none line-through"
                       >
-                        <span className="text-xs font-semibold">{slot}</span>
+                        <span className="text-xs font-semibold"><Ltr>{slot}</Ltr></span>
                         <div className="flex items-center gap-1 text-[10px] text-muted-foreground/60">
                           <Lock className="w-3 h-3" />
                           <span>{t('calendar.booked')}</span>
@@ -473,7 +479,7 @@ export default function CalendarPage() {
                         : "bg-secondary/40 border-border text-foreground hover:border-brand-orange/60"
                         }`}
                     >
-                      <span>{slot}</span>
+                      <span><Ltr>{slot}</Ltr></span>
                       {isSelected ? (
                         <CheckCircle2 className="w-4 h-4 text-black" />
                       ) : (
@@ -500,8 +506,8 @@ export default function CalendarPage() {
                 {t('calendar.selectedSlotTitle')}
               </span>
               <div className="flex items-center justify-between">
-                <p className="text-sm font-bold text-foreground">
-                  {selectedDate} {selectedSlot ? `| ${selectedSlot}` : ''}
+                <p className="text-sm font-bold text-foreground" data-testid="selected-slot">
+                  <Ltr>{selectedDate}</Ltr>{selectedSlot && <> | <Ltr>{selectedSlot}</Ltr></>}
                 </p>
                 {!selectedSlot && (
                   <span className="text-xs text-brand-orange animate-pulse font-medium">

@@ -52,9 +52,11 @@ test('UI Regression: Manage Appointment and Admin workflows (Arabic/English, Des
       });
     });
 
-    // Auto-accept confirmation dialogs
+    // The cancel confirmation must be the site dialog, never the browser's native confirm.
+    const nativeDialogs = [];
     page.on('dialog', async (dialog) => {
-      await dialog.accept();
+      nativeDialogs.push(dialog.type());
+      await dialog.dismiss();
     });
 
     // ------------------------------------------------------------------------
@@ -104,6 +106,9 @@ test('UI Regression: Manage Appointment and Admin workflows (Arabic/English, Des
 
     const slotText = await page.locator('text=02:00 PM').first();
     assert.ok(await slotText.isVisible(), 'Appointment slot 02:00 PM must be displayed');
+    // Time and date keep left-to-right order inside the Arabic page (no "PM 02:00")
+    assert.equal(await page.locator('[data-testid="appointment-time"] bdi').getAttribute('dir'), 'ltr');
+    assert.equal(await page.locator('[data-testid="appointment-date"] bdi').getAttribute('dir'), 'ltr');
 
     const serviceText = await page.locator('text=AI Strategic Advisory').first();
     assert.ok(await serviceText.isVisible(), 'Appointment service must be displayed');
@@ -118,7 +123,28 @@ test('UI Regression: Manage Appointment and Admin workflows (Arabic/English, Des
     const cancelBtn = page.locator('button:has-text("Cancel"), button:has-text("إلغاء الموعد")').first();
     assert.ok(await cancelBtn.isVisible(), 'Cancel button must be visible for confirmed appointment');
     await cancelBtn.click();
-    await page.waitForTimeout(1000);
+
+    // Site-styled confirmation: "Keep appointment" closes it without cancelling
+    const confirmDialog = page.locator('[data-testid="cancel-confirm"]');
+    await confirmDialog.waitFor({ state: 'visible', timeout: 5000 });
+    assert.equal(await confirmDialog.getAttribute('role'), 'alertdialog');
+    assert.ok((await confirmDialog.textContent()).includes('02:00 PM'), 'dialog names the slot being cancelled');
+    const keepBtn = confirmDialog.locator('button', { hasText: /Keep appointment|الاحتفاظ بالموعد/ });
+    assert.ok(await keepBtn.evaluate((el) => el === document.activeElement), 'focus starts on the safe button');
+    await keepBtn.click();
+    await confirmDialog.waitFor({ state: 'detached' });
+    assert.ok(await cancelBtn.isVisible(), 'appointment still active after "Keep"');
+
+    // Escape also closes it
+    await cancelBtn.click();
+    await confirmDialog.waitFor({ state: 'visible' });
+    await page.keyboard.press('Escape');
+    await confirmDialog.waitFor({ state: 'detached' });
+
+    // Confirm
+    await cancelBtn.click();
+    await page.locator('[data-testid="cancel-confirm-confirm"]').click();
+    assert.deepEqual(nativeDialogs, [], 'no native browser dialog');
 
     // Verify cancellation state reached
     const cancelledBadge = page.locator(':has-text("This booking has been cancelled"), :has-text("This appointment is cancelled"), :has-text("تم إلغاء هذا الحجز"), :has-text("تم إلغاء هذا الموعد")').first();
