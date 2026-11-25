@@ -98,11 +98,13 @@ test('No contract data, personal contacts, X/Twitter or unofficial numbers in sr
   assert.ok(!/twitter\.com|linkedin\.com\/company\/sardai/.test(html), 'index.html JSON-LD must list official profiles only');
 });
 
-test('Team page is not linked from navigation, footer or /about (C-G03, C-H02)', () => {
-  for (const f of ['src/config/navigation.js', 'src/components/layout/Footer.tsx', 'src/pages/AboutPage.jsx', 'src/components/SiteNavbar.jsx']) {
-    const code = read(f);
-    assert.ok(!code.includes("'/team'") && !code.includes('"/team"'), `${f} must not link /team`);
+test('Team page is linked from the "About Sard" menu and the footer (DEV-199, replaces C-G03)', () => {
+  for (const f of ['src/config/navigation.js', 'src/components/layout/Footer.tsx']) {
+    assert.ok(read(f).includes("to: '/team'"), `${f} links /team`);
   }
+  const team = read('src/pages/TeamPage.jsx');
+  assert.ok(team.includes("rpc('get_public_team')"), 'team page reads the RPC only');
+  assert.ok(!team.includes(".from('team_members')"), 'team page never reads the table');
 });
 
 test('Partner UI and assistant use publication RPCs, never the partnerships table', () => {
@@ -114,12 +116,13 @@ test('Partner UI and assistant use publication RPCs, never the partnerships tabl
 
 test('SEO: sitemap excludes restricted routes; _headers marks them noindex (CC-14)', () => {
   const sitemap = read('public/sitemap.xml');
-  for (const p of ['/team', '/member/', '/admin', '/calendar/manage', '/privacy', '/terms']) {
+  for (const p of ['/member/', '/admin', '/calendar/manage', '/privacy', '/terms']) {
     assert.ok(!sitemap.includes(`sard.dev${p}`), `sitemap must not list ${p}`);
   }
   const headers = read('public/_headers').replace(/\r\n/g, '\n');
-  for (const p of ['/team', '/member/*', '/admin', '/calendar/manage/*']) {
+  for (const p of ['/member/*', '/admin', '/calendar/manage/*']) {
     assert.ok(headers.includes(`${p}\n  X-Robots-Tag: noindex, nofollow`), `_headers must noindex ${p}`);
   }
-  assert.ok(read('public/robots.txt').includes('Disallow: /team'));
+  assert.ok(!read('public/robots.txt').includes('Disallow: /team'), '/team is public (DEV-199)');
+  assert.ok(read('public/sitemap.xml').includes('sard.dev/team<'), 'sitemap lists /team');
 });

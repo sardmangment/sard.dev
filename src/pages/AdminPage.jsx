@@ -6,7 +6,7 @@ import {
   adminCancelAppointment,
   TIME_SLOTS 
 } from '../utils/calendarStorage';
-import { Lock, Calendar, Trash2, PlusCircle, Bot, Cpu, LogOut, FolderKanban, Briefcase, Handshake, Inbox, Award } from 'lucide-react';
+import { Lock, Calendar, Trash2, PlusCircle, Bot, Cpu, LogOut, FolderKanban, Briefcase, Handshake, Inbox, Award, Users } from 'lucide-react';
 import sardLogo from '../assets/logo.png';
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
@@ -21,8 +21,9 @@ const ADMIN_TABS = [
   { id: 'applications', icon: Inbox },
   { id: 'collaborations', icon: Handshake },
   { id: 'partners', icon: Award },
+  { id: 'team', icon: Users },
 ];
-const CONTENT_TABS = new Set(['projects', 'openings', 'collaborations', 'partners']);
+const CONTENT_TABS = new Set(['projects', 'openings', 'collaborations', 'partners', 'team']);
 
 const SERVICE_OPTIONS = [
   'أتمتة الأعمال وتوفير التكاليف',

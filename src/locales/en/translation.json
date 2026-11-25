@@ -192,7 +192,8 @@
       "openings": "Jobs & Training",
       "applications": "Applications",
       "collaborations": "Collaborations",
-      "partners": "Partners"
+      "partners": "Partners",
+      "team": "Team"
     }
   },
   "adminContent": {
@@ -242,7 +243,11 @@
       "partner_name_en": "Name (English)",
       "partner_logo_url": "Logo",
       "public_summary_ar": "Short summary (Arabic, shown on the partner page)",
-      "public_summary_en": "Short summary (English, shown on the partner page)"
+      "public_summary_en": "Short summary (English, shown on the partner page)",
+      "role_ar": "Job title (Arabic)",
+      "role_en": "Job title (English)",
+      "tier": "Section",
+      "photo_url": "Photo"
     },
     "options": {
       "in_development": "In Development",
@@ -254,7 +259,10 @@
       "hybrid": "Hybrid",
       "academic": "Academic",
       "business": "Business",
-      "other": "Other"
+      "other": "Other",
+      "owner": "Company owner",
+      "manager": "Department head",
+      "staff": "Team member"
     },
     "published": "Published",
     "hidden": "Hidden",
@@ -291,6 +299,13 @@
       "add": "Add partner",
       "edit": "Edit partner",
       "empty": "No partners yet."
+    },
+    "team": {
+      "title": "Team",
+      "hint": "The Sard Team page: company owners, then department heads, then the team, each in this order. Publish a person only with their agreement to show their name, title and photo.",
+      "add": "Add member",
+      "edit": "Edit member",
+      "empty": "No team members yet."
     }
   },
   "adminApplications": {
@@ -361,7 +376,9 @@
     "faq": "FAQ",
     "contact": "Contact",
     "calendar": "Book a Meeting",
-    "ai": "Think with Sard"
+    "ai": "Think with Sard",
+    "aboutGroup": "About Sard",
+    "team": "Sard Team"
   },
   "aboutPage": {
     "metaTitle": "About Sard | Sard Integrated Smart Solutions",
@@ -580,19 +597,12 @@
     "officialChannels": "For any inquiry, please contact Sard through its official channels."
   },
   "team": {
-    "metaTitle": "Sard Team",
     "title": "The Sard Team",
-    "intro": "The Team page presents Sard members’ professional identities and organizational roles. All client inquiries and collaboration requests are directed exclusively to Sard’s official channels.",
-    "currentTitle": "Current Team",
-    "alumniTitle": "Sard Alumni",
-    "alumniIntro": "The “Sard Alumni” section honors former team members, with their consent, through a brief acknowledgment of their previous roles and contributions. Alumni are clearly identified as former members, without implying current employment or authority to represent Sard.",
-    "formerMember": "Former team member",
-    "internsTitle": "Sard Internship Contributors",
-    "internsTagline": "They learned, contributed, and made an impact.",
-    "internsIntro": "We value our interns’ contributions and believe promising ideas grow through opportunities to explore, build, and collaborate.",
-    "internsNote": "Inclusion recognizes an internship contribution and does not establish employment status or authority to represent Sard.",
-    "currentIntern": "Current Intern",
-    "completedInternship": "Completed Internship",
-    "empty": "No profiles are published in this section yet."
+    "metaTitle": "The Sard Team",
+    "intro": "The people behind Sard: its owners, the heads of its departments and the team that builds with our clients. All client enquiries go through Sard's official channels.",
+    "ownersTitle": "Company Owners",
+    "managersTitle": "Department Heads",
+    "staffTitle": "Our Team",
+    "empty": "The team page is being updated. Check back soon."
   }
 }

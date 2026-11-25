@@ -73,6 +73,28 @@ export const CONTENT_TYPES = {
       { name: 'is_published', type: 'bool', default: false },
     ],
   },
+  // DEV-199: /team (owners, department heads, staff). Only current members are managed here; alumni and
+  // interns rows are left alone (filter). Email, phone, LinkedIn, bio and consent columns are never loaded.
+  // New members are active current members; is_published alone decides whether they show on /team.
+  team: {
+    table: 'team_members',
+    titleFields: ['name_ar', 'name_en'],
+    subtitleFields: ['role_ar', 'role_en'],
+    imageField: 'photo_url',
+    uploadFolder: 'team',
+    filter: 'member_type=eq.current',
+    select: 'id,name_ar,name_en,role_ar,role_en,tier,photo_url,is_published,display_order,created_at',
+    insertSet: { is_active: true, member_type: 'current' },
+    fields: [
+      { name: 'name_ar', type: 'text', required: true, max: 120, dir: 'rtl' },
+      { name: 'name_en', type: 'text', required: true, max: 120, dir: 'ltr' },
+      { name: 'role_ar', type: 'text', required: true, max: 150, dir: 'rtl' },
+      { name: 'role_en', type: 'text', required: true, max: 150, dir: 'ltr' },
+      { name: 'tier', type: 'enum', options: ['owner', 'manager', 'staff'], required: true, default: 'staff' },
+      { name: 'photo_url', type: 'image', max: 500 },
+      { name: 'is_published', type: 'bool', default: false },
+    ],
+  },
 };
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;

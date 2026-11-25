@@ -207,7 +207,9 @@ export default function ContentManager({ type, request }) {
   useEffect(() => { load(); }, [load]);
 
   const today = new Date().toISOString().slice(0, 10);
-  const titleOf = (r) => (isAr ? r[def.titleFields[0]] : r[def.titleFields[1]]) || r[def.titleFields[1]] || r[def.titleFields[0]];
+  const pickOf = (r, [ar, en]) => (isAr ? r[ar] : r[en]) || r[en] || r[ar];
+  const titleOf = (r) => pickOf(r, def.titleFields);
+  const subtitleOf = (r) => (def.subtitleFields ? pickOf(r, def.subtitleFields) : null);
 
   const act = async (id, fn) => {
     setBusyId(id);
@@ -269,6 +271,7 @@ export default function ContentManager({ type, request }) {
                 )}
                 <div className="min-w-0 space-y-1">
                   <p className={`font-bold truncate ${r.is_published ? 'text-foreground' : 'text-muted-foreground'}`}>{titleOf(r)}</p>
+                  {subtitleOf(r) && <p className="text-xs text-muted-foreground truncate">{subtitleOf(r)}</p>}
                   <div className="flex flex-wrap gap-1.5 text-xs">
                     {badgeOf(r) && <span className="px-2 py-0.5 rounded-full bg-brand-navy/10 text-brand-navy font-semibold">{badgeOf(r)}</span>}
                     {r.closes_at && r.closes_at < today && (

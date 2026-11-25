@@ -1,6 +1,6 @@
 // api/admin/upload.js
 // DEV-194: image upload for project images and collaboration logos.
-//   POST /api/admin/upload  multipart/form-data { file, folder: "projects" | "collaborations" | "partners" }
+//   POST /api/admin/upload  multipart/form-data { file, folder: "projects" | "collaborations" | "partners" | "team" }
 //   → { url } public URL in the "site-media" bucket.
 // PNG / JPEG / WebP only (checked by file signature, not just the declared type), 2 MB max. No SVG.
 // Protected by the admin session cookie + CSRF.
@@ -10,7 +10,7 @@ import { guardAdminRequest, getServiceConfig, serviceHeaders, json } from '../_l
 export const config = { runtime: 'edge' };
 
 export const MAX_IMAGE_BYTES = 2 * 1024 * 1024;
-const FOLDERS = new Set(['projects', 'collaborations', 'partners']);
+const FOLDERS = new Set(['projects', 'collaborations', 'partners', 'team']);
 const BUCKET = 'site-media';
 
 /** Detects the image type from its first bytes. Returns { ext, mime } or null. */

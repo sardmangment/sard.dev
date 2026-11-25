@@ -1,5 +1,5 @@
 // api/admin/content.js
-// DEV-194: admin CRUD for site content: projects, job/training openings, collaborations and partners (DEV-190).
+// DEV-194: admin CRUD for site content: projects, job/training openings, collaborations, partners (DEV-190) and team (DEV-199).
 //   GET    /api/admin/content?type=projects                 → all rows (published and hidden), by display_order
 //   POST   /api/admin/content?type=projects   {fields}      → create (added at the end of the list)
 //   PATCH  /api/admin/content?type=projects   {id, fields}  → partial update (also hide / publish)
@@ -38,10 +38,13 @@ export default async function handler(req, env = {}) {
   if (!key) return json(503, { error: 'Server configuration missing.' });
   const base = `${url}/rest/v1/${def.table}`;
   const headers = serviceHeaders(key, { 'Content-Type': 'application/json', Prefer: 'return=representation' });
+  // Types like "team" manage only part of a table (def.filter); every read and write is limited to it.
+  const scope = def.filter ? `&${def.filter}` : '';
+  const ret = def.select ? `&select=${def.select}` : '';
 
   try {
     if (req.method === 'GET') {
-      const res = await fetch(`${base}?select=${def.select || '*'}&order=display_order.asc,created_at.asc`, { headers });
+      const res = await fetch(`${base}?select=${def.select || '*'}${scope}&order=display_order.asc,created_at.asc`, { headers });
       if (!res.ok) { console.warn(`[admin/content] GET ${type} ${res.status}`); return json(502, { error: 'load_failed' }); }
       return json(200, { data: await res.json() });
     }
@@ -52,12 +55,12 @@ export default async function handler(req, env = {}) {
       const { data, errors } = validateRecord(type, body);
       if (errors) return json(400, { error: 'invalid', fields: errors });
 
-      const last = await fetch(`${base}?select=display_order&order=display_order.desc&limit=1`, { headers });
+      const last = await fetch(`${base}?select=display_order${scope}&order=display_order.desc&limit=1`, { headers });
       const rows = last.ok ? await last.json() : [];
       data.display_order = (Array.isArray(rows) && rows[0] ? Number(rows[0].display_order) || 0 : 0) + 1;
-      Object.assign(data, def.alwaysSet);
+      Object.assign(data, def.alwaysSet, def.insertSet);
 
-      const res = await fetch(base, { method: 'POST', headers, body: JSON.stringify(data) });
+      const res = await fetch(`${base}${ret ? `?${ret.slice(1)}` : ''}`, { method: 'POST', headers, body: JSON.stringify(data) });
       if (!res.ok) { console.warn(`[admin/content] POST ${type} ${res.status}`); return json(502, { error: 'save_failed' }); }
       const created = await res.json();
       return json(201, { data: Array.isArray(created) ? created[0] : created });
@@ -74,7 +77,7 @@ export default async function handler(req, env = {}) {
           return json(400, { error: 'invalid', fields: ['order'] });
         }
         for (let i = 0; i < ids.length; i++) {
-          const res = await fetch(`${base}?id=eq.${ids[i]}`, { method: 'PATCH', headers, body: JSON.stringify({ display_order: i + 1 }) });
+          const res = await fetch(`${base}?id=eq.${ids[i]}${scope}`, { method: 'PATCH', headers, body: JSON.stringify({ display_order: i + 1 }) });
           if (!res.ok) { console.warn(`[admin/content] reorder ${type} ${res.status}`); return json(502, { error: 'save_failed' }); }
         }
         return json(200, { success: true });
@@ -87,7 +90,7 @@ export default async function handler(req, env = {}) {
       data.updated_at = new Date().toISOString();
       Object.assign(data, def.alwaysSet);
 
-      const res = await fetch(`${base}?id=eq.${id}${def.select ? `&select=${def.select}` : ''}`, { method: 'PATCH', headers, body: JSON.stringify(data) });
+      const res = await fetch(`${base}?id=eq.${id}${scope}${ret}`, { method: 'PATCH', headers, body: JSON.stringify(data) });
       if (!res.ok) { console.warn(`[admin/content] PATCH ${type} ${res.status}`); return json(502, { error: 'save_failed' }); }
       const updated = await res.json();
       if (!Array.isArray(updated) || updated.length === 0) return json(404, { error: 'not_found' });
@@ -97,7 +100,7 @@ export default async function handler(req, env = {}) {
     if (req.method === 'DELETE') {
       const id = params.get('id') || '';
       if (!UUID_RE.test(id)) return json(400, { error: 'invalid', fields: ['id'] });
-      const res = await fetch(`${base}?id=eq.${id}`, { method: 'DELETE', headers });
+      const res = await fetch(`${base}?id=eq.${id}${scope}${ret}`, { method: 'DELETE', headers });
       if (!res.ok) { console.warn(`[admin/content] DELETE ${type} ${res.status}`); return json(502, { error: 'delete_failed' }); }
       const deleted = await res.json();
       if (!Array.isArray(deleted) || deleted.length === 0) return json(404, { error: 'not_found' });

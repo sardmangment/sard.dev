@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- CC-14: public pages only. Team, member, admin, booking-management and legal-notice pages are excluded. -->
+<!-- CC-14: public pages only (DEV-199: /team is public). Member, admin, booking-management and legal-notice pages are excluded. -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://sard.dev/</loc></url>
   <url><loc>https://sard.dev/about</loc></url>
+  <url><loc>https://sard.dev/team</loc></url>
   <url><loc>https://sard.dev/projects</loc></url>
   <url><loc>https://sard.dev/project/a70286de-0294-4c1a-afea-7f74254cfc08</loc></url>
   <url><loc>https://sard.dev/project/a4dff878-9947-4c01-871c-3cc531f8f9b8</loc></url>

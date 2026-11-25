@@ -1,11 +1,96 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { Menu, X, Calendar, MessageSquare } from 'lucide-react';
+import { Menu, X, Calendar, MessageSquare, ChevronDown } from 'lucide-react';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import sardLogo from '../assets/logo.png';
 import { SITE_NAV } from '../config/navigation';
+
+const desktopLinkClass = (active) =>
+  `px-2 lg:px-3 py-1.5 rounded-lg text-xs xl:text-sm font-semibold tracking-wide whitespace-nowrap transition-colors ${
+    active ? 'text-brand-orange bg-brand-orange/10 font-bold' : 'text-muted-foreground hover:text-foreground hover:bg-secondary/60'
+  }`;
+
+/**
+ * DEV-199: desktop dropdown for a SITE_NAV group ("About Sard"). Opens on click (works on touch),
+ * closes on Escape (focus back to the button), outside click and navigation. Arrow keys move between items.
+ */
+function NavDropdown({ group, pathname }) {
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef(null);
+  const buttonRef = useRef(null);
+  const active = group.children.some((c) => c.to === pathname);
+  const menuId = `nav-menu-${group.id}`;
+
+  useEffect(() => { setOpen(false); }, [pathname]);
+
+  useEffect(() => {
+    if (!open) return undefined;
+    const onDown = (e) => { if (rootRef.current && !rootRef.current.contains(e.target)) setOpen(false); };
+    const onKey = (e) => {
+      if (e.key === 'Escape') { setOpen(false); buttonRef.current?.focus(); return; }
+      if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+      const items = [...(rootRef.current?.querySelectorAll('[role="menuitem"]') || [])];
+      if (!items.length) return;
+      e.preventDefault();
+      const i = items.indexOf(document.activeElement);
+      const next = e.key === 'ArrowDown' ? (i + 1) % items.length : (i <= 0 ? items.length - 1 : i - 1);
+      items[next].focus();
+    };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
+
+  return (
+    <div ref={rootRef} className="relative">
+      <button
+        ref={buttonRef}
+        type="button"
+        aria-haspopup="menu"
+        aria-expanded={open}
+        aria-controls={menuId}
+        data-testid={`nav-group-${group.id}`}
+        onClick={() => setOpen((o) => !o)}
+        className={`${desktopLinkClass(active)} inline-flex items-center gap-1 cursor-pointer`}
+      >
+        {t(group.labelKey)}
+        <ChevronDown className={`w-3.5 h-3.5 transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden="true" />
+      </button>
+      {open && (
+        <div
+          id={menuId}
+          role="menu"
+          aria-label={t(group.labelKey)}
+          className="absolute top-full mt-2 start-0 z-40 min-w-48 p-1.5 rounded-xl border border-border bg-card shadow-lg"
+        >
+          {group.children.map((c) => {
+            const isActive = c.to === pathname;
+            return (
+              <Link
+                key={c.to}
+                to={c.to}
+                role="menuitem"
+                aria-current={isActive ? 'page' : undefined}
+                onClick={() => setOpen(false)}
+                className={`block px-3 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-colors ${
+                  isActive ? 'text-brand-orange bg-brand-orange/10' : 'text-foreground hover:bg-secondary/70 hover:text-brand-orange'
+                }`}
+              >
+                {t(c.labelKey)}
+              </Link>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
 
 /**
  * SiteNavbar
@@ -30,6 +115,11 @@ export function SiteNavbar({
   const location = useLocation();
   const isRTL = i18n.language?.startsWith('ar') || (typeof document !== 'undefined' && document.documentElement.dir === 'rtl');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  // Drawer groups start expanded when the current page is inside them.
+  const [openGroups, setOpenGroups] = useState(() =>
+    SITE_NAV.filter((s) => s.children?.some((c) => c.to === location.pathname)).map((s) => s.id)
+  );
+  const toggleGroup = (id) => setOpenGroups((g) => (g.includes(id) ? g.filter((x) => x !== id) : [...g, id]));
 
   // Close drawer on Escape key
   useEffect(() => {
@@ -58,12 +148,17 @@ export function SiteNavbar({
   // `links` and non-section `drawerLinks` from pages are accepted for compatibility but no longer
   // change the header; only in-page section anchors (isSection) are added to the drawer.
   void links;
-  const mainDrawerLinks = SITE_NAV.map((s) => ({
+  const toDrawerLink = (s) => ({
     to: s.to,
     href: s.href,
     label_ar: t(s.labelKey, { lng: 'ar' }),
     label_en: t(s.labelKey, { lng: 'en' }),
-  }));
+  });
+  const mainDrawerLinks = SITE_NAV.map((s) =>
+    s.children
+      ? { group: s.id, label_ar: t(s.labelKey, { lng: 'ar' }), label_en: t(s.labelKey, { lng: 'en' }), children: s.children.map(toDrawerLink) }
+      : toDrawerLink(s)
+  );
   const desktopSiteLinks = SITE_NAV.filter((s) => !s.drawerOnly);
   const sectionDrawerLinks = drawerLinks.filter((l) => l.isSection);
   const cta = drawerCta || { to: '/calendar', icon: Calendar, label_ar: t('nav.calendar', { lng: 'ar' }), label_en: t('nav.calendar', { lng: 'en' }) };
@@ -89,12 +184,8 @@ export function SiteNavbar({
             {/* Desktop Center Navigation Links */}
             <nav aria-label="Main Navigation" className="hidden md:flex items-center gap-1 xl:gap-2">
               {desktopSiteLinks.map((s) => {
-                const isActive = location.pathname === s.to;
-                const linkClass = `px-2 lg:px-3 py-1.5 rounded-lg text-xs xl:text-sm font-semibold tracking-wide whitespace-nowrap transition-colors ${
-                  isActive
-                    ? 'text-brand-orange bg-brand-orange/10 font-bold'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-secondary/60'
-                }`;
+                if (s.children) return <NavDropdown key={s.id} group={s} pathname={location.pathname} />;
+                const linkClass = desktopLinkClass(location.pathname === s.to);
                 return s.href ? (
                   <a key={s.href} href={s.href} className={linkClass}>
                     {t(s.labelKey)}
@@ -110,7 +201,7 @@ export function SiteNavbar({
             {/* Actions: Page-specific links, Language Switcher, and Mobile Hamburger */}
             <div className="flex items-center gap-2 sm:gap-3">
               {/* Site-wide actions: identical on every page (hidden on mobile; available in the drawer) */}
-              {/* DEV-193: with 7 site links, the two pills show icon-only at medium widths (label kept for screen readers) */}
+              {/* DEV-193/199: the two pills show icon-only at medium widths (label kept for screen readers) */}
               <Link
                 to="/ai"
                 title={t('nav.ai')}
@@ -199,6 +290,43 @@ export function SiteNavbar({
                   </span>
 
                   {mainDrawerLinks.map((link) => {
+                    if (link.children) {
+                      const expanded = openGroups.includes(link.group);
+                      const groupActive = link.children.some((c) => c.to === location.pathname);
+                      return (
+                        <div key={link.group}>
+                          <button
+                            type="button"
+                            aria-expanded={expanded}
+                            aria-controls={`drawer-${link.group}`}
+                            data-testid={`drawer-group-${link.group}`}
+                            onClick={() => toggleGroup(link.group)}
+                            className={`w-full flex items-center justify-between gap-3 px-3.5 py-3 rounded-xl transition-all font-medium text-sm min-h-[44px] cursor-pointer ${
+                              groupActive ? 'text-brand-orange font-bold' : 'text-foreground hover:bg-muted hover:text-brand-orange'
+                            }`}
+                          >
+                            <span>{isRTL ? link.label_ar : link.label_en}</span>
+                            <ChevronDown className={`w-4 h-4 transition-transform ${expanded ? 'rotate-180' : ''}`} aria-hidden="true" />
+                          </button>
+                          {expanded && (
+                            <div id={`drawer-${link.group}`} className="ms-4 ps-2 border-s border-border/80 space-y-1">
+                              {link.children.map((c) => (
+                                <Link
+                                  key={c.to}
+                                  to={c.to}
+                                  onClick={() => setIsDrawerOpen(false)}
+                                  className={`flex items-center px-3.5 py-2.5 rounded-xl text-sm min-h-[44px] transition-colors ${
+                                    location.pathname === c.to ? 'bg-brand-orange/15 text-brand-orange font-bold' : 'text-foreground hover:bg-muted hover:text-brand-orange'
+                                  }`}
+                                >
+                                  {isRTL ? c.label_ar : c.label_en}
+                                </Link>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    }
                     const Icon = link.icon;
                     const isActive = link.to && location.pathname === link.to;
                     const cls = `flex items-center gap-3 px-3.5 py-3 rounded-xl transition-all font-medium text-sm min-h-[44px] ${

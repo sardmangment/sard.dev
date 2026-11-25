@@ -4,9 +4,9 @@ import assert from 'node:assert/strict';
 import { getChromium, getChromeExecutablePath, BASE_URL } from './test-helper.mjs';
 
 const TEAM_ROWS = [
-  { id: 't1', section: 'current', name_ar: 'عضو', name_en: 'Member One', role_ar: 'مطور', role_en: 'Developer', photo_url: null },
-  { id: 't2', section: 'alumni', name_ar: 'خريج', name_en: 'Alumnus', former_role_ar: 'مصمم', former_role_en: 'Designer', contribution_en: 'Built the brand kit.' },
-  { id: 't3', section: 'intern', name_ar: 'متدرب', name_en: 'Intern', internship_area_en: 'Data', intern_status: 'completed' },
+  { id: 't1', tier: 'owner', name_ar: 'مالك', name_en: 'Owner One', role_ar: 'المؤسس', role_en: 'Founder', photo_url: null },
+  { id: 't2', tier: 'manager', name_ar: 'مدير', name_en: 'Head One', role_ar: 'مدير التسويق', role_en: 'Head of Marketing', photo_url: null },
+  { id: 't3', tier: 'staff', name_ar: 'عضو', name_en: 'Member One', role_ar: 'مطور', role_en: 'Developer', photo_url: null },
 ];
 
 async function mockSupabase(page) {
@@ -70,7 +70,6 @@ test('Content pages: AR/EN, desktop and 375px, no horizontal overflow, policy ch
 
           if (p.path === '/about') {
             assert.equal(await page.locator('[data-testid="about-values"] > li').count(), 6, 'six values');
-            assert.equal(await page.locator('a[href="/team"]').count(), 0, '/about must not link /team');
           }
           if (p.path === '/faq') {
             assert.equal(await page.locator('[data-faq]').count(), 8, '8 FAQs while FAQ-007 is gated');
@@ -92,11 +91,12 @@ test('Content pages: AR/EN, desktop and 375px, no horizontal overflow, policy ch
             assert.ok(robots.includes('noindex'), 'legal notice is noindex');
           }
           if (p.path === '/team') {
-            const robots = await page.locator('meta[name="robots"]').getAttribute('content');
-            assert.ok(robots.includes('noindex'), 'team page is noindex');
-            const body = await page.locator('main').textContent();
-            assert.ok(body.includes(lang === 'ar' ? 'عضو سابق في الفريق' : 'Former team member'), 'alumni labelled');
-            assert.ok(body.includes(lang === 'ar' ? 'أتمّ التدريب' : 'Completed Internship'), 'intern status shown');
+            const robots = await page.locator('meta[name="robots"]').evaluateAll((els) => els.map((e) => e.content).join(' '));
+            assert.ok(!robots.includes('noindex'), 'team page is indexable (DEV-199)');
+            await page.locator('[data-testid="team-card"]').first().waitFor({ timeout: 8000 });
+            const headings = await page.locator('main h2').allTextContents();
+            assert.deepEqual(headings.map((h) => h.trim()), lang === 'ar' ? ['أصحاب الشركة', 'مديرو الأقسام', 'فريق العمل'] : ['Company Owners', 'Department Heads', 'Our Team'], 'three sections in order');
+            assert.equal(await page.locator('[data-testid="team-card"]').count(), 3);
             const mainLinks = await page.locator('main a[href^="mailto:"], main a[href^="tel:"], main a[href*="linkedin"]').count();
             assert.equal(mainLinks, 0, 'no personal contact links on the team page');
           }

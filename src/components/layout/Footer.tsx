@@ -5,7 +5,7 @@ import { Mail, Phone, MapPin, MessageCircle, Instagram, Linkedin, Facebook } fro
 import { SITE, whatsappUrl } from '@/config/site';
 
 // CC-12: official channels only (C-A07…C-A16), from src/config/site.js — not from the
-// contact_info/footer_links tables, which held unverified data. No Team link (C-G03). No X (C-A17).
+// contact_info/footer_links tables, which held unverified data. Team link added in DEV-199 (manager decision, replaces C-G03). No X (C-A17).
 const SOCIAL_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   instagram: Instagram,
   linkedin: Linkedin,
@@ -26,6 +26,7 @@ export const Footer = ({ companyName }: FooterProps) => {
 
   const pageLinks = [
     { to: '/about', label: t('nav.about') },
+    { to: '/team', label: t('nav.team') },
     { to: '/projects', label: t('nav.projects') },
     { to: '/careers', label: t('nav.careers') },
     { to: '/collaborations', label: t('nav.collaborations') },

@@ -1,6 +1,5 @@
 User-agent: *
 Allow: /
-Disallow: /team
 Disallow: /member/
 Disallow: /admin
 Disallow: /calendar/manage/
