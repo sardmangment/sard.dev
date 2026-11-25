@@ -204,7 +204,7 @@ export default function ManageAppointmentPage() {
                   <CalendarIcon className="w-3.5 h-3.5 text-brand-orange" />
                   {isRTL ? 'التاريخ' : 'Date'}
                 </span>
-                <p className="text-sm font-bold text-foreground">{appointment.date}</p>
+                <p className="text-sm font-bold text-foreground" data-testid="appointment-date"><bdi dir="ltr">{appointment.date}</bdi></p>
               </div>
 
               <div className="p-4 rounded-xl bg-secondary/40 border border-border space-y-1">
@@ -212,8 +212,9 @@ export default function ManageAppointmentPage() {
                   <Clock className="w-3.5 h-3.5 text-brand-orange" />
                   {isRTL ? 'التوقيت' : 'Time Slot'}
                 </span>
-                <p className="text-sm font-bold text-foreground">
-                  {appointment.timeSlot || appointment.time_slot}
+                <p className="text-sm font-bold text-foreground" data-testid="appointment-time">
+                  {/* bdi keeps "12:00 PM" in order inside the Arabic (RTL) page */}
+                  <bdi dir="ltr">{appointment.timeSlot || appointment.time_slot}</bdi>
                 </p>
               </div>
             </div>

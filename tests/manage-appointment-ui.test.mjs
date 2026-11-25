@@ -106,6 +106,9 @@ test('UI Regression: Manage Appointment and Admin workflows (Arabic/English, Des
 
     const slotText = await page.locator('text=02:00 PM').first();
     assert.ok(await slotText.isVisible(), 'Appointment slot 02:00 PM must be displayed');
+    // Time and date keep left-to-right order inside the Arabic page (no "PM 02:00")
+    assert.equal(await page.locator('[data-testid="appointment-time"] bdi').getAttribute('dir'), 'ltr');
+    assert.equal(await page.locator('[data-testid="appointment-date"] bdi').getAttribute('dir'), 'ltr');
 
     const serviceText = await page.locator('text=AI Strategic Advisory').first();
     assert.ok(await serviceText.isVisible(), 'Appointment service must be displayed');
