@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { SiteNavbar } from '../components/SiteNavbar';
+import { ConfirmDialog } from '../components/ConfirmDialog';
 
 export default function ManageAppointmentPage() {
   const { id } = useParams();
@@ -34,6 +35,7 @@ export default function ManageAppointmentPage() {
   const [cancelSuccess, setCancelSuccess] = useState(false);
   const [cancelError, setCancelError] = useState('');
   const [copied, setCopied] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   // Extract manage token once on mount and retain in memory across address bar hash cleanup
   const tokenRef = useRef('');
@@ -80,13 +82,8 @@ export default function ManageAppointmentPage() {
     return () => { isMounted = false; };
   }, [id, token, cancelSuccess]);
 
+  // Confirmation uses the site dialog (ConfirmDialog), not the browser's window.confirm.
   const handleCancel = async () => {
-    const confirmPrompt = isRTL
-      ? 'هل أنت متأكد من رغبتك في إلغاء هذا الموعد؟ سيتم إتاحة الموعد فوراً.'
-      : 'Are you sure you want to cancel this appointment? The slot will become available immediately.';
-
-    if (!window.confirm(confirmPrompt)) return;
-
     setCancelling(true);
     setCancelError('');
 
@@ -112,6 +109,7 @@ export default function ManageAppointmentPage() {
       setCancelError(err.message || 'Failed to cancel appointment');
     } finally {
       setCancelling(false);
+      setConfirmOpen(false);
     }
   };
 
@@ -271,8 +269,9 @@ export default function ManageAppointmentPage() {
 
                 <button
                   type="button"
-                  onClick={handleCancel}
+                  onClick={() => setConfirmOpen(true)}
                   disabled={cancelling}
+                  data-testid="cancel-appointment"
                   className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-600 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-colors cursor-pointer disabled:opacity-50"
                 >
                   {cancelling ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
@@ -288,6 +287,24 @@ export default function ManageAppointmentPage() {
         )}
 
       </div>
+
+      {confirmOpen && (
+        <ConfirmDialog
+          testId="cancel-confirm"
+          title={isRTL ? 'إلغاء الموعد؟' : 'Cancel this appointment?'}
+          body={isRTL ? (
+            <>سيتم إلغاء موعدك يوم <bdi dir="ltr">{appointment?.date}</bdi> الساعة <bdi dir="ltr" className="whitespace-nowrap">{appointment?.timeSlot || appointment?.time_slot}</bdi>، ويصبح الموعد متاحًا لغيرك فورًا. لا يمكن التراجع عن الإلغاء.</>
+          ) : (
+            <>Your appointment on <bdi>{appointment?.date}</bdi> at <bdi className="whitespace-nowrap">{appointment?.timeSlot || appointment?.time_slot}</bdi> will be cancelled and the slot becomes available to others right away. This cannot be undone.</>
+          )}
+          confirmLabel={cancelling ? (isRTL ? 'جاري الإلغاء...' : 'Cancelling...') : (isRTL ? 'نعم، ألغِ الموعد' : 'Yes, cancel it')}
+          cancelLabel={isRTL ? 'الاحتفاظ بالموعد' : 'Keep appointment'}
+          closeLabel={isRTL ? 'إغلاق' : 'Close'}
+          busy={cancelling}
+          onConfirm={handleCancel}
+          onCancel={() => setConfirmOpen(false)}
+        />
+      )}
     </div>
   );
 }
