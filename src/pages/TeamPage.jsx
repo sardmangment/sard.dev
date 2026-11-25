@@ -6,7 +6,7 @@ import { supabase } from '../integrations/supabase/client';
 import { PageShell, PageHeader } from '../components/PageShell';
 import { usePageMeta } from '../hooks/usePageMeta';
 
-// DEV-199 · /team: three sections managed from /admin → Team — company owners, department heads, team.
+// DEV-199 · /team: three sections managed from /admin → Team — founding partners, heads of departments, team.
 // Public and linked from the navbar ("About Sard") and footer (manager's decision, replaces C-G03).
 // Data comes only from the get_public_team RPC: published, active current members, approved fields only
 // (name, title, photo). No contact details, no external links (C-G01). Alumni and interns are not shown.

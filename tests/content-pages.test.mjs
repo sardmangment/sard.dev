@@ -95,7 +95,7 @@ test('Content pages: AR/EN, desktop and 375px, no horizontal overflow, policy ch
             assert.ok(!robots.includes('noindex'), 'team page is indexable (DEV-199)');
             await page.locator('[data-testid="team-card"]').first().waitFor({ timeout: 8000 });
             const headings = await page.locator('main h2').allTextContents();
-            assert.deepEqual(headings.map((h) => h.trim()), lang === 'ar' ? ['أصحاب الشركة', 'مديرو الأقسام', 'فريق العمل'] : ['Company Owners', 'Department Heads', 'Our Team'], 'three sections in order');
+            assert.deepEqual(headings.map((h) => h.trim()), lang === 'ar' ? ['الشركاء المؤسسون', 'رؤساء الأقسام', 'فريق العمل'] : ['Founding Partners', 'Heads of Departments', 'Our Team'], 'three sections in order');
             assert.equal(await page.locator('[data-testid="team-card"]').count(), 3);
             const mainLinks = await page.locator('main a[href^="mailto:"], main a[href^="tel:"], main a[href*="linkedin"]').count();
             assert.equal(mainLinks, 0, 'no personal contact links on the team page');

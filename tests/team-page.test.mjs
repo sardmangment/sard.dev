@@ -175,7 +175,7 @@ test('Admin Team tab: add a department head (AR/EN, desktop and 375px)', async (
         await mgr.locator('[data-testid="content-row"]').first().waitFor({ timeout: 8000 });
         const text = await mgr.textContent();
         assert.ok(text.includes(lang === 'ar' ? 'المدير العام' : 'General Manager'), 'job title shown under the name');
-        assert.ok(text.includes(lang === 'ar' ? 'صاحب الشركة' : 'Company owner'), 'section badge shown');
+        assert.ok(text.includes(lang === 'ar' ? 'شريك مؤسس' : 'Founding partner'), 'section badge shown');
 
         await mgr.getByRole('button', { name: lang === 'ar' ? 'إضافة عضو' : 'Add member' }).click();
         const editor = page.locator('[data-testid="content-editor"]');

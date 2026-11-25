@@ -260,8 +260,8 @@
       "academic": "Academic",
       "business": "Business",
       "other": "Other",
-      "owner": "Company owner",
-      "manager": "Department head",
+      "owner": "Founding partner",
+      "manager": "Head of department",
       "staff": "Team member"
     },
     "published": "Published",
@@ -302,7 +302,7 @@
     },
     "team": {
       "title": "Team",
-      "hint": "The Sard Team page: company owners, then department heads, then the team, each in this order. Publish a person only with their agreement to show their name, title and photo.",
+      "hint": "The Sard Team page: founding partners, then heads of departments, then the team, each in this order. Publish a person only with their agreement to show their name, title and photo.",
       "add": "Add member",
       "edit": "Edit member",
       "empty": "No team members yet."
@@ -599,9 +599,9 @@
   "team": {
     "title": "The Sard Team",
     "metaTitle": "The Sard Team",
-    "intro": "The people behind Sard: its owners, the heads of its departments and the team that builds with our clients. All client enquiries go through Sard's official channels.",
-    "ownersTitle": "Company Owners",
-    "managersTitle": "Department Heads",
+    "intro": "The people behind Sard: its founding partners, the heads of its departments and the team that builds with our clients. All client enquiries go through Sard's official channels.",
+    "ownersTitle": "Founding Partners",
+    "managersTitle": "Heads of Departments",
     "staffTitle": "Our Team",
     "empty": "The team page is being updated. Check back soon."
   }
