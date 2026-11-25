@@ -34,7 +34,7 @@ test('Booking stepper follows the visitor through the booking (AR/EN, desktop an
         const stepper = page.locator('[data-testid="stepper"]');
         await stepper.waitFor({ timeout: 8000 });
         assert.equal(await stepper.getAttribute('aria-label'), dict.calendar.steps.label);
-        assert.deepEqual((await stepper.locator('li').allTextContents()).map((s) => s.replace(/\s*\(.*\)\s*$/, '').replace(/^\d/, '').trim()),
+        assert.deepEqual((await stepper.locator('li').allTextContents()).map((s) => s.replace(/\s*\(.*\)\s*$/, '').replace(/^\d+/, '').trim()),
           [dict.calendar.steps.slot, dict.calendar.steps.details, dict.calendar.steps.confirm]);
         assert.deepEqual(await statuses(page), ['current', 'upcoming', 'upcoming']);
         assert.equal(await stepper.locator('li[aria-current="step"]').count(), 1);
