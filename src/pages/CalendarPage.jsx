@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -30,6 +30,9 @@ import {
   MessageSquare
 } from 'lucide-react';
 import { SiteNavbar } from '../components/SiteNavbar';
+import { Stepper } from '../components/Stepper';
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function CalendarPage() {
   const { t, i18n } = useTranslation();
@@ -66,6 +69,8 @@ export default function CalendarPage() {
   const [bookingError, setBookingError] = useState('');
   const [copiedLink, setCopiedLink] = useState(false);
   const [deviceBookings, setDeviceBookings] = useState([]);
+  const slotsRef = useRef(null);
+  const detailsRef = useRef(null);
 
   // Load device bookings from localStorage (D-26 Default A) & prune expired bookings
   useEffect(() => {
@@ -176,6 +181,21 @@ export default function CalendarPage() {
     }
   };
 
+  // DEV-206: booking steps — 1 day & time, 2 your details, 3 confirmation. Both panels stay visible
+  // (side by side on desktop); the stepper shows progress and jumps to a panel when a reached step is clicked.
+  const bookingSteps = [
+    { id: 'slot', label: t('calendar.steps.slot') },
+    { id: 'details', label: t('calendar.steps.details') },
+    { id: 'confirm', label: t('calendar.steps.confirm') },
+  ];
+  const detailsReady = Boolean(name.trim()) && EMAIL_RE.test(email.trim());
+  const currentStep = lastBookedAppointment && !selectedSlot ? 3 : !selectedSlot ? 0 : detailsReady ? 2 : 1;
+  const goToStep = (i) => {
+    const el = i === 0 ? slotsRef.current : detailsRef.current;
+    el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (i === 1) setTimeout(() => detailsRef.current?.querySelector('input')?.focus({ preventScroll: true }), 300);
+  };
+
   const calendarLinks = [
     { to: '/', icon: Home, label_ar: 'الرئيسية', label_en: 'Home' },
     { to: '/ai', icon: MessageSquare, label_ar: 'احجز بالذكاء الاصطناعي', label_en: 'Book with AI' },
@@ -205,6 +225,14 @@ export default function CalendarPage() {
             {t('calendar.subtitle')}
           </p>
         </div>
+
+        <Stepper
+          steps={bookingSteps}
+          current={currentStep}
+          onStepClick={goToStep}
+          label={t('calendar.steps.label')}
+          className="max-w-2xl mx-auto"
+        />
 
         {/* Success Alert & Manage Link (HF-02) */}
         {lastBookedAppointment && (
@@ -334,7 +362,7 @@ export default function CalendarPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
           {/* Date Picker & Current Week Buttons + Slots (min-w-0: let the week bar scroll instead of widening the card) */}
-          <div className="min-w-0 lg:col-span-7 bg-card border border-border rounded-2xl p-6 space-y-6 shadow-sm">
+          <div ref={slotsRef} className="scroll-mt-6 min-w-0 lg:col-span-7 bg-card border border-border rounded-2xl p-6 space-y-6 shadow-sm">
 
             {/* Week Days Quick Bar */}
             <div className="space-y-3">
@@ -461,7 +489,7 @@ export default function CalendarPage() {
           </div>
 
           {/* Booking Confirmation Form */}
-          <div className="min-w-0 lg:col-span-5 bg-card border border-border rounded-2xl p-6 space-y-5 shadow-sm">
+          <div ref={detailsRef} className="scroll-mt-6 min-w-0 lg:col-span-5 bg-card border border-border rounded-2xl p-6 space-y-5 shadow-sm">
             <h3 className="text-lg font-bold text-foreground pb-2 border-b border-border">
               {t('calendar.confirmDetails')}
             </h3>

@@ -164,7 +164,13 @@
     "notesLabel": "Additional Notes",
     "notesPlaceholder": "Briefly describe what you would like to discuss (optional)",
     "saving": "Booking…",
-    "bookNow": "Confirm Booking"
+    "bookNow": "Confirm Booking",
+    "steps": {
+      "label": "Booking steps",
+      "slot": "Pick a day and time",
+      "details": "Your details",
+      "confirm": "Confirmation"
+    }
   },
   "admin": {
     "title": "Admin Control Panel | Sard AI",
@@ -604,5 +610,15 @@
     "managersTitle": "Heads of Departments",
     "staffTitle": "Our Team",
     "empty": "The team page is being updated. Check back soon."
+  },
+  "stepper": {
+    "label": "Form progress",
+    "stepOf": "Step {{current}} of {{total}}",
+    "done": "All steps done",
+    "status": {
+      "complete": "done",
+      "current": "current step",
+      "upcoming": "not started"
+    }
   }
 }
