@@ -54,6 +54,25 @@ export const CONTENT_TYPES = {
       { name: 'is_published', type: 'bool', default: false },
     ],
   },
+  // DEV-190: the "Our Partners in Success" ribbon on the home page (read through get_published_partners).
+  // Only these columns are loaded into the admin: contract fields stay out of the browser.
+  // is_active is always set: visibility is controlled by is_published alone.
+  partners: {
+    table: 'partnerships',
+    titleFields: ['partner_name_ar', 'partner_name_en'],
+    imageField: 'partner_logo_url',
+    uploadFolder: 'partners',
+    select: 'id,partner_name_ar,partner_name_en,partner_logo_url,public_summary_ar,public_summary_en,is_published,display_order,created_at',
+    alwaysSet: { is_active: true },
+    fields: [
+      { name: 'partner_name_ar', type: 'text', required: true, max: 150, dir: 'rtl' },
+      { name: 'partner_name_en', type: 'text', required: true, max: 150, dir: 'ltr' },
+      { name: 'partner_logo_url', type: 'image', max: 500 },
+      { name: 'public_summary_ar', type: 'textarea', max: 2000, dir: 'rtl' },
+      { name: 'public_summary_en', type: 'textarea', max: 2000, dir: 'ltr' },
+      { name: 'is_published', type: 'bool', default: false },
+    ],
+  },
 };
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;

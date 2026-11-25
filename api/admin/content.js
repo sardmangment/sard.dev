@@ -1,5 +1,5 @@
 // api/admin/content.js
-// DEV-194: admin CRUD for site content: projects, job/training openings and collaborations.
+// DEV-194: admin CRUD for site content: projects, job/training openings, collaborations and partners (DEV-190).
 //   GET    /api/admin/content?type=projects                 → all rows (published and hidden), by display_order
 //   POST   /api/admin/content?type=projects   {fields}      → create (added at the end of the list)
 //   PATCH  /api/admin/content?type=projects   {id, fields}  → partial update (also hide / publish)
@@ -41,7 +41,7 @@ export default async function handler(req, env = {}) {
 
   try {
     if (req.method === 'GET') {
-      const res = await fetch(`${base}?select=*&order=display_order.asc,created_at.asc`, { headers });
+      const res = await fetch(`${base}?select=${def.select || '*'}&order=display_order.asc,created_at.asc`, { headers });
       if (!res.ok) { console.warn(`[admin/content] GET ${type} ${res.status}`); return json(502, { error: 'load_failed' }); }
       return json(200, { data: await res.json() });
     }
@@ -55,6 +55,7 @@ export default async function handler(req, env = {}) {
       const last = await fetch(`${base}?select=display_order&order=display_order.desc&limit=1`, { headers });
       const rows = last.ok ? await last.json() : [];
       data.display_order = (Array.isArray(rows) && rows[0] ? Number(rows[0].display_order) || 0 : 0) + 1;
+      Object.assign(data, def.alwaysSet);
 
       const res = await fetch(base, { method: 'POST', headers, body: JSON.stringify(data) });
       if (!res.ok) { console.warn(`[admin/content] POST ${type} ${res.status}`); return json(502, { error: 'save_failed' }); }
@@ -84,8 +85,9 @@ export default async function handler(req, env = {}) {
       const { data, errors } = validateRecord(type, fields, { partial: true });
       if (errors) return json(400, { error: 'invalid', fields: errors });
       data.updated_at = new Date().toISOString();
+      Object.assign(data, def.alwaysSet);
 
-      const res = await fetch(`${base}?id=eq.${id}`, { method: 'PATCH', headers, body: JSON.stringify(data) });
+      const res = await fetch(`${base}?id=eq.${id}${def.select ? `&select=${def.select}` : ''}`, { method: 'PATCH', headers, body: JSON.stringify(data) });
       if (!res.ok) { console.warn(`[admin/content] PATCH ${type} ${res.status}`); return json(502, { error: 'save_failed' }); }
       const updated = await res.json();
       if (!Array.isArray(updated) || updated.length === 0) return json(404, { error: 'not_found' });

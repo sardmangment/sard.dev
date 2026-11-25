@@ -191,7 +191,8 @@
       "projects": "Projects",
       "openings": "Jobs & Training",
       "applications": "Applications",
-      "collaborations": "Collaborations"
+      "collaborations": "Collaborations",
+      "partners": "Partners"
     }
   },
   "adminContent": {
@@ -236,7 +237,12 @@
       "started_on": "Start date",
       "logo_url": "Logo",
       "website_url": "Website",
-      "is_published": "Published (visible on the site)"
+      "is_published": "Published (visible on the site)",
+      "partner_name_ar": "Name (Arabic)",
+      "partner_name_en": "Name (English)",
+      "partner_logo_url": "Logo",
+      "public_summary_ar": "Short summary (Arabic, shown on the partner page)",
+      "public_summary_en": "Short summary (English, shown on the partner page)"
     },
     "options": {
       "in_development": "In Development",
@@ -278,7 +284,14 @@
       "image_too_large": "The image is larger than 2 MB.",
       "image_type": "Only PNG, JPG or WebP images are allowed."
     },
-    "expired": "Closed (past closing date)"
+    "expired": "Closed (past closing date)",
+    "partners": {
+      "title": "Partners",
+      "hint": "The \"Our Partners in Success\" ribbon on the home page, in this order. Publish a partner only with a signed agreement or real joint work, and their permission to show name and logo.",
+      "add": "Add partner",
+      "edit": "Edit partner",
+      "empty": "No partners yet."
+    }
   },
   "adminApplications": {
     "title": "Job applications",
