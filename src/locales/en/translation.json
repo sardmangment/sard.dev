@@ -470,6 +470,12 @@
         "cv_type": "Your CV must be a PDF file.",
         "cv_too_large": "The file is larger than 5 MB.",
         "cv_missing": "Attach your CV."
+      },
+      "steps": {
+        "label": "Application steps",
+        "details": "Your details",
+        "cv": "Your CV",
+        "send": "Consent & send"
       }
     }
   },

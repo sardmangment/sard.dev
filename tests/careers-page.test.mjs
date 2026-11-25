@@ -66,14 +66,23 @@ test('Careers page: openings, filters and apply links (AR/EN, desktop and 375px)
         assert.ok(await dialog.locator('[role="alert"]').count() >= 4, 'required-field errors shown');
         assert.equal(page.applications.length, 0, 'nothing sent with errors');
 
+        // DEV-206 stepper: details → CV → consent & send, follows what is filled in
+        const steps = () => dialog.locator('[data-testid="stepper"] li').evaluateAll((els) => els.map((e) => e.dataset.status));
+        const stepIs = (n) => page.waitForFunction((i) => document.querySelector(`[data-testid="apply-dialog"] [data-testid="stepper"] li:nth-child(${i})`)?.dataset.status === 'current', n);
+        assert.deepEqual(await steps(), ['current', 'upcoming', 'upcoming']);
+
         // Valid submit → posted to /api/careers/apply with the opening id and the PDF
         await dialog.locator('#full_name').fill('Sara Ali');
         await dialog.locator('#email').fill('sara@example.com');
         await dialog.locator('#phone').fill('+20 100 000 0000');
+        await stepIs(2);
         await dialog.locator('#cv').setInputFiles({ name: 'cv.pdf', mimeType: 'application/pdf', buffer: Buffer.from('%PDF-1.4') });
+        await stepIs(3);
+        assert.deepEqual(await steps(), ['complete', 'complete', 'current']);
         await dialog.locator('input[name="consent"]').check();
         await dialog.locator('button[type="submit"]').click();
         await page.locator('[data-testid="apply-success"]').waitFor({ timeout: 5000 });
+        assert.deepEqual(await steps(), ['complete', 'complete', 'complete'], 'all steps done after sending');
         assert.equal(page.applications.length, 1, 'one application sent');
         assert.ok(page.applications[0].includes('o1') && page.applications[0].includes('%PDF-'), 'opening id and CV posted');
         await page.keyboard.press('Escape');

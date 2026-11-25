@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { X, Upload, CheckCircle2, Loader2 } from 'lucide-react';
+import { Stepper } from './Stepper';
 
 // DEV-192: in-site application form for /careers. Posts multipart/form-data to /api/careers/apply.
 // `opening` = a published opening, or null for a general application.
@@ -22,6 +23,17 @@ function validate(fd, file) {
   else if (file.type !== 'application/pdf' && !/\.pdf$/i.test(file.name)) errs.cv = 'cv_type';
   if (fd.get('consent') !== 'yes') errs.consent = 'consent';
   return errs;
+}
+
+// DEV-206: stepper progress, from the same rules as validate(): 0 your details, 1 CV, 2 consent & send.
+function progressOf(form) {
+  if (!form) return 0;
+  const fd = new FormData(form);
+  const v = (k) => (fd.get(k) || '').toString().trim();
+  if (v('full_name').length < 2 || !EMAIL_RE.test(v('email')) || !PHONE_RE.test(v('phone'))) return 0;
+  const file = fd.get('cv') instanceof File && fd.get('cv').size ? fd.get('cv') : null;
+  if (!file || file.size > MAX_CV || (file.type !== 'application/pdf' && !/\.pdf$/i.test(file.name))) return 1;
+  return 2;
 }
 
 function Field({ id, label, error, required, children }) {
@@ -48,6 +60,22 @@ export function ApplyDialog({ opening, isAr, onClose }) {
   const [state, setState] = useState('idle'); // idle | sending | done | failed
   const [serverError, setServerError] = useState('');
   const [fileName, setFileName] = useState('');
+  const formRef = useRef(null);
+  const [progress, setProgress] = useState(0);
+  const steps = [
+    { id: 'details', label: t('careersPage.form.steps.details') },
+    { id: 'cv', label: t('careersPage.form.steps.cv') },
+    { id: 'send', label: t('careersPage.form.steps.send') },
+  ];
+  const currentStep = state === 'done' ? steps.length : progress;
+  // Clicking a reached step moves focus to its first field (the dialog scrolls to it).
+  const goToStep = (i) => {
+    const target = ['full_name', 'cv', 'consent'][i];
+    const el = formRef.current?.elements?.namedItem(target);
+    const focusEl = target === 'cv' ? formRef.current?.querySelector('label[for="cv"]') : el;
+    focusEl?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    (target === 'cv' ? el : focusEl)?.focus?.({ preventScroll: true });
+  };
 
   const title = opening ? (isAr ? opening.title_ar : opening.title_en) : t('careersPage.form.generalTitle');
 
@@ -97,7 +125,8 @@ export function ApplyDialog({ opening, isAr, onClose }) {
         className="relative w-full sm:max-w-xl max-h-[92vh] overflow-y-auto bg-background rounded-t-3xl sm:rounded-3xl shadow-2xl"
         data-testid="apply-dialog"
       >
-        <div className="sticky top-0 z-10 flex items-start justify-between gap-4 px-6 pt-6 pb-4 bg-background border-b border-border">
+        <div className="sticky top-0 z-10 px-6 pt-6 pb-4 bg-background border-b border-border space-y-4">
+         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs font-semibold text-brand-orange-700">{t('careersPage.form.applyingFor')}</p>
             <h2 id="apply-title" className="text-xl font-bold text-foreground">{title}</h2>
@@ -105,6 +134,8 @@ export function ApplyDialog({ opening, isAr, onClose }) {
           <button type="button" onClick={onClose} aria-label={t('careersPage.form.close')} className="w-9 h-9 shrink-0 rounded-full bg-secondary hover:bg-secondary/70 flex items-center justify-center cursor-pointer">
             <X className="w-5 h-5" aria-hidden="true" />
           </button>
+         </div>
+          <Stepper steps={steps} current={currentStep} onStepClick={state === 'done' ? undefined : goToStep} label={t('careersPage.form.steps.label')} />
         </div>
 
         {state === 'done' ? (
@@ -115,7 +146,7 @@ export function ApplyDialog({ opening, isAr, onClose }) {
             <button type="button" onClick={onClose} className="px-6 py-2.5 rounded-xl bg-brand-navy text-white font-semibold cursor-pointer">{t('careersPage.form.close')}</button>
           </div>
         ) : (
-          <form onSubmit={submit} noValidate className="px-6 py-5 space-y-4">
+          <form ref={formRef} onSubmit={submit} onChange={() => setProgress(progressOf(formRef.current))} onInput={() => setProgress(progressOf(formRef.current))} noValidate className="px-6 py-5 space-y-4">
             {/* Honeypot: hidden from people, filled by bots */}
             <div className="hidden" aria-hidden="true">
               <label>Website<input type="text" name="website" tabIndex={-1} autoComplete="off" /></label>
