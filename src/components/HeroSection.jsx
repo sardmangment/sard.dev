@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion';
 import SplitText from './SplitText';
-import { PrimeTag } from './PrimeTag';
 import { SiteNavbar } from './SiteNavbar';
 import { useTranslation } from 'react-i18next';
 import { Link } from "react-router-dom";   
@@ -114,8 +113,9 @@ export const HeroSection = () => {
                 whileTap={{ scale: 0.98 }}
                 className="px-8 py-4 border-2 border-brand-gray text-brand-gray bg-transparent flex items-center gap-3 font-bold rounded-xl hover:bg-white/10 transition-all text-base cursor-pointer"
               >
+                {/* DEV-212: brain icon replaces the "Prime" tag */}
+                <Brain className="w-5 h-5 text-brand-orange" aria-hidden="true" />
                 <span>{t('hero.askAssistant')}</span>
-                <PrimeTag />
                 {isRTL ? <ArrowLeft className="w-5 h-5" /> : <ArrowRight className="w-5 h-5" />}
               </motion.button>
             </Link>
