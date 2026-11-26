@@ -11,7 +11,7 @@ import {
   ShieldCheck, 
   Zap, 
   Home, 
-  MessageSquare, 
+  Brain, 
   Sparkles, 
   Building2,
   FolderGit2
@@ -42,7 +42,7 @@ export const HeroSection = () => {
     { to: '/', icon: Home, label_ar: 'الرئيسية', label_en: 'Home' },
     { to: '/projects', icon: FolderGit2, label_ar: 'المشاريع', label_en: 'Projects' },
     { to: '/calendar', icon: Calendar, label_ar: 'جدول المواعيد', label_en: 'Book Meeting' },
-    { to: '/ai', icon: MessageSquare, label_ar: 'مساعد الذكاء الاصطناعي', label_en: 'Sard AI Chat' },
+    { to: '/ai', icon: Brain, label_ar: 'مساعد الذكاء الاصطناعي', label_en: 'Sard AI Chat' },
     { href: '#about', icon: Sparkles, label_ar: 'عن سرد', label_en: 'About Us', isSection: true },
     { href: '#services', icon: Zap, label_ar: 'خدماتنا', label_en: 'Our Services', isSection: true },
     { href: '#partners', icon: Building2, label_ar: 'شركاؤنا', label_en: 'Partners', isSection: true },

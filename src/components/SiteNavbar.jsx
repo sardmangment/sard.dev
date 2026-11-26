@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { Menu, X, Calendar, MessageSquare, ChevronDown } from 'lucide-react';
+import { Menu, X, Calendar, Brain, ChevronDown } from 'lucide-react';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import sardLogo from '../assets/logo.png';
 import { SITE_NAV } from '../config/navigation';
@@ -211,7 +211,7 @@ export function SiteNavbar({
                     : 'border-border/70 text-foreground hover:bg-secondary/60'
                 }`}
               >
-                <MessageSquare className="w-4 h-4 text-brand-orange" aria-hidden="true" />
+                <Brain className="w-4 h-4 text-brand-orange" aria-hidden="true" />
                 <span className="sr-only xl:not-sr-only">{t('nav.ai')}</span>
               </Link>
               <Link

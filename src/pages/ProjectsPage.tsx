@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { SiteNavbar } from '@/components/SiteNavbar';
 import { Footer } from '@/components/layout/Footer';
-import { ExternalLink, FolderGit2, Home, Calendar, MessageSquare } from 'lucide-react';
+import { ExternalLink, FolderGit2, Home, Calendar, Brain } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -127,7 +127,7 @@ export const ProjectsPage = () => {
     { to: '/', icon: Home, label_ar: 'الرئيسية', label_en: 'Home' },
     { to: '/projects', icon: FolderGit2, label_ar: 'المشاريع', label_en: 'Projects' },
     { to: '/calendar', icon: Calendar, label_ar: 'جدول المواعيد', label_en: 'Calendar' },
-    { to: '/ai', icon: MessageSquare, label_ar: 'مساعد الذكاء الاصطناعي', label_en: 'Sard AI Chat' },
+    { to: '/ai', icon: Brain, label_ar: 'مساعد الذكاء الاصطناعي', label_en: 'Sard AI Chat' },
   ];
 
   return (

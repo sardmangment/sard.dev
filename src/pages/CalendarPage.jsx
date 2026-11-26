@@ -27,7 +27,7 @@ import {
   Check,
   Bookmark,
   Home,
-  MessageSquare
+  Brain
 } from 'lucide-react';
 import { SiteNavbar } from '../components/SiteNavbar';
 import { Stepper } from '../components/Stepper';
@@ -202,12 +202,12 @@ export default function CalendarPage() {
 
   const calendarLinks = [
     { to: '/', icon: Home, label_ar: 'الرئيسية', label_en: 'Home' },
-    { to: '/ai', icon: MessageSquare, label_ar: 'احجز بالذكاء الاصطناعي', label_en: 'Book with AI' },
+    { to: '/ai', icon: Brain, label_ar: 'احجز بالذكاء الاصطناعي', label_en: 'Book with AI' },
   ];
 
   const calendarDrawerLinks = [
     { to: '/', icon: Home, label_ar: 'الرئيسية', label_en: 'Home' },
-    { to: '/ai', icon: MessageSquare, label_ar: 'مساعد الذكاء الاصطناعي', label_en: 'Sard AI Chat' },
+    { to: '/ai', icon: Brain, label_ar: 'مساعد الذكاء الاصطناعي', label_en: 'Sard AI Chat' },
   ];
 
   return (
