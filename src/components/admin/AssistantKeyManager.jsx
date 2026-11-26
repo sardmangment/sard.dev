@@ -2,12 +2,11 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { KeyRound, Loader2, CheckCircle2, AlertTriangle, Eye, EyeOff, Trash2 } from 'lucide-react';
 import { ConfirmDialog } from '../ConfirmDialog';
+import { normalizeAssistantKey, isPlausibleAssistantKey } from '../../config/assistantKeyFormat';
 
 // DEV-212: set the AI assistant's Gemini API key from the admin (api/admin/assistant-key.js).
 // The saved key is never sent back to the browser: only where it comes from and its last 4 characters.
 // A new key is tested with Google before it is saved.
-
-const KEY_RE = /^[A-Za-z0-9_-]{30,200}$/;
 
 export default function AssistantKeyManager({ request }) {
   const { t, i18n } = useTranslation();
@@ -35,9 +34,9 @@ export default function AssistantKeyManager({ request }) {
 
   const save = async (e) => {
     e.preventDefault();
-    const key = value.trim();
+    const key = normalizeAssistantKey(value);
     setMessage(null);
-    if (!KEY_RE.test(key)) { setMessage({ kind: 'error', text: t('adminAssistant.errors.invalid_key') }); return; }
+    if (!isPlausibleAssistantKey(key)) { setMessage({ kind: 'error', text: t('adminAssistant.errors.invalid_key') }); return; }
     setBusy(true);
     try {
       const data = await request('/api/admin/assistant-key', { method: 'POST', body: { key } });
@@ -117,7 +116,7 @@ export default function AssistantKeyManager({ request }) {
             value={value}
             onChange={(e) => setValue(e.target.value)}
             placeholder="AIza…"
-            maxLength={200}
+            maxLength={600}
             className="flex-1 min-w-0 rounded-xl border border-border bg-background px-4 py-2.5 text-sm font-mono text-foreground outline-none focus:ring-2 focus:ring-brand-orange/40"
           />
           <button

@@ -654,7 +654,7 @@
     "removeConfirm": "Remove key",
     "errors": {
       "load_failed": "Could not load the key status. Try again.",
-      "invalid_key": "This does not look like a Google API key.",
+      "invalid_key": "This does not look like an API key. Paste only the key itself as copied from Google AI Studio (it usually starts with AIza), without other text.",
       "key_rejected": "Google rejected this key. Check it in Google AI Studio and try again. Nothing was saved.",
       "save_failed": "Could not save the key. Try again.",
       "delete_failed": "Could not remove the key. Try again."

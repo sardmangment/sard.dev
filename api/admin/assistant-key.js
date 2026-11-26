@@ -7,11 +7,10 @@
 
 import { guardAdminRequest, getServiceConfig, serviceHeaders, json } from '../_lib/adminGuard.js';
 import { ASSISTANT_KEY_SETTING, clearAssistantKeyCache, readStoredKey, hasEnvKey } from '../_lib/assistantKey.js';
+import { normalizeAssistantKey, isPlausibleAssistantKey } from '../../src/config/assistantKeyFormat.js';
 
 export const config = { runtime: 'edge' };
 
-// Google API keys: letters, digits, "-" and "_" only.
-export const KEY_RE = /^[A-Za-z0-9_-]{30,200}$/;
 const MAX_BODY = 4 * 1024;
 
 const last4 = (k) => (k ? k.slice(-4) : null);
@@ -57,8 +56,8 @@ export default async function handler(req, env = {}) {
       if (Number(req.headers.get('content-length') || 0) > MAX_BODY) return json(413, { error: 'too_large' });
       let body;
       try { body = await req.json(); } catch { body = null; }
-      const newKey = typeof body?.key === 'string' ? body.key.trim() : '';
-      if (!KEY_RE.test(newKey)) return json(400, { error: 'invalid_key' });
+      const newKey = normalizeAssistantKey(body?.key);
+      if (!isPlausibleAssistantKey(newKey)) return json(400, { error: 'invalid_key' });
 
       if (!(await testGeminiKey(newKey))) return json(422, { error: 'key_rejected' });
 

@@ -194,3 +194,29 @@ test('Admin Assistant tab: status, save (tested), remove with confirmation (AR/E
     await browser.close();
   }
 });
+
+test('pasted keys are cleaned: spaces, line breaks, invisible characters, quotes, NAME= prefix', async () => {
+  const { normalizeAssistantKey: n, isPlausibleAssistantKey: ok } = await import('../src/config/assistantKeyFormat.js');
+  for (const pasted of [
+    ` ${GOOD}\n`,
+    `‏${GOOD}​`,
+    `"${GOOD}"`,
+    `GEMINI_API_KEY=${GOOD}`,
+    `GEMINI_API_KEY: '${GOOD}'`,
+    `${GOOD.slice(0, 20)}\n${GOOD.slice(20)}`,
+  ]) {
+    assert.equal(n(pasted), GOOD, JSON.stringify(pasted));
+  }
+  assert.ok(ok(GOOD));
+  assert.ok(ok('AQ.Ab8RN6K-example_key.with.dots0123'), 'newer formats with dots are allowed (Google does the real check)');
+  for (const bad of ['short', 'hello world, this is not a key!', '<script>alert(1)</script>', 'x'.repeat(501)]) {
+    assert.equal(ok(n(bad)), false, bad.slice(0, 30));
+  }
+
+  // The server cleans the key the same way before testing and saving it
+  await withBackend({}, async (state) => {
+    const res = await keyHandler(req('POST', { key: `GEMINI_API_KEY="${GOOD}"\n` }));
+    assert.equal(res.status, 200);
+    assert.equal(state.stored, GOOD);
+  });
+});
