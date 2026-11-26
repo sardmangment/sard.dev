@@ -199,7 +199,8 @@
       "applications": "Applications",
       "collaborations": "Collaborations",
       "partners": "Partners",
-      "team": "Team"
+      "team": "Team",
+      "assistant": "AI Assistant"
     }
   },
   "adminContent": {
@@ -625,6 +626,38 @@
       "complete": "done",
       "current": "current step",
       "upcoming": "not started"
+    }
+  },
+  "adminAssistant": {
+    "title": "Think with Sard: API key",
+    "hint": "The Google Gemini API key used by the AI assistant. It is kept on the server only and is never shown again after saving.",
+    "current": "Key in use",
+    "source": {
+      "admin": "Key saved here",
+      "env": "Cloudflare key (GEMINI_API_KEY)",
+      "none": "No key configured"
+    },
+    "updated": "Saved {{when}}",
+    "noneWarning": "The assistant cannot answer until a key is saved.",
+    "newKey": "New API key",
+    "newKeyHint": "Paste a key from Google AI Studio. It is tested with Google before it is saved; the saved key replaces the Cloudflare key.",
+    "showKey": "Show key",
+    "hideKey": "Hide key",
+    "save": "Test and save",
+    "testing": "Testing…",
+    "saved": "Key works and is saved. The assistant uses it within a minute.",
+    "remove": "Remove saved key",
+    "removed": "Saved key removed.",
+    "removeTitle": "Remove the saved key?",
+    "removeBodyEnv": "The assistant will go back to the Cloudflare key (GEMINI_API_KEY) within a minute.",
+    "removeBodyNone": "There is no Cloudflare key, so the assistant will stop answering until a new key is saved.",
+    "removeConfirm": "Remove key",
+    "errors": {
+      "load_failed": "Could not load the key status. Try again.",
+      "invalid_key": "This does not look like a Google API key.",
+      "key_rejected": "Google rejected this key. Check it in Google AI Studio and try again. Nothing was saved.",
+      "save_failed": "Could not save the key. Try again.",
+      "delete_failed": "Could not remove the key. Try again."
     }
   }
 }

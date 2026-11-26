@@ -3,6 +3,7 @@
 // Rate limited per client IP via shared Postgres RPC or fallback sliding window.
 
 import { checkChatRateLimit } from "./_lib/rateLimit.js";
+import { getAssistantKey } from "./_lib/assistantKey.js";
 
 export const config = { runtime: "edge" };
 
@@ -122,8 +123,9 @@ export default async function handler(req, env = (typeof globalThis !== 'undefin
     );
   }
 
-  // Server-only secret. Read only GEMINI_API_KEY. Never read VITE_-prefixed variable.
-  const apiKey = env.GEMINI_API_KEY || (typeof process !== 'undefined' ? process.env.GEMINI_API_KEY : '');
+  // Server-only secret (DEV-212): the key saved from /admin (app_settings), else the Cloudflare secret
+  // GEMINI_API_KEY. Never a VITE_-prefixed variable; never sent to the browser.
+  const { key: apiKey } = await getAssistantKey(env);
   if (!apiKey) {
     return new Response(
       JSON.stringify({ error: "Server AI proxy is pending server-side GEMINI_API_KEY configuration." }),

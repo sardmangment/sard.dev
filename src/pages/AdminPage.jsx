@@ -6,12 +6,13 @@ import {
   adminCancelAppointment,
   TIME_SLOTS 
 } from '../utils/calendarStorage';
-import { Lock, Calendar, Trash2, PlusCircle, Bot, Cpu, LogOut, FolderKanban, Briefcase, Handshake, Inbox, Award, Users } from 'lucide-react';
+import { Lock, Calendar, Trash2, PlusCircle, Bot, Cpu, LogOut, FolderKanban, Briefcase, Handshake, Inbox, Award, Users, Brain } from 'lucide-react';
 import sardLogo from '../assets/logo.png';
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import ContentManager from '../components/admin/ContentManager';
 import ApplicationsManager from '../components/admin/ApplicationsManager';
+import AssistantKeyManager from '../components/admin/AssistantKeyManager';
 
 // DEV-194: dashboard sections. Appointments is the original admin view; content sections use /api/admin/content.
 const ADMIN_TABS = [
@@ -22,6 +23,7 @@ const ADMIN_TABS = [
   { id: 'collaborations', icon: Handshake },
   { id: 'partners', icon: Award },
   { id: 'team', icon: Users },
+  { id: 'assistant', icon: Brain },
 ];
 const CONTENT_TABS = new Set(['projects', 'openings', 'collaborations', 'partners', 'team']);
 
@@ -418,6 +420,7 @@ export default function AdminPage() {
 
         {CONTENT_TABS.has(activeTab) && <ContentManager key={activeTab} type={activeTab} request={adminRequest} />}
         {activeTab === 'applications' && <ApplicationsManager request={adminRequest} />}
+        {activeTab === 'assistant' && <AssistantKeyManager request={adminRequest} />}
 
         {activeTab === 'appointments' && (<>
         {/* AI Agent Box */}
